@@ -1,0 +1,16 @@
+{
+    “Confidence”: {
+        “High”: {
+            “min”: 0.0
+            “max”: 0.0 
+        },
+        “Medium”: {
+            “min”: 0.0
+            “max”: 0.0
+        },
+        “High”: {
+            “min”: 0.0
+            “max”: 0.0
+        }
+    }
+}
