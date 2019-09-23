@@ -1,5 +1,5 @@
 import abc
-import data_extraction.field.data.field_data as field_data
+import backend.data_extraction.field.data.field_data as field_data
 
 """
 Interface for identifying and validating a Field on a check.

@@ -7,3 +7,5 @@ backend/preprocess/__pycache__/
 
 .vscode
 */.vscode
+
+.idea
