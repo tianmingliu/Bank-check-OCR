@@ -2,41 +2,88 @@
 <html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
-        <title>Flask Test</title>
+        <title>Upload Your Check</title>
     </head>
     <body>
-        <h1>Upload a check</h1>
-        <a href='#' onclick="unHide();">Upload</a>
+        <h1 align="center">Deutsche Bank Check Reader</h1>
+        <h2 align="center">Upload a Check</h2>
+        <!-- TODO This form needs a file for its action, something to pass the data to -->
+        <form onsubmit="unHide();" id="uploadImage" method="POST" enctype="multipart/form-data">
+            <div align="center">
+                <input idf="imageFile" type="file" />
+                <br>
+                <input id="submit" name="submit" value="Upload" type="submit" />
+            </div>
+        </form>
+
         <br><br><br>
-        <div id='dataDiv' style="display:none">
-            <label><b>Extracted Data</b></label>
-            <table>
+        <!-- TODO Change display attr to display: none when done @Taha -->
+        <div id='dataDiv' style="display: block;">
+            <table width="100%" align="center" border="1" style="border-collapse: collapse;">
                 <tr>
-                    <td>Account Number: </td>
-                    <td>TEST</td>
+                    <th colspan="5">Extracted Data</th>
                 </tr>
                 <tr>
-                    <td>Routing Number: </td>
-                    <td>TEST</td>
-                </tr>
-                <tr>
-                    <td>Check Number: </td>
-                    <td>TEST</td>
-                </tr>
-                <tr>
-                    <td>Date of Check: </td>
-                    <td>TEST</td>
-                </tr>
-                <tr>
-                    <td>Account Holder Name: </td>
-                    <td>TEST</td>
-                </tr>
-                <tr>
-                    <td>Amount: </td>
-                    <td>$TEST</td>
+                    <th>Field</th>
+                    <th>Extracted Value</th>
+                    <th>PASS/FAIL</th>
+                    <th>Reason</th>
+                    <th>Confidence</th>
+                </tr><tr>
+                    <td>Account Number</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr><tr>
+                    <td>Routing Number</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr><tr>
+                    <td>Date</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr><tr>
+                    <td>Pay to the Order of</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr><tr>
+                    <td>Image Amount</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr><tr>
+                    <td>Written Amount</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr><tr>
+                    <td>Memo</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr><tr>
+                    <td>Signature</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             </table>
         </div>
+
+        <br><br><br>
+        <!-- TODO Add JSON file -->
+        <div align="center"><a href="#">JSON File</a></div>
     </body>
     <script>
         function unHide() {
