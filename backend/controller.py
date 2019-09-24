@@ -4,15 +4,21 @@ import backend.data_extraction.data_extraction_main  as de
 import backend.postprocess.postprocess_main          as pop
 
 """
-TODO(Dustin): do it
-
 Writes a list to a specified file in JSON format.
+
 @param fields: list of fields of type FieldData
 @param filename: file to write to
 """
-def writeToJSONOutput(fields, filename):
-    print("Writes to a JSON file...eventually")
+def writeToJSONOutput(fields, filename): 
+    fp = open(filename, 'w+')
+    fp.write("{\n")
 
+    for field in fields:
+        fp.write(str(field))
+
+    fp.write("}\n")
+    fp.close()
+    
 """
 Current entry point for the program.
 
@@ -40,6 +46,8 @@ def main():
         de.extractDataEntryPoint(image, field)
 
     pop.postprocessEntryPoint(image, fields)
+
+    writeToJSONOutput(fields, "out.json")
 
 if __name__ == "__main__":
     main()
