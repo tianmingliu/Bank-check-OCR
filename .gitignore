@@ -8,3 +8,5 @@ backend/preprocess/__pycache__/
 .vscode
 */.vscode
 *.json
+
+.idea

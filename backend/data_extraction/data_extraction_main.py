@@ -1,5 +1,5 @@
-import data_extraction.field.data.field_data as field_data
-import data_extraction.field_list as field_list 
+import backend.data_extraction.field.data.field_data as field_data
+import backend.data_extraction.field_list as field_list
 
 """
 Entry point for the Data Extraction stage of the pipeline.
