@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Flask Test</title>
+    </head>
+    <body>
+        <h1>Upload a check</h1>
+        <a href='#' onclick="unHide();">Upload</a>
+        <br><br><br>
+        <div id='dataDiv' style="display:none">
+            <label><b>Extracted Data</b></label>
+            <table>
+                <tr>
+                    <td>Account Number: </td>
+                    <td>TEST</td>
+                </tr>
+                <tr>
+                    <td>Routing Number: </td>
+                    <td>TEST</td>
+                </tr>
+                <tr>
+                    <td>Check Number: </td>
+                    <td>TEST</td>
+                </tr>
+                <tr>
+                    <td>Date of Check: </td>
+                    <td>TEST</td>
+                </tr>
+                <tr>
+                    <td>Account Holder Name: </td>
+                    <td>TEST</td>
+                </tr>
+                <tr>
+                    <td>Amount: </td>
+                    <td>$TEST</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+    <script>
+        function unHide() {
+            document.getElementById('dataDiv').style = "";
+        }
+    </script>
+</html>
