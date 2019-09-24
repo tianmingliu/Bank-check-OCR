@@ -19,6 +19,9 @@ class FieldType(Enum):
     FIELD_TYPE_AMOUNT    = 3
     FIELD_TYPE_ROUTING   = 4
 
+    def __str__(self):
+        return f"\"field_type\": \"{self.name}\""
+
 """
 Represents a (x,y) coordinate on an image.
 """
@@ -26,6 +29,12 @@ Represents a (x,y) coordinate on an image.
 class Point:
     x: float = 0.0
     y: float = 0.0
+
+    def __str__(self):
+        return f""" {{
+            \"x\": {self.x},
+            \"y\": {self.y}
+        }}"""
 
 """
 Represents a bounding box on an image. 
@@ -38,6 +47,12 @@ class BoundingBox:
     min_bound: Point = Point(0.0, 0.0)
     max_bound: Point = Point(0.0, 0.0)
 
+    def __str__(self):
+        return f"""\"boundingBox\": {{
+        \"min_bound\": {str(self.min_bound)},
+        \"max_bound\": {str(self.max_bound)}
+    }}"""
+
 """
 Represents the actual data of a field on a check.
 
@@ -47,8 +62,14 @@ Represents the actual data of a field on a check.
 """
 @dataclass
 class FieldDataInfo:
-    extractedData: str   = ""
+    extracted_data: str   = ""
     confidence:    float = 0.0
+
+    def __str__(self):
+        return f"""\"data_info\": {{
+          \"extracted_data\": \"{self.extracted_data}\",
+          \"confidence\": {self.confidence}
+    }}"""
 
 """
 Represents the data for a Field on a check. 
@@ -63,3 +84,12 @@ class FieldData:
     field_type: FieldType     = FieldType.FIELD_TYPE_NONE
     bounds:     BoundingBox   = BoundingBox()
     data_info:  FieldDataInfo = FieldDataInfo()
+
+    def __str__(self):
+        ft = str(self.field_type)
+        bs = str(self.bounds)
+        di = str(self.data_info)
+        return f"""\t{ft},
+    {bs},
+    {di}
+"""
