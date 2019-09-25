@@ -17,9 +17,7 @@ def extractFieldsEntryPoint(image):
     # do stuff
 
     # Just return a single data field for now
-    list = [
-        field_data.FieldData()
-    ]
+    list = [ field_data.FieldData(), field_data.FieldData() ]
 
     # returns the data struct
     return list

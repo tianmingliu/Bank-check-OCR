@@ -1,21 +1,32 @@
+import backend.data_extraction.field.data.field_data as fd
 import backend.preprocess.preprocess_main            as prp
 import backend.field_extraction.field_extractor_main as fe
 import backend.data_extraction.data_extraction_main  as de
 import backend.postprocess.postprocess_main          as pop
 
+from dataclasses_json import dataclass_json
+
+from typing import List
+
+
 """
 Writes a list to a specified file in JSON format.
-
+ 
 @param fields: list of fields of type FieldData
 @param filename: file to write to
 """
-def writeToJSONOutput(fields, filename): 
+def createJSONFromFieldDataList(fields: List[fd.FieldData]):
+    json_str = ""
+    id = 0
+    for field in fields:
+        json_str += str("\"element" + str(id) + "\": " + field.to_json(indent=4) + ",\n")
+        id += 1
+    return json_str[:-2] + "\n"
+
+def writeToJSONFile(json_str, filename): 
     fp = open(filename, 'w+')
     fp.write("{\n")
-
-    for field in fields:
-        fp.write(str(field))
-
+    fp.write(json_str)
     fp.write("}\n")
     fp.close()
     
@@ -47,7 +58,8 @@ def main():
 
     pop.postprocessEntryPoint(image, fields)
 
-    writeToJSONOutput(fields, "out.json")
+    json_str = createJSONFromFieldDataList(fields)
+    writeToJSONFile(json_str, "out.json")
 
 if __name__ == "__main__":
     main()
