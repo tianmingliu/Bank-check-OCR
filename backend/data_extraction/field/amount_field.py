@@ -13,7 +13,7 @@ import backend.data_extraction.config_helper as helper
 
 class AmountField(field.Field):
 
-    def identify(self, field_data: field_data.FieldData):
+    def identify(self, data: field_data.FieldData):
         print("Identifying if the passed data is the amount...")
 
     """
