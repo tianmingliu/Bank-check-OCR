@@ -25,11 +25,11 @@ class AmountField(field.Field):
             print("Amount number is not a float")
             return False
 
-        if num_amount < helper.get_config_data()['thresholds']['amount_min']:
-            print("Amount number is lower than minimum")
+        if num_amount <= helper.get_config_data()['thresholds']['amount_min']:
+            print("Amount number is lower than minimum: " + str(helper.get_config_data()['thresholds']['amount_min']))
             return False
-        elif num_amount > helper.get_config_data()['thresholds']['amount_max']:
-            print("Amount number is greater than maximum")
+        elif num_amount >= helper.get_config_data()['thresholds']['amount_max']:
+            print("Amount number is greater than maximum: " + str(helper.get_config_data()['thresholds']['amount_max']))
             return False
         else:
             print("Passed validation")

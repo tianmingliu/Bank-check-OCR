@@ -3,9 +3,10 @@ import os
 
 
 def get_config_data():
-    filedir = os.path.dirname(os.path.realpath('__file__'))
-    filename = os.path.join(filedir, '../../../../config/config.yml')
-
+    filedir = os.path.abspath(os.path.dirname(__file__))
+    print(filedir)
+    filename = os.path.join(filedir, '..\\..\\config\\config.yml')
+    print(filename)
     with open(filename, 'r') as config_file:
         cfg = yaml.load(config_file)
 
