@@ -5,8 +5,9 @@ import backend.data_extraction.data_extraction_main  as de
 import backend.postprocess.postprocess_main          as pop
 
 from dataclasses_json import dataclass_json
-
 from typing import List
+
+import cv2
 
 
 """
@@ -43,19 +44,41 @@ Controls the overall pipeline:
 7. Send postprocess data to the frontend 
 """
 def main():
-    image = None
+    # image_file = "resources/images/simple_check.jpg"
+    image_file = "resources/images/check_example.jpg"
 
-    prp.preprocessEntryPoint(image)
+    # Read RGB image as greyscale
+    img = cv2.imread(image_file)  
 
+    cv2.imshow("Canny edge detection", img)
+    cv2.waitKey(0)
+
+    # Destroying present windows on screen 
+    cv2.destroyAllWindows()  
+
+    ##################################################
+    # PREPROCESS PASS
+    ##################################################
+    image = prp.preprocessEntryPoint(img)
+
+    ##################################################
+    # FIELD EXTRACTTION PASS
+    ##################################################
     # Returns a list of fields
     fields = fe.extractFieldsEntryPoint(image)
     if fields is None or len(fields) == 0:
         print("No fields were found!")
         return
 
+    ##################################################
+    # DATA EXTRACTION PASS
+    ##################################################
     for field in fields:
         de.extractDataEntryPoint(image, field)
 
+    ##################################################
+    # DATA EXTRACTION PASS
+    ##################################################
     pop.postprocessEntryPoint(image, fields)
 
     json_str = createJSONFromFieldDataList(fields)
