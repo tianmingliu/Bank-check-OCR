@@ -7,31 +7,29 @@
     <body>
         <h1 align="center">Deutsche Bank Check Reader</h1>
         <h2 align="center">Upload a Check</h2>
-        <!-- TODO This form needs a file for its action, something to pass the data to -->
-        <form onsubmit="unHide();" id="uploadImage" method="POST" enctype="multipart/form-data">
+
+        <form onsubmit="uploadImage();" id="uploadImage">
             <div align="center">
-                <input idf="imageFile" type="file" />
+                <input id="file" name="file" type="file" />
                 <br>
                 <input id="submit" name="submit" value="Upload" type="submit" />
             </div>
         </form>
 
         <br><br><br>
-        <!-- TODO Change display attr to display: none when done @Taha -->
-        <div id='dataDiv' style="display: block;">
-            <table width="100%" align="center" border="1" style="border-collapse: collapse;">
+
+        <div id='dataDiv' style="display: none;">
+            <table align="center" border="1" style="border-collapse: collapse;">
                 <tr>
                     <th colspan="5">Extracted Data</th>
                 </tr>
                 <tr>
                     <th>Field</th>
-                    <th>Extracted Value</th>
+                    <th>Value</th>
                     <th>PASS/FAIL</th>
                     <th>Reason</th>
-                    <th>Confidence</th>
                 </tr><tr>
                     <td>Account Number</td>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -40,10 +38,8 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
                 </tr><tr>
                     <td>Date</td>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -52,10 +48,8 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
                 </tr><tr>
                     <td>Image Amount</td>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -64,10 +58,8 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
                 </tr><tr>
                     <td>Memo</td>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -76,11 +68,10 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
                 </tr>
             </table>
         </div>
-
+        <div align="center"><textarea rows="10" style="width: 300px;" id="test" disabled>TEST</textarea></div>
         <br><br><br>
         <!-- TODO Add JSON file -->
         <div align="center"><a href="#">JSON File</a></div>
@@ -88,6 +79,22 @@
     <script>
         function unHide() {
             document.getElementById('dataDiv').style = "";
+        }
+
+        function uploadImage() {
+            var uploadForm = document.getElementById('uploadImage');
+
+            var request = new XMLHttpRequest();
+            //POST to httpbin which returns the POST data as JSON
+            request.open('POST', 'https://httpbin.org/post', /* async = */ false);
+
+            var formData = new FormData(document.getElementById('uploadImage'));
+            request.send(formData);
+
+            var file = document.getElementById("file").value;
+            file = file.substr(12);
+            document.getElementById('test').value = file;
+            unHide();
         }
     </script>
 </html>
