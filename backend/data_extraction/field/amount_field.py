@@ -16,6 +16,11 @@ class AmountField(field.Field):
     def identify(self, field_data: field_data.FieldData):
         print("Identifying if the passed data is the amount...")
 
+    """
+    Validate the amount field provided. Checks if the value is between the configurable
+    max and min and also ensures the data provided is actually a numerical amount.
+    Returns false when failing validation and true if pass.
+    """
     def validate(self, data: field_data.FieldData):
         print("Validating if the passed data is a valid amount")
 
