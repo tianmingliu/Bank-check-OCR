@@ -38,19 +38,33 @@ def controller_entry_point(image_file):
     # FIELD EXTRACTTION PASS
     ##################################################
     # Returns a list of fields
-    fields = fe.extractFieldsEntryPoint(image)
+    fields = fe.extractFieldsEntryPoint(img, image)
     if fields is None or len(fields) == 0:
         print("No fields were found!")
         return
+    
+    # Was the data preserved when returning?
+    # Print and write to output file
+    count = 0
+    def_name = "resources/output/cropped_field"
+    for pair in fields:
+        cv2.imshow('captcha_result', pair.image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        fname = def_name + str(count) + ".jpg";
+        cv2.imwrite(fname , pair.image)
+
+        count += 1
 
     ##################################################
     # DATA EXTRACTION PASS
     ##################################################
-    for field in fields:
-        de.extractDataEntryPoint(image, field)
+    for pair in fields:
+        de.extractDataEntryPoint(pair)
 
     ##################################################
-    # DATA EXTRACTION PASS
+    # POST PROCESS PASS
     ##################################################
     pop.postprocessEntryPoint(image, fields)
 
@@ -60,6 +74,8 @@ def controller_entry_point(image_file):
 def main():
     # image_file = "resources/images/simple_check.jpg"
     image_file = "resources/images/check_example.jpg"
+    # image_file = "resources/images/test_image.jpg"
+    # image_file = "resources/images/hello.jpg"
 
     controller_entry_point(image_file)
 

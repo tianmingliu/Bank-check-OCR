@@ -11,3 +11,6 @@ backend/preprocess/__pycache__/
 *.json
 
 .idea
+
+resources/output/
+resources/*.zip

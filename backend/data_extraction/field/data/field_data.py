@@ -1,7 +1,8 @@
-from enum import Enum
-from dataclasses import dataclass
+import cv2
+from enum             import Enum
+from dataclasses      import dataclass
 from dataclasses_json import dataclass_json
-from typing import List
+from typing           import List
 
 
 """
@@ -71,3 +72,8 @@ class FieldData:
     field_type: FieldType     = FieldType.FIELD_TYPE_NONE
     bounds:     BoundingBox   = BoundingBox()
     data_info:  FieldDataInfo = FieldDataInfo()
+
+@dataclass
+class DataPair:
+    image: cv2.IMREAD_GRAYSCALE
+    data:  FieldData
