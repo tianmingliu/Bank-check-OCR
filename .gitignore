@@ -1,11 +1,4 @@
-backend/__pycache__/
-backend/json_utils/__pycache__/
-backend/data_extraction/__pycache__/
-backend/data_extraction/field/__pycache__/
-backend/data_extraction/field/data/__pycache__/
-backend/field_extraction/__pycache__/
-backend/postprocess/__pycache__/
-backend/preprocess/__pycache__/
+**/__pycache__
 
 .vscode
 */.vscode
