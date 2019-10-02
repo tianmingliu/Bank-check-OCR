@@ -64,7 +64,9 @@ def extractFieldsEntryPoint(image_orig, image):
         # can change to image for only black/white image
         cropped = image_orig[y :y +  h , x : x + w]
 
-        list.append(field_data.DataPair(cropped, field_data.FieldData()))
+        data = field_data.FieldData()
+        data.bounds = field_data.BoundingRect(x, y, w, h)
+        list.append(field_data.DataPair(cropped, data))
 
     cv2.imshow('captcha_result', img_cpy)
     cv2.waitKey(0)

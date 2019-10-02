@@ -48,9 +48,9 @@ def controller_entry_point(image_file):
     count = 0
     def_name = "resources/output/cropped_field"
     for pair in fields:
-        cv2.imshow('captcha_result', pair.image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.imshow('captcha_result', pair.image)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
         fname = def_name + str(count) + ".jpg";
         cv2.imwrite(fname , pair.image)
