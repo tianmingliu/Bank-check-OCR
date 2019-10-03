@@ -9,7 +9,7 @@ def main():
 
     f_name = "C:\\Users\\development\\2019FallTeam03\\" \
         "backend\\data_extraction\\digit_recognition\\" \
-        "test_images\\cropped_field7.jpg"
+        "test_images\\cropped_field6.jpg"
 
     image = cv2.imread(f_name)
 
@@ -19,7 +19,7 @@ def main():
 
     filename = "{}.png".format("temp")
     cv2.imwrite(filename, gray)
-    text = pytesseract.image_to_string(Image.open(filename), config='--psm 7')
+    text = pytesseract.image_to_string(Image.open(filename), config='--oem 1 --psm 7')
     print(text)
 
 
