@@ -73,6 +73,7 @@ class FieldData:
     bounds:     BoundingRect  = BoundingRect(0.0, 0.0, 0.0, 0.0)
     data_info:  FieldDataInfo = FieldDataInfo()
 
+
 @dataclass
 class DataPair:
     image: cv2.IMREAD_GRAYSCALE

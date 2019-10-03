@@ -42,5 +42,5 @@ class Field(abc.ABC):
     @return FieldType of the instanced variable.
     """
     @abc.abstractmethod
-    def getType(self):
+    def get_type(self):
         pass
