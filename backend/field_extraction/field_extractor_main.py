@@ -45,9 +45,6 @@ def extractFieldsEntryPoint(image_orig, image):
     # image, contours, hierarchy = cv2.findContours(dilated,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     contours, _ = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Performs a new dilation on the original image in order to only have black and white
-    # ret, cimg = cv2.threshold(image,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-
     list = []
     img_cpy = image.copy()
     for contour in contours:
@@ -72,8 +69,4 @@ def extractFieldsEntryPoint(image_orig, image):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    # Just return a single data field for now
-    # list = [ field_data.FieldData(), field_data.FieldData() ]
-
-    # returns the data struct
     return list

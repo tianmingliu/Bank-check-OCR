@@ -57,6 +57,7 @@ Represents the actual data of a field on a check.
 @dataclass
 class FieldDataInfo:
     extracted_data: str   = ""
+    confidence: float = 0.0
 
 """
 Represents the data for a Field on a check. 
