@@ -7,13 +7,13 @@ There are two versions then to validate. The passed data will accept a
 written and a non-written field for the identify method.
 """
 import backend.data_extraction.field.data.field_data as field_data
-import backend.data_extraction.field.field as field
-import backend.data_extraction.config_helper as helper
+import backend.data_extraction.field.field           as field
+import backend.data_extraction.config_helper         as helper
 
 
 class AmountField(field.Field):
 
-    def identify(self, data: field_data.FieldData):
+    def identify(self, data: field_data.DataPair):
         print("Identifying if the passed data is the amount...")
 
     """
@@ -21,7 +21,7 @@ class AmountField(field.Field):
     max and min and also ensures the data provided is actually a numerical amount.
     Returns false when failing validation and true if pass.
     """
-    def validate(self, data: field_data.FieldData):
+    def validate(self, data: field_data.DataPair):
         print("Validating if the passed data is a valid amount")
 
         try:

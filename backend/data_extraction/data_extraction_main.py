@@ -1,5 +1,5 @@
 import backend.data_extraction.field.data.field_data as field_data
-import backend.data_extraction.field_list as field_list
+import backend.data_extraction.field_list            as field_list
 
 """
 Entry point for the Data Extraction stage of the pipeline.
@@ -16,22 +16,22 @@ bounding box has been set in the field.
 
 @return True if the extraction was successful. False otherwise. 
 """
-def extractDataEntryPoint(image, field: field_data.FieldData):
+def extractDataEntryPoint(pair: field_data.DataPair):
     # Hard coded for now
     handwritten = True
     
     # Some struct that will contain the data 
     if (handwritten):
-        handwrittenExtraction(image, field)
+        handwrittenExtraction(pair)
     else:
-        nonHandwrittenExtraction(image, field)
+        nonHandwrittenExtraction(pair)
 
     # Now identify the type of data
-    if (not identifyExtractedField(field)):
+    if (not identifyExtractedField(pair)):
         return False
 
     # Then validate
-    return validateExtractedField(field)
+    return validateExtractedField(pair)
 
 """
 Performs the handwritten extraction from the provided image. If the
@@ -43,7 +43,7 @@ extracted data.
 
 @return True if the extraction was successful. False otherwise.
 """
-def handwrittenExtraction(image, field: field_data.FieldData):
+def handwrittenExtraction(pair: field_data.DataPair):
     print("Handwritten extraction")
 
 """
@@ -56,7 +56,7 @@ extracted data.
 
 @return True if the extraction was successful. False otherwise.
 """
-def nonHandwrittenExtraction(image, field: field_data.FieldData):
+def nonHandwrittenExtraction(pair: field_data.DataPair):
     print("Non-handwritten extraction")
 
 """
@@ -68,9 +68,9 @@ set to the appriate FieldType.
 
 @return True if the field was identified. False otherwise. 
 """
-def identifyExtractedField(data: field_data.FieldData):
-    for field in field_list.GlobalFieldList:
-        if field.identify(data):
+def identifyExtractedField(pair: field_data.DataPair):
+    for field in field_list.GlobalFieldList.values():
+        if field.identify(pair.data):
             return True
     return False
 
@@ -82,8 +82,13 @@ FieldType.
 
 @return True if the field was valid. False otherwise. 
 """
-def validateExtractedField(data: field_data.FieldData):
-    for field in field_list.GlobalFieldList:
-        if data.field_type == field.getType():
-            return field.validate(data)
-    return False
+def validateExtractedField(pair: field_data.DataPair):
+    try:
+        return field_list.GlobalFieldList[pair.data.field_type].validate()
+    except KeyError:
+        return False
+
+    # for field in field_list.GlobalFieldList:
+    #     if data.field_type == field.getType():
+    #         return field.validate(data)
+    # return False
