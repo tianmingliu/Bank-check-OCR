@@ -47,9 +47,10 @@ extracted data.
 def handwritten_extraction(pair: field_data.DataPair):
     data = data_extract.extract_data(pair.image)
     pair.data.data_info.extracted_data = data["text"]
+    pair.data.data_info.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
     print("\tExtracted data: " + pair.data.data_info.extracted_data)
-    print("\tMean confidence: " + data["mean_conf"])
+    print("\tMean confidence: " + pair.data.data_info.confidence)
 
 """
 Performs the non-handwritten extraction from the provided image. If the
