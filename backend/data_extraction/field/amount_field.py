@@ -40,6 +40,6 @@ class AmountField(field.Field):
             print("Passed validation")
             return True
 
-    def getType(self):
+    def get_type(self):
         return field_data.FieldType.FIELD_TYPE_AMOUNT
 

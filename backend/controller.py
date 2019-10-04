@@ -61,7 +61,7 @@ def controller_entry_point(image_file):
     # DATA EXTRACTION PASS
     ##################################################
     for pair in fields:
-        de.extractDataEntryPoint(pair)
+        de.extract_data_entry_point(pair)
 
     ##################################################
     # POST PROCESS PASS

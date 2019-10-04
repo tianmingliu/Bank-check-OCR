@@ -8,5 +8,5 @@ class DateField(field.Field):
     def validate(self, data: field_data.DataPair):
         print("Validating if the passed data is a valid date")
     
-    def getType(self):
+    def get_type(self):
         return field_data.FieldType.FIELD_TYPE_DATE
