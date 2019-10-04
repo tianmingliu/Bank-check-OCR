@@ -10,6 +10,6 @@ def extract_data_py_tesseract(image):
     filename = "{}.png".format("temp")
     cv2.imwrite(filename, image)
     text = pytesseract.image_to_string(Image.open(filename), config='--psm 7')
-    
+
     return text
 
