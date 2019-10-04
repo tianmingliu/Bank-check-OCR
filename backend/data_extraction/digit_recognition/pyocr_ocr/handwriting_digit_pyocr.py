@@ -4,6 +4,14 @@ import pyocr.builders
 import cv2
 
 
+"""
+Extracts data from the provided openCV image using the pyocr Tesseract wrapper.
+
+@param image: openCV image
+
+@return Dictionary containing the extracted text and mean confidence of the text
+"""
+
 def extract_data(image):
     tools = pyocr.get_available_tools()
     if len(tools) == 0:
