@@ -15,7 +15,7 @@ def home():
 @app.route('/field-data', methods=['GET'])
 def get_fields():
     try:
-        return send_file("..\\..\\backend\\out.json", attachment_filename='out.json')
+        return send_file("..\\backend\\out.json", attachment_filename='out.json')
     except Exception as e:
         return str(e)
 

@@ -28,11 +28,12 @@ def extract_data_entry_point(pair: field_data.DataPair):
         non_handwritten_extraction(pair)
 
     # Now identify the type of data
-    if not identify_extracted_field(pair):
-        return False
+    # if not identify_extracted_field(pair):
+    #     return False
 
     # Then validate
-    return validate_extracted_field(pair)
+    #return validate_extracted_field(pair)
+    return pair
 
 """
 Performs the handwritten extraction from the provided image. If the
@@ -46,11 +47,11 @@ extracted data.
 """
 def handwritten_extraction(pair: field_data.DataPair):
     data = data_extract.extract_data(pair.image)
-    pair.data.data_info.extracted_data = data["text"]
-    pair.data.data_info.confidence = data["mean_conf"]
+    pair.data.extracted_data = data["text"]
+    pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    print("\tExtracted data: " + pair.data.data_info.extracted_data)
-    print("\tMean confidence: " + pair.data.data_info.confidence)
+    print("\tExtracted data: " + pair.data.extracted_data)
+    print("\tMean confidence: " + str(pair.data.confidence))
 
 """
 Performs the non-handwritten extraction from the provided image. If the
