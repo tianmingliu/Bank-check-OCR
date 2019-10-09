@@ -44,8 +44,8 @@ def controller_entry_point(image_file):
     
     # Was the data preserved when returning?
     # Print and write to output file
-    count = 0
-    def_name = "resources/output/cropped_field"
+    # count = 0
+    # def_name = "resources/output/cropped_field"
     # for pair in fields:
     #     cv2.imshow('captcha_result', pair.image)
     #     cv2.waitKey(0)
@@ -61,6 +61,7 @@ def controller_entry_point(image_file):
     ##################################################
     for pair in fields:
         de.extract_data_entry_point(pair)
+        
     ##################################################
     # POST PROCESS PASS
     ##################################################
