@@ -31,19 +31,7 @@ def preprocessEntryPoint(image):
 
     image = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
 
-    # cv2.imshow("Rescaled image", image)
-    # cv2.waitKey(0)
-    #
-    # # Destroying present windows on screen
-    # cv2.destroyAllWindows()
-
     # Greyscale the image
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # cv2.imshow("Canny edge detection", image)
-    # cv2.waitKey(0)
-    #
-    # # Destroying present windows on screen
-    # cv2.destroyAllWindows()
-    
     return image

@@ -37,7 +37,10 @@ def extract_data(image):
             conf_sum += y.confidence
             conf_count += 1
 
-    mean_conf = conf_sum / conf_count
+    if conf_count == 0:
+        mean_conf = 0
+    else:
+        mean_conf = conf_sum / conf_count
 
     return {"text": tool.image_to_string(Image.open(filename), lang=lang, builder=pyocr.builders.TextBuilder()),
             "mean_conf": mean_conf}

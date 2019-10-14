@@ -23,16 +23,14 @@ def extractFieldsEntryPoint(image_orig, image):
 
     cv2.imshow("New image", image_final)
     cv2.waitKey(0)
-
-    # Destroying present windows on screen 
-    cv2.destroyAllWindows() 
+    cv2.destroyAllWindows()
 
     _, mask = cv2.threshold(image,180,255,cv2.THRESH_TOZERO_INV)
     _, new_img = cv2.threshold(image_final,150,255,cv2.THRESH_OTSU)  # for black text , cv.THRESH_BINARY_INV
 
     cv2.imshow("New image", new_img)
     cv2.waitKey(0)
-    cv2.destroyAllWindows() 
+    cv2.destroyAllWindows()
 
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5,
                                                          3))  # to manipulate the orientation of dilution , large x means horizonatally dilating  more, large y means vertically dilating more
@@ -40,7 +38,7 @@ def extractFieldsEntryPoint(image_orig, image):
 
     cv2.imshow("Dilation", dilated)
     cv2.waitKey(0)
-    cv2.destroyAllWindows() 
+    cv2.destroyAllWindows()
 
     # image, contours, hierarchy = cv2.findContours(dilated,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     contours, _ = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)

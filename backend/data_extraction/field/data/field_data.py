@@ -72,7 +72,9 @@ Represents the data for a Field on a check.
 class FieldData:
     field_type: FieldType     = FieldType.FIELD_TYPE_NONE
     bounds:     BoundingRect  = BoundingRect(0.0, 0.0, 0.0, 0.0)
-    data_info:  FieldDataInfo = FieldDataInfo()
+    #data_info:  FieldDataInfo = FieldDataInfo()
+    extracted_data: str = ""
+    confidence: float = 0.0
 
 
 @dataclass
