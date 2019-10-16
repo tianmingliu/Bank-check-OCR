@@ -1,6 +1,6 @@
 import backend.data_extraction.field.data.field_data as field_data
 import backend.data_extraction.field_list as field_list
-import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_digit_pyocr as data_extract
+import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
 
 """
 Entry point for the Data Extraction stage of the pipeline.
