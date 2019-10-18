@@ -1,22 +1,19 @@
 import os
-# from flask import Flask, render_template, send_file
 
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 
+import cv2 
 
 from flask import Blueprint
 from flask_restful import Api
-from backend.hello import Hello
+from backend.controller import controller_entry_point
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
-# Route
-api.add_resource(Hello, '/Hello')
-
 UPLOAD_FOLDER = os.getcwd() + "/uploads/"
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'pdf'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -24,22 +21,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# # The definition for the home page
-# @app.route("/", methods=['GET', 'POST'])
-# def home():
-#     return render_template("home.html")
-
-# @app.route('/field-data', methods=['GET'])
-# def get_fields():
-#     try:
-#         return send_file("..\\backend\\out.json", attachment_filename='out.json')
-#     except Exception as e:
-#         return str(e)
-
-# @app.route('/image', methods=['POST'])
-# def send_image():
-#     pass
 
 from flask import send_from_directory
 
@@ -64,7 +45,14 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             print(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            # Send the image to the backend
+            img = controller_entry_point(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            cv2.imwrite(os.path.join(app.config['UPLOAD_FOLDER'], filename), img)
+
+            # Show the processed image
             return redirect(url_for('uploaded_file',
                                     filename=filename))
     return '''

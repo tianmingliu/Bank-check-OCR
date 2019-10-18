@@ -1,5 +1,5 @@
 import cv2
-
+import numpy as np
 """
 Accepts an image as inout and performs a series of 
 preprocessing analysis on the image.
@@ -31,7 +31,42 @@ def preprocessEntryPoint(image):
 
     image = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
 
+    
+    # START luminance
+    """
+    source = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
+    
+    cv2.imshow("YUV", source)
+    cv2.waitKey(0)
+    # cv2.destroyAllWindows() 
+    
+    y, u, v = cv2.split(source)
+    cv2.equalizeHist(y, y)
+    out = cv2.merge([y, u, v])
+    
+    cv2.imshow("YUV Equalized", out)
+    cv2.waitKey(0)
+
+    source = cv2.cvtColor(out, cv2.COLOR_YUV2BGR)
+    cv2.imshow("Back to Source", source)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows() 
+
+    dst = cv2.fastNlMeansDenoisingColored(source, None, 5, 5, 20, 15) 
+
+    cv2.imshow(" Denoised Image", dst)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()  
+
     # Greyscale the image
+    image = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
+    """
+    # End LUMINANCE
+
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # cv2.imshow("Image", image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()  
 
     return image

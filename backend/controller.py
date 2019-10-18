@@ -7,6 +7,24 @@ import backend.json_utils.json_utils                 as ju
 import os
 
 import cv2
+
+def test_subtraction(img):
+
+    algo = "MOG2"
+    if algo == 'MOG2':
+        backSub = cv2.createBackgroundSubtractorMOG2()
+    else:
+        backSub = cv2.createBackgroundSubtractorKNN()
+    
+    fgMask = backSub.apply(img)
+    cv2.rectangle(img, (10, 2), (100,20), (255,255,255), -1)
+
+    cv2.imshow('Frame', img)
+    cv2.imshow('FG Mask', fgMask)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()  
+
+
     
 """
 Current entry point for the program.
@@ -21,12 +39,15 @@ Controls the overall pipeline:
 7. Send postprocess data to the frontend 
 """
 def controller_entry_point(image_file):
+    
+    print(image_file)
+
     # Read RGB image as greyscale
     img = cv2.imread(image_file)  
 
-    cv2.imshow("Image", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()  
+    # cv2.imshow("Image", img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()  
 
     ##################################################
     # PREPROCESS PASS
@@ -37,7 +58,12 @@ def controller_entry_point(image_file):
     # FIELD EXTRACTTION PASS
     ##################################################
     # Returns a list of fields
-    fields = fe.extractFieldsEntryPoint(img, image)
+    img, fields = fe.extractFieldsEntryPoint(img, image)
+
+    # cv2.imshow('captcha_result', img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
     if fields is None or len(fields) == 0:
         print("No fields were found!")
         return
@@ -70,14 +96,16 @@ def controller_entry_point(image_file):
     json_str = ju.createJSONFromFieldDataList(fields)
     ju.writeToJSONFile(json_str, "out.json")
 
+    return img
+
 def main():
     # image_file = "resources/images/simple_check.jpg"
-    filedir = os.path.abspath(os.path.dirname(__file__))
-    print(filedir)
-    image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
-    #image_file = "resources/images/check_example.jpg"
+    # filedir = os.path.abspath(os.path.dirname(__file__))
+    # print(filedir)
+    # image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
+    # image_file = "resources/images/check_example.jpg"
     # image_file = "resources/images/test_image.jpg"
-    # image_file = "resources/images/hello.jpg"
+    image_file = "resources/images/written_check.jpg"
 
     controller_entry_point(image_file)
 
