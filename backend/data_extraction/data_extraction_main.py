@@ -1,5 +1,6 @@
 import backend.data_extraction.field.data.field_data as field_data
 import backend.data_extraction.field_list as field_list
+import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
 
 """
 Entry point for the Data Extraction stage of the pipeline.
@@ -16,22 +17,23 @@ bounding box has been set in the field.
 
 @return True if the extraction was successful. False otherwise. 
 """
-def extractDataEntryPoint(image, field: field_data.FieldData):
+def extract_data_entry_point(pair: field_data.DataPair):
     # Hard coded for now
     handwritten = True
     
     # Some struct that will contain the data 
-    if (handwritten):
-        handwrittenExtraction(image, field)
+    if handwritten:
+        handwritten_extraction(pair)
     else:
-        nonHandwrittenExtraction(image, field)
+        non_handwritten_extraction(pair)
 
     # Now identify the type of data
-    if (not identifyExtractedField(field)):
-        return False
+    # if not identify_extracted_field(pair):
+    #     return False
 
     # Then validate
-    return validateExtractedField(field)
+    #return validate_extracted_field(pair)
+    return pair
 
 """
 Performs the handwritten extraction from the provided image. If the
@@ -43,8 +45,13 @@ extracted data.
 
 @return True if the extraction was successful. False otherwise.
 """
-def handwrittenExtraction(image, field: field_data.FieldData):
-    print("Handwritten extraction")
+def handwritten_extraction(pair: field_data.DataPair):
+    data = data_extract.extract_data(pair.image)
+    pair.data.extracted_data = data["text"]
+    pair.data.confidence = data["mean_conf"]
+    print("Handwritten extraction: ")
+    print("\tExtracted data: " + pair.data.extracted_data)
+    print("\tMean confidence: " + str(pair.data.confidence))
 
 """
 Performs the non-handwritten extraction from the provided image. If the
@@ -56,7 +63,7 @@ extracted data.
 
 @return True if the extraction was successful. False otherwise.
 """
-def nonHandwrittenExtraction(image, field: field_data.FieldData):
+def non_handwritten_extraction(pair: field_data.DataPair):
     print("Non-handwritten extraction")
 
 """
@@ -68,9 +75,9 @@ set to the appriate FieldType.
 
 @return True if the field was identified. False otherwise. 
 """
-def identifyExtractedField(data: field_data.FieldData):
-    for field in field_list.GlobalFieldList:
-        if field.identify(data):
+def identify_extracted_field(pair: field_data.DataPair):
+    for field in field_list.GlobalFieldList.values():
+        if field.identify(pair.data):
             return True
     return False
 
@@ -82,8 +89,13 @@ FieldType.
 
 @return True if the field was valid. False otherwise. 
 """
-def validateExtractedField(data: field_data.FieldData):
-    for field in field_list.GlobalFieldList:
-        if data.field_type == field.getType():
-            return field.validate(data)
-    return False
+def validate_extracted_field(pair: field_data.DataPair):
+    try:
+        return field_list.GlobalFieldList[pair.data.field_type].validate()
+    except KeyError:
+        return False
+
+    # for field in field_list.GlobalFieldList:
+    #     if data.field_type == field.getType():
+    #         return field.validate(data)
+    # return False

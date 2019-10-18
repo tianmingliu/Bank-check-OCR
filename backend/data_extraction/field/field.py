@@ -21,7 +21,7 @@ class Field(abc.ABC):
     @return True if the field was identified. False otherwise
     """
     @abc.abstractmethod
-    def identify(self, field: field_data.FieldData):
+    def identify(self, field: field_data.DataPair):
         pass
 
     """
@@ -33,7 +33,7 @@ class Field(abc.ABC):
     @return True if the field was valid. False otherwise
     """
     @abc.abstractmethod
-    def validate(self, field: field_data.FieldData):
+    def validate(self, field: field_data.DataPair):
         pass
 
     """
@@ -42,5 +42,5 @@ class Field(abc.ABC):
     @return FieldType of the instanced variable.
     """
     @abc.abstractmethod
-    def getType(self):
+    def get_type(self):
         pass
