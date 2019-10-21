@@ -23,6 +23,7 @@ class FieldType(Enum):
     FIELD_TYPE_DATE      = 2
     FIELD_TYPE_AMOUNT    = 3
     FIELD_TYPE_ROUTING   = 4
+    FIELD_TYPE_ACCOUNT   = 5
 
 """
 Represents a bounding box on an image. 
