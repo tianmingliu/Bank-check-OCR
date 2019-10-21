@@ -7,24 +7,6 @@ import backend.json_utils.json_utils                 as ju
 import os
 
 import cv2
-
-def test_subtraction(img):
-
-    algo = "MOG2"
-    if algo == 'MOG2':
-        backSub = cv2.createBackgroundSubtractorMOG2()
-    else:
-        backSub = cv2.createBackgroundSubtractorKNN()
-    
-    fgMask = backSub.apply(img)
-    cv2.rectangle(img, (10, 2), (100,20), (255,255,255), -1)
-
-    cv2.imshow('Frame', img)
-    cv2.imshow('FG Mask', fgMask)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()  
-
-
     
 """
 Current entry point for the program.
@@ -45,24 +27,22 @@ def controller_entry_point(image_file):
     # Read RGB image as greyscale
     img = cv2.imread(image_file)  
 
-    # cv2.imshow("Image", img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()  
-
     ##################################################
     # PREPROCESS PASS
     ##################################################
-    image = prp.preprocessEntryPoint(img)
+    # Save the original dimensions
+    height = img.shape[0]
+    width  = img.shape[1]
+    dim = (width, height)
+
+    # Process the image
+    pre_image, old_image = prp.preprocessEntryPoint(img)
 
     ##################################################
     # FIELD EXTRACTTION PASS
     ##################################################
     # Returns a list of fields
-    img, fields = fe.extractFieldsEntryPoint(img, image)
-
-    # cv2.imshow('captcha_result', img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    img, fields = fe.extractFieldsEntryPoint(old_image, pre_image)
 
     if fields is None or len(fields) == 0:
         print("No fields were found!")
@@ -91,12 +71,16 @@ def controller_entry_point(image_file):
     ##################################################
     # POST PROCESS PASS
     ##################################################
-    pop.postprocessEntryPoint(image, fields)
+    final_img = pop.postprocessEntryPoint(img, dim, fields)
+
+    cv2.imshow('Final image', final_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     json_str = ju.createJSONFromFieldDataList(fields)
     ju.writeToJSONFile(json_str, "out.json")
 
-    return img
+    return final_img
 
 def main():
     # image_file = "resources/images/simple_check.jpg"
