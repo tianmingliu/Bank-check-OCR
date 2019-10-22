@@ -73,9 +73,9 @@ def controller_entry_point(image_file):
     ##################################################
     final_img = pop.postprocessEntryPoint(img, dim, fields)
 
-    cv2.imshow('Final image', final_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow('Final image', final_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     json_str = ju.createJSONFromFieldDataList(fields)
     ju.writeToJSONFile(json_str, "out.json")

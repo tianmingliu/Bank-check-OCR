@@ -32,17 +32,17 @@ def extractFieldsEntryPoint(image_orig, image):
     new_img = cv2.adaptiveThreshold(threshed,255,cv2.ADAPTIVE_THRESH_MEAN_C,
             cv2.THRESH_BINARY_INV,11,2)
 
-    cv2.imshow("New image", new_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow("New image", new_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5,
                                                          3))  # to manipulate the orientation of dilution , large x means horizonatally dilating  more, large y means vertically dilating more
     dilated = cv2.dilate(new_img, kernel, iterations=3)  # dilate , more the iteration more the dilation
 
-    cv2.imshow("Dilation", dilated)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow("Dilation", dilated)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     # image, contours, hierarchy = cv2.findContours(dilated,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     contours, _ = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -69,8 +69,8 @@ def extractFieldsEntryPoint(image_orig, image):
         data.bounds = field_data.BoundingRect(x, y, w, h)
         list.append(field_data.DataPair(cropped, data))
 
-    cv2.imshow('captcha_result', img_cpy)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow('captcha_result', img_cpy)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     return img_cpy, list
