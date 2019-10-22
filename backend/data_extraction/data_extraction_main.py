@@ -9,7 +9,7 @@ import argparse
 import imutils
 import cv2
 
-# from backend.data_extraction import field_list
+# from backend.data_extraction import field_lis
 
 """
 Entry point for the Data Extraction stage of the pipeline.
