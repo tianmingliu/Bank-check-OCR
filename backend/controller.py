@@ -21,31 +21,37 @@ Controls the overall pipeline:
 7. Send postprocess data to the frontend 
 """
 def controller_entry_point(image_file):
+    
+    print(image_file)
+
     # Read RGB image as greyscale
     img = cv2.imread(image_file)  
-
-    cv2.imshow("Image", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()  
 
     ##################################################
     # PREPROCESS PASS
     ##################################################
-    image = prp.preprocessEntryPoint(img)
+    # Save the original dimensions
+    height = img.shape[0]
+    width  = img.shape[1]
+    dim = (width, height)
+
+    # Process the image
+    pre_image, old_image = prp.preprocessEntryPoint(img)
 
     ##################################################
     # FIELD EXTRACTTION PASS
     ##################################################
     # Returns a list of fields
-    fields = fe.extractFieldsEntryPoint(img, image)
+    img, fields = fe.extractFieldsEntryPoint(old_image, pre_image)
+
     if fields is None or len(fields) == 0:
         print("No fields were found!")
         return
     
     # Was the data preserved when returning?
     # Print and write to output file
-    count = 0
-    def_name = "resources/output/cropped_field"
+    # count = 0
+    # def_name = "resources/output/cropped_field"
     # for pair in fields:
     #     cv2.imshow('captcha_result', pair.image)
     #     cv2.waitKey(0)
@@ -61,22 +67,29 @@ def controller_entry_point(image_file):
     ##################################################
     for pair in fields:
         de.extract_data_entry_point(pair)
+        
     ##################################################
     # POST PROCESS PASS
     ##################################################
-    pop.postprocessEntryPoint(image, fields)
+    final_img = pop.postprocessEntryPoint(img, dim, fields)
+
+    # cv2.imshow('Final image', final_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     json_str = ju.createJSONFromFieldDataList(fields)
     ju.writeToJSONFile(json_str, "out.json")
 
+    return final_img
+
 def main():
     # image_file = "resources/images/simple_check.jpg"
-    filedir = os.path.abspath(os.path.dirname(__file__))
-    print(filedir)
-    image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
-    #image_file = "resources/images/check_example.jpg"
+    # filedir = os.path.abspath(os.path.dirname(__file__))
+    # print(filedir)
+    # image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
+    # image_file = "resources/images/check_example.jpg"
     # image_file = "resources/images/test_image.jpg"
-    # image_file = "resources/images/hello.jpg"
+    image_file = "resources/images/written_check.jpg"
 
     controller_entry_point(image_file)
 
