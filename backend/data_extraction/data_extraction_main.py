@@ -1,7 +1,7 @@
-# import backend as backend
-# import backend.data_extraction.field.data.field_data as field_data
-# import backend.data_extraction.field_list as field_list
-# import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_digit_pyocr as data_extract
+import backend.data_extraction.field.data.field_data as field_data
+import backend.data_extraction.field_list as field_list
+import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
+import backend.data_extraction.letter_recognition.src.main as hw_extract
 from skimage.segmentation import clear_border
 from imutils import contours
 import numpy as np
@@ -9,7 +9,6 @@ import argparse
 import imutils
 import cv2
 
-# from backend.data_extraction import field_lis
 
 """
 Entry point for the Data Extraction stage of the pipeline.
@@ -26,26 +25,23 @@ bounding box has been set in the field.
 
 @return True if the extraction was successful. False otherwise. 
 """
-
-
-def extract_data_entry_point(pair):
-    # Now identify the type of data
-    # fieldType = identify_extracted_field(pair) won't be used for now
-    fieldType = "account/routing"
-
-    # Some struct that will contain the data
-    # Here, call appropriate function based on the identified field type
-    if fieldType == "handwritten":
+def extract_data_entry_point(pair: field_data.DataPair):
+    # Hard coded for now
+    handwritten = True
+    
+    # Some struct that will contain the data 
+    if handwritten:
         handwritten_extraction(pair)
-    elif fieldType == "nonhandwritten":
+    else:
         non_handwritten_extraction(pair)
-    elif fieldType == "account/routing":
-        account_routing_extraction(pair)
+
+    # Now identify the type of data
+    # if not identify_extracted_field(pair):
+    #     return False
 
     # Then validate
-    # return validate_extracted_field(pair)
+    #return validate_extracted_field(pair)
     return pair
-
 
 """
 Performs the handwritten extraction from the provided image. If the
@@ -57,16 +53,15 @@ extracted data.
 
 @return True if the extraction was successful. False otherwise.
 """
-
-
-def handwritten_extraction(pair):
-    data = data_extract.extract_data(pair.image)
-    pair.data.extracted_data = data["text"]
-    pair.data.confidence = data["mean_conf"]
+def handwritten_extraction(pair: field_data.DataPair):
+    # data = data_extract.extract_data(pair.image)
+    # pair.data.extracted_data = data["text"]
+    # pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    print("\tExtracted data: " + pair.data.extracted_data)
-    print("\tMean confidence: " + str(pair.data.confidence))
-
+    text = hw_extract.extract(pair.image)
+    pair.data.extracted_data = text
+    # print("\tExtracted data: " + pair.data.extracted_data)
+    # print("\tMean confidence: " + str(pair.data.confidence))
 
 """
 Performs the non-handwritten extraction from the provided image. If the
@@ -78,11 +73,8 @@ extracted data.
 
 @return True if the extraction was successful. False otherwise.
 """
-
-
-def non_handwritten_extraction(pair):
+def non_handwritten_extraction(pair: field_data.DataPair):
     print("Non-handwritten extraction")
-
 
 """
 Performs the non-handwritten extraction from the provided image. If the

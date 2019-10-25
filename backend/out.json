@@ -1,0 +1,156 @@
+{
+"element0": {
+    "field_type": 0,
+    "bounds": {
+        "x": 371,
+        "y": 242,
+        "w": 57,
+        "h": 23
+    },
+    "extracted_data": "m3ml3I9In9G3G3G+G+G+G+G+G+G+Glue+G+G+lon",
+    "confidence": 0.0
+},
+"element1": {
+    "field_type": 0,
+    "bounds": {
+        "x": 205,
+        "y": 242,
+        "w": 142,
+        "h": 23
+    },
+    "extracted_data": ";/3/3/3/8/&/&/&/4/4/*/*&*4*47474747474747373)3)3I3I",
+    "confidence": 0.0
+},
+"element2": {
+    "field_type": 0,
+    "bounds": {
+        "x": 42,
+        "y": 242,
+        "w": 146,
+        "h": 23
+    },
+    "extracted_data": "m:m.m.m.m.m.P.P.P.P.m.m.m6m6m6m6mum0mum0m0ELEMENTARY",
+    "confidence": 0.0
+},
+"element3": {
+    "field_type": 0,
+    "bounds": {
+        "x": 346,
+        "y": 204,
+        "w": 231,
+        "h": 30
+    },
+    "extracted_data": "v7E7E7E7E#E7n7n7n7n7D7D7D7D7D7D7D7k7k7k7k7k7k7k/D",
+    "confidence": 0.0
+},
+"element4": {
+    "field_type": 0,
+    "bounds": {
+        "x": 24,
+        "y": 201,
+        "w": 250,
+        "h": 30
+    },
+    "extracted_data": "8!'!'!'#'#'#'#'!'!'!'!'!'!'!'!'#'#'#'#'#'#'#'#'",
+    "confidence": 0.0
+},
+"element5": {
+    "field_type": 0,
+    "bounds": {
+        "x": 24,
+        "y": 164,
+        "w": 205,
+        "h": 28
+    },
+    "extracted_data": "ye&e9e9i9i9i9i95X9i9i9i9i5i9i9i9i9i9i9i9i9i9U9U",
+    "confidence": 0.0
+},
+"element6": {
+    "field_type": 0,
+    "bounds": {
+        "x": 23,
+        "y": 123,
+        "w": 491,
+        "h": 33
+    },
+    "extracted_data": "6a6a6a6b6b6b6b6a6a6ha6P6P6P6P6by6Quare6a6a6",
+    "confidence": 0.0
+},
+"element7": {
+    "field_type": 0,
+    "bounds": {
+        "x": 477,
+        "y": 97,
+        "w": 45,
+        "h": 18
+    },
+    "extracted_data": "Sun7no7ous0ous0ous0ous0our4uno",
+    "confidence": 0.0
+},
+"element8": {
+    "field_type": 0,
+    "bounds": {
+        "x": 24,
+        "y": 94,
+        "w": 61,
+        "h": 28
+    },
+    "extracted_data": "IS8e8m8eh8me8me8me8m8me8hem8hem8hem8hem8me8m8m8S8",
+    "confidence": 0.0
+},
+"element9": {
+    "field_type": 0,
+    "bounds": {
+        "x": 81,
+        "y": 92,
+        "w": 76,
+        "h": 29
+    },
+    "extracted_data": "m3N3N3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"38",
+    "confidence": 0.0
+},
+"element10": {
+    "field_type": 0,
+    "bounds": {
+        "x": 523,
+        "y": 54,
+        "w": 56,
+        "h": 13
+    },
+    "extracted_data": "?.?W?W?W?g?g?W?W?W?W?W?W?W?W8W.W.W.W.8.8.8.8?8S8fo",
+    "confidence": 0.0
+},
+"element11": {
+    "field_type": 0,
+    "bounds": {
+        "x": 345,
+        "y": 53,
+        "w": 155,
+        "h": 27
+    },
+    "extracted_data": "A*L*!*!F!3!F!F!F!A!:!:F3F3F3*3*3*3*3*!*!*!*!*!*O!",
+    "confidence": 0.0
+},
+"element12": {
+    "field_type": 0,
+    "bounds": {
+        "x": 23,
+        "y": 25,
+        "w": 145,
+        "h": 49
+    },
+    "extracted_data": "g\"g\"g\"g\"n\"g\"g\"g\"g\"g\"g\"g\"re\"re\"re\"re\"re\"re\"regrettable",
+    "confidence": 0.0
+},
+"element13": {
+    "field_type": 0,
+    "bounds": {
+        "x": 540,
+        "y": 24,
+        "w": 38,
+        "h": 20
+    },
+    "extracted_data": "big+g+5+5+5+5+5+5+5+5+5+5+5+5+5+E+E+E+E+E+p+",
+    "confidence": 0.0
+}
+}
