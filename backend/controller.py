@@ -26,7 +26,7 @@ def controller_entry_point(image_file):
 
     cv2.imshow("Image", img)
     cv2.waitKey(0)
-    cv2.destroyAllWindows()  
+    cv2.destroyAllWindows()
 
     ##################################################
     # PREPROCESS PASS
@@ -74,7 +74,7 @@ def main():
     filedir = os.path.abspath(os.path.dirname(__file__))
     print(filedir)
     image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
-    #image_file = "resources/images/check_example.jpg"
+    # image_file = "resources/images/check_example.jpg"
     # image_file = "resources/images/test_image.jpg"
     # image_file = "resources/images/hello.jpg"
 
