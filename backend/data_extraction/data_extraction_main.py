@@ -1,6 +1,7 @@
 import backend.data_extraction.field.data.field_data as field_data
 import backend.data_extraction.field_list as field_list
 import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
+import backend.data_extraction.letter_recognition.src.main as hw_extract
 
 """
 Entry point for the Data Extraction stage of the pipeline.
@@ -46,12 +47,14 @@ extracted data.
 @return True if the extraction was successful. False otherwise.
 """
 def handwritten_extraction(pair: field_data.DataPair):
-    data = data_extract.extract_data(pair.image)
-    pair.data.extracted_data = data["text"]
-    pair.data.confidence = data["mean_conf"]
+    # data = data_extract.extract_data(pair.image)
+    # pair.data.extracted_data = data["text"]
+    # pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    print("\tExtracted data: " + pair.data.extracted_data)
-    print("\tMean confidence: " + str(pair.data.confidence))
+    text = hw_extract.extract(pair.image)
+    pair.data.extracted_data = text
+    # print("\tExtracted data: " + pair.data.extracted_data)
+    # print("\tMean confidence: " + str(pair.data.confidence))
 
 """
 Performs the non-handwritten extraction from the provided image. If the
