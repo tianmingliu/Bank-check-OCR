@@ -2,155 +2,320 @@
 "element0": {
     "field_type": 0,
     "bounds": {
-        "x": 371,
-        "y": 242,
-        "w": 57,
-        "h": 23
+        "x": 379,
+        "y": 669,
+        "w": 166,
+        "h": 14
     },
-    "extracted_data": "m3ml3I9In9G3G3G+G+G+G+G+G+G+Glue+G+G+lon",
+    "extracted_data": "I?I?IT?a6a6a6a6a6x6'6I6I?'6'6a6a6a6'6",
     "confidence": 0.0
 },
 "element1": {
     "field_type": 0,
     "bounds": {
-        "x": 205,
-        "y": 242,
-        "w": 142,
-        "h": 23
+        "x": 766,
+        "y": 591,
+        "w": 99,
+        "h": 17
     },
-    "extracted_data": ";/3/3/3/8/&/&/&/4/4/*/*&*4*47474747474747373)3)3I3I",
+    "extracted_data": "#p#p#K#K#p9p#K#K#K1K1K1K1K1+1K1K1K1K1K1K1K1K1K1K",
     "confidence": 0.0
 },
 "element2": {
     "field_type": 0,
     "bounds": {
-        "x": 42,
-        "y": 242,
-        "w": 146,
-        "h": 23
+        "x": 861,
+        "y": 589,
+        "w": 124,
+        "h": 18
     },
-    "extracted_data": "m:m.m.m.m.m.P.P.P.P.m.m.m6m6m6m6mum0mum0m0ELEMENTARY",
+    "extracted_data": "9g9N9N9N9N8N8N8N8N8N8N8N?N?N?N?N?N?N?N?N?N?N,N,",
     "confidence": 0.0
 },
 "element3": {
     "field_type": 0,
     "bounds": {
-        "x": 346,
-        "y": 204,
-        "w": 231,
-        "h": 30
+        "x": 33,
+        "y": 535,
+        "w": 265,
+        "h": 38
     },
-    "extracted_data": "v7E7E7E7E#E7n7n7n7n7D7D7D7D7D7D7D7k7k7k7k7k7k7k/D",
+    "extracted_data": "g,g,A,E,E,8,8,8,8,8x8E8 8 P!P!P6P6P6P6P6P6P6P68",
     "confidence": 0.0
 },
 "element4": {
     "field_type": 0,
     "bounds": {
-        "x": 24,
-        "y": 201,
-        "w": 250,
-        "h": 30
+        "x": 311,
+        "y": 533,
+        "w": 266,
+        "h": 38
     },
-    "extracted_data": "8!'!'!'#'#'#'#'!'!'!'!'!'!'!'!'#'#'#'#'#'#'#'#'",
+    "extracted_data": "0303030:03030303030:0:3:3:3:3131313131313I3I3G",
     "confidence": 0.0
 },
 "element5": {
     "field_type": 0,
     "bounds": {
-        "x": 24,
-        "y": 164,
-        "w": 205,
-        "h": 28
+        "x": 648,
+        "y": 532,
+        "w": 94,
+        "h": 36
     },
-    "extracted_data": "ye&e9e9i9i9i9i95X9i9i9i9i5i9i9i9i9i9i9i9i9i9U9U",
+    "extracted_data": "'+O+O+Old+Old+Old+O+O+O+O+O+O+O+O+O+O+5+5+l",
     "confidence": 0.0
 },
 "element6": {
     "field_type": 0,
     "bounds": {
-        "x": 23,
-        "y": 123,
-        "w": 491,
-        "h": 33
+        "x": 1002,
+        "y": 503,
+        "w": 38,
+        "h": 10
     },
-    "extracted_data": "6a6a6a6b6b6b6b6a6a6ha6P6P6P6P6by6Quare6a6a6",
+    "extracted_data": "#S#S!E(E/G/G G G / / / / / / /G/G/G/G/G/G/G/G/8/",
     "confidence": 0.0
 },
 "element7": {
     "field_type": 0,
     "bounds": {
-        "x": 477,
-        "y": 97,
-        "w": 45,
-        "h": 18
+        "x": 26,
+        "y": 472,
+        "w": 371,
+        "h": 44
     },
-    "extracted_data": "Sun7no7ous0ous0ous0ous0our4uno",
+    "extracted_data": "5D5a5a1a1a5a1a1a1a1a(a(a(a(a(a(a(a(5(5(1(1(1A1A1A1",
     "confidence": 0.0
 },
 "element8": {
     "field_type": 0,
     "bounds": {
-        "x": 24,
-        "y": 94,
-        "w": 61,
-        "h": 28
+        "x": 694,
+        "y": 467,
+        "w": 202,
+        "h": 48
     },
-    "extracted_data": "IS8e8m8eh8me8me8me8m8me8hem8hem8hem8hem8me8m8m8S8",
+    "extracted_data": "v)S).S.S3S)S3S3S)S3S3S3S3S3S3G3G3G3G3G3G3G)G)G5G",
     "confidence": 0.0
 },
 "element9": {
     "field_type": 0,
     "bounds": {
-        "x": 81,
-        "y": 92,
-        "w": 76,
-        "h": 29
+        "x": 573,
+        "y": 457,
+        "w": 146,
+        "h": 65
     },
-    "extracted_data": "m3N3N3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"3\"38",
+    "extracted_data": "8g8A8Ye8A8A8A8A8A8O8O8O8O8O8O8O8O8O8O8O8O8O8O6D6",
     "confidence": 0.0
 },
 "element10": {
     "field_type": 0,
     "bounds": {
-        "x": 523,
-        "y": 54,
-        "w": 56,
-        "h": 13
+        "x": 691,
+        "y": 323,
+        "w": 43,
+        "h": 10
     },
-    "extracted_data": "?.?W?W?W?g?g?W?W?W?W?W?W?W?W8W.W.W.W.8.8.8.8?8S8fo",
+    "extracted_data": "b0up0up0up0up0k0x0x0x0x0x0x0x0x0x0x0x0x0x0x0x0x0x!",
     "confidence": 0.0
 },
 "element11": {
     "field_type": 0,
     "bounds": {
-        "x": 345,
-        "y": 53,
-        "w": 155,
-        "h": 27
+        "x": 622,
+        "y": 323,
+        "w": 37,
+        "h": 10
     },
-    "extracted_data": "A*L*!*!F!3!F!F!F!A!:!:F3F3F3*3*3*3*3*!*!*!*!*!*O!",
+    "extracted_data": "L5L.L.L.L.L.L.L.ded/ded/ded5ded5ded5L5L5L5L'Avventura",
     "confidence": 0.0
 },
 "element12": {
     "field_type": 0,
     "bounds": {
-        "x": 23,
-        "y": 25,
-        "w": 145,
-        "h": 49
+        "x": 831,
+        "y": 306,
+        "w": 111,
+        "h": 25
     },
-    "extracted_data": "g\"g\"g\"g\"n\"g\"g\"g\"g\"g\"g\"g\"re\"re\"re\"re\"re\"re\"regrettable",
+    "extracted_data": "I?I7I7e7e7e7j7j7j7j.e.e.e.e.e.e.e.e.e.e.e.e9e7e0Y",
     "confidence": 0.0
 },
 "element13": {
     "field_type": 0,
     "bounds": {
-        "x": 540,
-        "y": 24,
-        "w": 38,
-        "h": 20
+        "x": 989,
+        "y": 296,
+        "w": 71,
+        "h": 32
     },
-    "extracted_data": "big+g+5+5+5+5+5+5+5+5+5+5+5+5+5+E+E+E+E+E+p+",
+    "extracted_data": ";(M(M(U(U(;(;(s(s(0(0(0(0(0(0(0(0(s(s(s(s(s(M(M(",
+    "confidence": 0.0
+},
+"element14": {
+    "field_type": 0,
+    "bounds": {
+        "x": 76,
+        "y": 292,
+        "w": 68,
+        "h": 42
+    },
+    "extracted_data": "i;it;at5p5O5O5O5O5O5O5O5O5p5p5p5p5p5p5p5p5p5Oi5O5O",
+    "confidence": 0.0
+},
+"element15": {
+    "field_type": 0,
+    "bounds": {
+        "x": 951,
+        "y": 288,
+        "w": 31,
+        "h": 42
+    },
+    "extracted_data": "J0J0J0J0J0J#J#J#J#J#J#J#J#J#J#J#J#J#J0J0J0J0J0J0D)",
+    "confidence": 0.0
+},
+"element16": {
+    "field_type": 0,
+    "bounds": {
+        "x": 177,
+        "y": 285,
+        "w": 122,
+        "h": 47
+    },
+    "extracted_data": ";j;j;j;j;j;j;j8j8j8j8j8j8j8j8j8L8L5L5L5L5GL",
+    "confidence": 0.0
+},
+"element17": {
+    "field_type": 0,
+    "bounds": {
+        "x": 327,
+        "y": 277,
+        "w": 281,
+        "h": 58
+    },
+    "extracted_data": "/0c0c0c0D#D#D#D#D#D#c#c#c#c#c#c#c#c#c#c#c#c#cycle",
+    "confidence": 0.0
+},
+"element18": {
+    "field_type": 0,
+    "bounds": {
+        "x": 871,
+        "y": 219,
+        "w": 122,
+        "h": 37
+    },
+    "extracted_data": "L4L)L4L,L,L,L,L,L*L*L*L*L*L*L8L8L8L8L8L8L?L",
+    "confidence": 0.0
+},
+"element19": {
+    "field_type": 0,
+    "bounds": {
+        "x": 26,
+        "y": 219,
+        "w": 790,
+        "h": 42
+    },
+    "extracted_data": ";yi",
+    "confidence": 0.0
+},
+"element20": {
+    "field_type": 0,
+    "bounds": {
+        "x": 26,
+        "y": 215,
+        "w": 107,
+        "h": 22
+    },
+    "extracted_data": "8.8.8.8.8.8/82828282828282828D8D8D8282828D8D8D2D",
+    "confidence": 0.0
+},
+"element21": {
+    "field_type": 0,
+    "bounds": {
+        "x": 824,
+        "y": 212,
+        "w": 31,
+        "h": 44
+    },
+    "extracted_data": "7171'1'1'1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H1H",
+    "confidence": 0.0
+},
+"element22": {
+    "field_type": 0,
+    "bounds": {
+        "x": 647,
+        "y": 141,
+        "w": 50,
+        "h": 22
+    },
+    "extracted_data": " v v v v v4v4v4v4v4v4v4v4v4v4v4v4v4v4v4v4v4v4v9v0",
+    "confidence": 0.0
+},
+"element23": {
+    "field_type": 0,
+    "bounds": {
+        "x": 717,
+        "y": 106,
+        "w": 167,
+        "h": 65
+    },
+    "extracted_data": "&s&s&s\"s\"s\"s\"s\"s\"s\"c\"last\"clash\"local4c4c;c;c3",
+    "confidence": 0.0
+},
+"element24": {
+    "field_type": 0,
+    "bounds": {
+        "x": 924,
+        "y": 40,
+        "w": 97,
+        "h": 38
+    },
+    "extracted_data": "(B(text(tut(tut&tut&tut&tut&tut&te",
+    "confidence": 0.0
+},
+"element25": {
+    "field_type": 0,
+    "bounds": {
+        "x": 510,
+        "y": 3,
+        "w": 59,
+        "h": 10
+    },
+    "extracted_data": "C!X!X!X!G!G!G9G9G9G9G9G!G!G!G!G!G!G!G!G!G!G!G9G9z",
+    "confidence": 0.0
+},
+"element26": {
+    "field_type": 0,
+    "bounds": {
+        "x": 269,
+        "y": 3,
+        "w": 210,
+        "h": 10
+    },
+    "extracted_data": "2D2J2J2J2J2J2J2J2J2J2J2J2J2J2J2J2J2J2J2J2J2J2J2-J",
+    "confidence": 0.0
+},
+"element27": {
+    "field_type": 0,
+    "bounds": {
+        "x": 551,
+        "y": 0,
+        "w": 529,
+        "h": 688
+    },
+    "extracted_data": " P P j j j j j j j j j ) ) ) ) ) ) ) ) ) ) 6 6fif",
+    "confidence": 0.0
+},
+"element28": {
+    "field_type": 0,
+    "bounds": {
+        "x": 0,
+        "y": 0,
+        "w": 763,
+        "h": 688
+    },
+    "extracted_data": "YOU,YOU,YOU,YOU,dc,du,du,du,du,du,du,du,du.d",
     "confidence": 0.0
 }
 }

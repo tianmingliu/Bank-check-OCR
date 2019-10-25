@@ -199,3 +199,6 @@ def extract(image):
     recognized = infer(model, filename)
     return recognized
 
+if __name__ == "__main__":
+    img = cv2.imread("../../../../resources/images/hello.jpg")
+    extract(img)

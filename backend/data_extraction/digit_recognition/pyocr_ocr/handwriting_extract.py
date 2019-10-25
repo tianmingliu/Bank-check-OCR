@@ -21,7 +21,8 @@ def extract_data(image):
     tool = tools[0]
 
     langs = tool.get_available_languages()
-    lang = langs[0]
+    print(langs)
+    lang = langs[1]
 
     filename = "{}.png".format("temp")
     cv2.imwrite(filename, image)

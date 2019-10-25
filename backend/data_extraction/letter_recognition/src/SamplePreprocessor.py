@@ -12,7 +12,7 @@ def preprocessor(img, imgSize, enhance=False, dataAugmentation=False):
     # there are damaged files in IAM dataset - just use black image instead
     if img is None:
         img = np.zeros([imgSize[1], imgSize[0]]) # (64,800)
-        print("Image None!")
+        # print("Image None!")
 
     # increase dataset size by applying random stretches to the images
     if dataAugmentation:
