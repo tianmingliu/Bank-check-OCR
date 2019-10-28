@@ -40,9 +40,9 @@ def extractFieldsEntryPoint(image_orig, image):
                                                          3))  # to manipulate the orientation of dilution , large x means horizonatally dilating  more, large y means vertically dilating more
     dilated = cv2.dilate(new_img, kernel, iterations=3)  # dilate , more the iteration more the dilation
 
-    # cv2.imshow("Dilation", dilated)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.imshow("Dilation", dilated)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     # image, contours, hierarchy = cv2.findContours(dilated,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     contours, _ = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
