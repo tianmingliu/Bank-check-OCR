@@ -4,15 +4,15 @@
         <meta charset="utf-8">
         <title>Upload Your Check</title>
     </head>
-    <body>
+    <body> <!-- Don't delete any commented out code for now, it might be useful later on -->
         <h1 align="center">Deutsche Bank Check Reader</h1>
         <h2 align="center">Upload a Check</h2>
 
-        <form onsubmit="uploadImage();" id="uploadImage">
+        <form onsubmit="" id="uploadImage">
             <div align="center">
-                <input id="file" name="file" type="file" />
+                <input type="file" id="file" name="file" />
                 <br>
-                <input id="submit" name="submit" value="Upload" type="submit" />
+                <input type="button" id="submit" name="submit" value="Upload" onclick="uploadImage();" />
             </div>
         </form>
 
@@ -71,30 +71,62 @@
                 </tr>
             </table>
         </div>
-        <div align="center"><textarea rows="10" style="width: 300px;" id="test" disabled>TEST</textarea></div>
+        <!-- <div align="center"><textarea rows="10" style="width: 300px;" id="test" disabled>TEST</textarea></div>
         <br><br><br>
-        <!-- TODO Add JSON file -->
-        <div align="center"><a href="http://127.0.0.1:5000/field-data">JSON File</a></div>
+        TODO Add JSON file
+        <div align="center"><a href="http://127.0.0.1:5000/field-data">JSON File</a></div> -->
     </body>
-    <script>
-        function unHide() {
-            document.getElementById('dataDiv').style = "";
+    <script> //DON'T DELETE THESE YET, JUST IN CASE IT'S NEEDED
+        // if (getUrlVars()["showTable"] == "true") {
+        //     hideUnhide();
+        // }
+        //
+        // function getUrlVars() {
+        //     var vars = {};
+        //     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        //         vars[key] = value;
+        //     });
+        //     return vars;
+        // }
+
+        /*
+         * This function either hides or reveals/shows elements on the page depending on user interaction
+         * @show boolean true means show, false means hide
+         */
+        function hideUnhide(show) {
+            if (show == true) {
+                document.getElementById('dataDiv').style = "";
+            } else {
+                document.getElementById('dataDiv').style = "display: none;";
+            }
         }
 
+        /*
+         * This function is called when the Upload button is clicked, and it gets the uploaded files' name
+         * and then calls the hideUnhide() function based on whether a file was uploaded or not.
+         * This function will also handle sending the data to the backend
+         *
+         * Don't delete any commented out code, it may be useful later on.
+         */
         function uploadImage() {
-            var uploadForm = document.getElementById('uploadImage');
+            /*let uploadForm = document.getElementById('uploadImage');
 
-            var request = new XMLHttpRequest();
+            let request = new XMLHttpRequest();
             //POST to httpbin which returns the POST data as JSON
-            request.open('POST', 'https://httpbin.org/post', /* async = */ false);
+            request.open('POST', 'https://httpbin.org/post', /* async = */ /*true); /*
 
-            var formData = new FormData(document.getElementById('uploadImage'));
-            request.send(formData);
+            let formData = new FormData(document.getElementById('uploadImage'));
+            request.send(formData);*/
 
-            var file = document.getElementById("file").value;
-            file = file.substr(12);
-            document.getElementById('test').value = file;
-            unHide();
+            let file = document.getElementById("file").files[0];
+
+            if (file != null) {
+                // document.getElementById('test').value = file.name;
+                hideUnhide(true);
+            } else {
+                // document.getElementById('test').value = "";
+                hideUnhide(false)
+            }
         }
     </script>
 </html>

@@ -6,5 +6,10 @@
 
 .idea
 
+uploads/*
 resources/output/
 resources/*.zip
+backend/data_extraction/letter_recognition/model/snapshot-24.data-00000-of-00001
+snapshot-24.data-00000-of-00001
+backend/logs/
+backend/data_extraction/letter_recognition/src/logs/
