@@ -5,6 +5,7 @@ import backend.data_extraction.field_list as field_list
 import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
 import backend.data_extraction.letter_recognition.src.main as hw_extract
 import backend.preprocess.preprocess_main            as prp
+import backend.data_extraction.extract_methods as extract
 from skimage.segmentation import clear_border
 from imutils import contours
 import numpy as np
@@ -70,11 +71,11 @@ extracted data.
 
 
 def handwritten_extraction(pair: field_data.DataPair):
-    # data = data_extract.extract_data(pair.image)
+    # data = extract.extract_data_pyocr(pair.image)
     # pair.data.extracted_data = data["text"]
     # pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    text = hw_extract.extract(pair.image)
+    text = extract.extract_data_handwriting(pair.image)
     pair.data.extracted_data = text
     # print("\tExtracted data: " + pair.data.extracted_data)
     # print("\tMean confidence: " + str(pair.data.confidence))

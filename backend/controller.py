@@ -73,7 +73,7 @@ def controller_entry_point(image_file):
     ##################################################
     final_img = pop.postprocessEntryPoint(img, dim, fields)
 
-    # cv2.imshow('Final image', final_img)
+    # cv2.imwrite('filename', final_img)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
@@ -89,7 +89,8 @@ def main():
     # image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
     # image_file = "resources/images/check_example.jpg"
     # image_file = "resources/images/test_image.jpg"
-    image_file = "resources/images/written_check.jpg"
+    image_file = "../resources/images/written_check.jpg"
+    # image_file = "../resources/images/example_check_2.PNG"
 
     controller_entry_point(image_file)
 
