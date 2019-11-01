@@ -4,7 +4,7 @@ import codecs
 import sys
 import os
 
-import tensorflow as tf
+# import tensorflow as tf
 
 from backend.data_extraction.letter_recognition.src.DataLoader import FilePaths
 
