@@ -1,5 +1,10 @@
+import sys
+
 import backend.data_extraction.field.data.field_data as field_data
 import backend.data_extraction.field_list as field_list
+import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
+import backend.data_extraction.letter_recognition.src.main as hw_extract
+import backend.preprocess.preprocess_main            as prp
 import backend.data_extraction.extract_methods as extract
 from skimage.segmentation import clear_border
 from imutils import contours
@@ -9,7 +14,7 @@ import imutils
 import cv2
 import pyocr
 from PIL import Image
-
+import os
 
 """
 Entry point for the Data Extraction stage of the pipeline.
@@ -26,10 +31,12 @@ bounding box has been set in the field.
 
 @return True if the extraction was successful. False otherwise. 
 """
+
+
 def extract_data_entry_point(pair: field_data.DataPair):
     # Hard coded for now
     fieldType = "account/routing"
-    
+
     # Some struct that will contain the data 
     if fieldType == "handwritten":
         handwritten_extraction(pair)
@@ -38,6 +45,7 @@ def extract_data_entry_point(pair: field_data.DataPair):
         # print(account_routing_extraction_opencv_single(pair))
         # print(account_routing_extraction_opencv_simple(pair))
         print(account_routing_extraction_opencv_group(pair))
+        print(account_routing_extraction_javascript(pair))
     else:
         non_handwritten_extraction(pair)
 
@@ -46,8 +54,9 @@ def extract_data_entry_point(pair: field_data.DataPair):
     #     return False
 
     # Then validate
-    #return validate_extracted_field(pair)
+    # return validate_extracted_field(pair)
     return pair
+
 
 """
 Performs the handwritten extraction from the provided image. If the
@@ -59,6 +68,8 @@ extracted data.
 
 @return True if the extraction was successful. False otherwise.
 """
+
+
 def handwritten_extraction(pair: field_data.DataPair):
     # data = extract.extract_data_pyocr(pair.image)
     # pair.data.extracted_data = data["text"]
@@ -68,6 +79,7 @@ def handwritten_extraction(pair: field_data.DataPair):
     pair.data.extracted_data = text
     # print("\tExtracted data: " + pair.data.extracted_data)
     # print("\tMean confidence: " + str(pair.data.confidence))
+
 
 """
 Performs the non-handwritten extraction from the provided image. If the
@@ -79,8 +91,11 @@ extracted data.
 
 @return True if the extraction was successful. False otherwise.
 """
+
+
 def non_handwritten_extraction(pair: field_data.DataPair):
     print("Non-handwritten extraction")
+
 
 """
 Performs the non-handwritten extraction from the provided image. If the
@@ -97,9 +112,9 @@ extracted data.
 def account_routing_extraction_tesseract(pair):
     # Using tesseract
     filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\cropped_field2.jpg')
-    print(filedir)
+    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
     image = cv2.imread(image_file)
+    image, smaller_image = prp.preprocessEntryPoint(image)
     cv2.imshow("Image", image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -118,31 +133,33 @@ def account_routing_extraction_tesseract(pair):
     # filename = "{}.jpg".format("temp")
     # cv2.imwrite(filename, image)
 
-    txt = tool.image_to_string(  # returns this: [323955785[
+    txt = tool.image_to_string(
         Image.open(image_file),
         lang=lang,
         builder=pyocr.builders.TextBuilder()
     )
 
-    word_boxes = tool.image_to_string(  # returns this: [323955785[
+    word_boxes = tool.image_to_string(
         Image.open(image_file),
         lang=lang,
         builder=pyocr.builders.WordBoxBuilder()
     )
 
-    line_and_word_boxes = tool.image_to_string(  # returns this: [323955785[
+    line_and_word_boxes = tool.image_to_string(
         Image.open(image_file),
         lang=lang,
         builder=pyocr.builders.LineBoxBuilder()
     )
 
-    digits = tool.image_to_string(  # returns this: 02395578500
+    digits = tool.image_to_string(
         Image.open(image_file),
         lang=lang,
         builder=pyocr.tesseract.DigitBuilder()
     )
 
-    return txt
+    return {"txt: ": txt,
+            "wordbox: ": word_boxes[0].content + ' ' + word_boxes[1].content + ' ' + word_boxes[2].content,
+            "lineAndWordBox: ": line_and_word_boxes[0].content, "digits: ": digits}
 
 
 def account_routing_extraction_opencv_single(pair):
@@ -293,6 +310,7 @@ def account_routing_extraction_opencv_single(pair):
     # display the output check OCR information to the screen
     print("Check OCR: {}".format(" ".join(output)))
 
+
 def account_routing_extraction_opencv_simple(pair):
     filedir = os.path.abspath(os.path.dirname(__file__))
     image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\cropped_field2.jpg')
@@ -372,11 +390,15 @@ def account_routing_extraction_opencv_simple(pair):
     cv2.imshow("Better Method", clone)
     cv2.waitKey(0)
 
+
 def account_routing_extraction_opencv_group(pair):
     print("Account/Writing extraction")
     filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line.png')
+    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
     ref_image_file = os.path.join(filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
+    image = cv2.imread(image_file)
+    image, smaller_image = prp.preprocessEntryPoint(image)
+    cv2.imshow("Test", image)
     # construct argument parse and parse the arguments
     # ap = argparse.ArgumentParser()
     # ap.add_argument("-i", "--image", required=True, help="path to input image")
@@ -513,6 +535,12 @@ def account_routing_extraction_opencv_group(pair):
     print("Check OCR: {}".format(" ".join(output)))
     cv2.imshow("Check OCR", image)
     cv2.waitKey(0)
+
+
+def account_routing_extraction_javascript(pair):
+    # TODO: implement
+    return False
+
 
 """
 Scans the GlobalFieldList looking for a matching field using the data

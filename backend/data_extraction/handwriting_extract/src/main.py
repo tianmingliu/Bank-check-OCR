@@ -5,7 +5,7 @@ import sys
 import cv2
 import editdistance
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 
 from backend.data_extraction.handwriting_extract.src.DataLoader import Batch, DataLoader, FilePaths
 from backend.data_extraction.handwriting_extract.src.SamplePreprocessor import preprocessor, wer
