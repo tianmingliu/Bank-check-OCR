@@ -339,7 +339,7 @@ def process_upper_region(image):
     # show(cropped_left, "Upper Left")
     # show(cropped_right, "Upper Right")
 
-    # detect_text(cropped_right, .5, .1)
+    detect_text(cropped_right, .5, .1)
 
 
 def process_middle_region(image):

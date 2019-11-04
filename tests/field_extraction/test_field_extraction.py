@@ -3,8 +3,8 @@ import cv2
 import backend.preprocess.preprocess_main            as pr
 import backend.field_extraction.field_extractor_main as fe
 
-file_in_dir  = "tests/test-files/field_extract/input/"
-file_out_dir = "tests/test-files/field_extract/output/"
+file_in_dir  = "../test-files/field_extract/input/"
+file_out_dir = "../test-files/field_extract/output/"
 
 
 filenames = [

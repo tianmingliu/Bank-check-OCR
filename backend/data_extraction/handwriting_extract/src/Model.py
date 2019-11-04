@@ -304,7 +304,6 @@ class Model:
         feedDict = {self.inputImgs: batch.imgs, self.seqLen: [Model.maxTextLen] * numBatchElements}
         evalRes = self.sess.run([self.decoder, self.ctcIn3dTBC], feedDict)
         decoded = evalRes[0]
-        print(decoded)
         # # Dump RNN output to .csv file
         # decoded, rnnOutput = self.sess.run([self.decoder, self.rnnOutput], {
         #                                    self.inputImgs: batch.imgs, self.seqLen: [Model.maxTextLen] * Model.batchSize})
