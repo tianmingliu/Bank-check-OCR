@@ -41,11 +41,11 @@ def extract_data_entry_point(pair: field_data.DataPair):
     if fieldType == "handwritten":
         handwritten_extraction(pair)
     elif fieldType == "account/routing":
-        # print(account_routing_extraction_tesseract(pair))
+        print(account_routing_extraction_tesseract(pair))
         # print(account_routing_extraction_opencv_single(pair))
         # print(account_routing_extraction_opencv_simple(pair))
-        print(account_routing_extraction_opencv_group(pair))
-        print(account_routing_extraction_javascript(pair))
+        # print(account_routing_extraction_opencv_group(pair))
+        # print(account_routing_extraction_javascript(pair))
     else:
         non_handwritten_extraction(pair)
 
@@ -112,7 +112,7 @@ extracted data.
 def account_routing_extraction_tesseract(pair):
     # Using tesseract
     filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
+    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg ')
     image = cv2.imread(image_file)
     image, smaller_image = prp.preprocessEntryPoint(image)
     cv2.imshow("Image", image)
@@ -442,15 +442,15 @@ def account_routing_extraction_opencv_group(pair):
 
     # load the input image, grab its dimensions, and apply array slicing
     # to keep only the bottom 20% of the image (that's where the account info is)
-    image = cv2.imread(image_file)
+    # image = cv2.imread(image_file)
     # (h, w) = image.shape[:2]
     # delta = int(h - (h * 0.2))
     # bottom = image[delta:h, 0:w]
 
     # convert bottom image to grayscale, apply blackhat morphological operator
     # to find dark regions against a light background (the routing/account #s)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, rectKernel)
+    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blackhat = cv2.morphologyEx(image, cv2.MORPH_BLACKHAT, rectKernel)
 
     # compute the Scharr gradient of the blackhat image, then scale
     # the rest back into the range [0, 255]
@@ -493,7 +493,7 @@ def account_routing_extraction_opencv_group(pair):
 
         # extract group ROI of chars from the grayscale image
         # then apply thresholding to segment the digits from background
-        group = gray[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
+        group = image[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
         group = cv2.threshold(group, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
         cv2.imshow("Group", group)
@@ -538,9 +538,28 @@ def account_routing_extraction_opencv_group(pair):
 
 
 def account_routing_extraction_javascript(pair):
-    # TODO: implement
-    return False
+    # Using tesseract
+    filedir = os.path.abspath(os.path.dirname(__file__))
+    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg ')
+    image = cv2.imread(image_file)
+    image, smaller_image = prp.preprocessEntryPoint(image)
+    cv2.imshow("Image", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
+    tools = pyocr.get_available_tools()
+    if len(tools) == 0:
+        print("No OCR tool found")
+        sys.exit(1)
+
+    tool = tools[0]
+
+    langs = tool.get_available_languages()
+    lang = langs[1]
+    print(lang)
+
+    SYMBOL_CONFIDENCE_THRESHOLD_PERCENT = 45
+    #TODO: did not finish this method
 
 """
 Scans the GlobalFieldList looking for a matching field using the data
