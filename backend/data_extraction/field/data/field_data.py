@@ -1,7 +1,7 @@
 import cv2
 from enum             import Enum
 from dataclasses      import dataclass
-from dataclasses_json import dataclass_json
+# from dataclasses_json import dataclass_json
 from typing           import List
 
 
@@ -16,7 +16,7 @@ Represents a type of field on a check. There are 5 types:
 NOTE(Dustin): It might be worth splitting date into Written and 
 NonWritten
 """
-@dataclass_json
+# @dataclass_json
 class FieldType(Enum):
     FIELD_TYPE_NONE            = 0
     FIELD_TYPE_DATE            = 1
@@ -36,7 +36,7 @@ Represents a bounding box on an image.
 @field w: width of the bounding rectangle
 @field h: height of the bounding rectangle
 """
-@dataclass_json
+# @dataclass_json
 @dataclass
 class BoundingRect:
     x: float = 0
@@ -57,7 +57,7 @@ Represents the actual data of a field on a check.
 @field confidence: how confident it is that the extracted
                    data is accurate
 """
-@dataclass_json
+# @dataclass_json
 @dataclass
 class FieldDataInfo:
     extracted_data: str   = ""
@@ -71,7 +71,7 @@ Represents the data for a Field on a check.
 @field data_info: The information for the field that was extracted from
                   the check
 """
-@dataclass_json
+# @dataclass_json
 @dataclass
 class FieldData:
     field_type: FieldType     = FieldType.FIELD_TYPE_NONE
