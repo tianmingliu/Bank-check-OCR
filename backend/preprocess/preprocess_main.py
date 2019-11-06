@@ -69,47 +69,88 @@ def remove_shadow(image):
     return result, norm_result
 
 """
-NOTE(Dustin): Idea: find the middle two lines. Which one is longer? Found the written amount. 
-Above it will be the "Pay to the order of" field and amount. 
+width: width of the image
+height: height of the image
+x: x position
+y: y position
+direction: 0 North
+           1 East
+           2 South
+           3 West
+@return true if the (x,y) is within bounds. False otherwise
+
+Note(Dustin): y - 1 is North
+              x - 1 is West
 """
-import numpy as np
-from matplotlib import pyplot as plt
-def detect_lines(img):
+def check_neighbor(width: int, height: int, x: int, y: int, direction: int):
+    # if north
+    if direction == 0:
+        if y - 1 < 0:
+            return False
+        else:
+            return True
+    # if east
+    elif direction == 1:
+        if x + 1 >= width:
+            return False
+        else:
+            return True
+    # if south
+    elif direction == 2:
+        if y + 1 >= height:
+            return False
+        else:
+            return True
+    # if west
+    elif direction == 3:
+        if x - 1 < 0:
+            return False
+        else:
+            return True
+    # wrong direction provided
+    else:
+        return False
 
-    kernel_size = 5
-    blur_gray = cv2.GaussianBlur(img,(kernel_size, kernel_size),0)
-    edges = cv2.Canny(blur_gray,50,150)
+"""
+An experiment to determine if we can brute force finding the lines
 
-    # plt.subplot(121),plt.imshow(img,cmap = 'gray')
-    # plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-    # plt.subplot(122),plt.imshow(edges,cmap = 'gray')
-    # plt.title('Edge Image'), plt.xticks([]), plt.yticks([]) 
+@param image
+"""
+def find_lines(img):
+    height = img.shape[0]
+    width  = img.shape[1]
 
-    # plt.show()
+    blank_image = np.zeros((height,width,3), np.uint8)
 
-    rho = 1  # distance resolution in pixels of the Hough grid
-    theta = np.pi / 180  # angular resolution in radians of the Hough grid
-    threshold = 100  # minimum number of votes (intersections in Hough grid cell)
-    min_line_length = 100  # minimum number of pixels making up a line
-    max_line_gap = 10  # maximum gap in pixels between connectable line segments
-    line_image = np.copy(img) * 0  # creating a blank to draw lines on
+    black = [0, 0, 0]
+    white = [255, 255, 255] 
 
-    # Run Hough on edge detected image
-    # Output "lines" is an array containing endpoints of detected line segments
-    lines = cv2.HoughLinesP(edges, rho, theta, threshold, np.array([]),
-                    min_line_length, max_line_gap)
+    min_length = 5 # minumum length in pixels of a line
 
-    for line in lines:
-        for x1,y1,x2,y2 in line:
-            cv2.line(img,(x1,y1),(x2,y2),(0,255,255),5)
+    # for each pixel
+    for j in range(height):
 
+        start_x = 0        # starting pixel of the line
+        current_length = 0 # current length of the line
+        for i in range(width):
+            channels_xy = img[j,i]
 
+            # check only left/right for now            
+            if check_neighbor(width, height, i + 1, j, 1):
+                channels_xy_right = img[j, i + 1]
+                if all(channels_xy == black) and all(channels_xy_right == black):
+                    current_length += 1
+                else:
+                    if current_length >= min_length:
+                        # blank_image[j,i] = white
+                        cv2.line(blank_image, (start_x, j), (start_x + current_length, j + 5), white, 1)
+                    current_length = 0
+                    start_x = i + 1
 
-    lines_edges = cv2.addWeighted(img, 0.8, line_image, 1, 0)
-
-    cv2.imshow("Lines", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow("Finding lines image...", img)
+    # cv2.imshow("Finding lines blank...", blank_image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows() 
 
 """
 Accepts an image as inout and performs a series of 
@@ -148,7 +189,9 @@ def preprocessEntryPoint(image):
     #new_image = remove_shadow(res)
     new_image = res
 
+    # find_lines(new_image)
+
     # A test for detecting lines
-    # detect_lines(new_image)
+    # detect_lines(new_image) 
 
     return new_image, smol_image
