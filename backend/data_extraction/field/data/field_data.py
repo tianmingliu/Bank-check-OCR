@@ -18,12 +18,15 @@ NonWritten
 """
 # @dataclass_json
 class FieldType(Enum):
-    FIELD_TYPE_NONE      = 0
-    FIELD_TYPE_SIGNATURE = 1
-    FIELD_TYPE_DATE      = 2
-    FIELD_TYPE_AMOUNT    = 3
-    FIELD_TYPE_ROUTING   = 4
-    FIELD_TYPE_ACCOUNT   = 5
+    FIELD_TYPE_NONE            = 0
+    FIELD_TYPE_DATE            = 1
+    FIELD_TYPE_PAY_TO_ORDER_OF = 2
+    FIELD_TYPE_AMOUNT          = 3
+    FIELD_TYPE_AMOUNT_WRITTEN  = 4
+    FIELD_TYPE_SIGNATURE       = 5
+    FIELD_TYPE_MEMO            = 6
+    FIELD_TYPE_ROUTING         = 7
+    FIELD_TYPE_ACCOUNT         = 8
 
 """
 Represents a bounding box on an image. 
