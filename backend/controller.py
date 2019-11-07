@@ -36,13 +36,15 @@ def controller_entry_point(image_file):
     dim = (width, height)
 
     # Process the image
-    pre_image, old_image = prp.preprocessEntryPoint(img)
+    # pre_image, old_image = prp.preprocessEntryPoint(img)
+    img, old_image = prp.preprocessEntryPoint(img)
 
     ##################################################
     # FIELD EXTRACTTION PASS
     ##################################################
     # Returns a list of fields
-    img, fields = fe.extractFieldsEntryPoint(old_image, pre_image)
+    # img, fields = fe.extractFieldsEntryPoint(old_image, pre_image)
+    img, fields = fe.extractFieldsEntryPoint(old_image, img)
 
     if fields is None or len(fields) == 0:
         print("No fields were found!")
@@ -65,8 +67,10 @@ def controller_entry_point(image_file):
     ##################################################
     # DATA EXTRACTION PASS
     ##################################################
-    for img, pair in fields:
-        de.extract_data_entry_point(img, pair)
+    # for img, pair in fields:
+    for (field, image) in fields:
+        de.extract_data_entry_point(image, field)
+        # de.extract_data_entry_point(image, field)
         
     ##################################################
     # POST PROCESS PASS
@@ -89,7 +93,7 @@ def main():
     # image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
     # image_file = "resources/images/check_example.jpg"
     # image_file = "resources/images/test_image.jpg"
-    image_file = "../resources/images/written_check.jpg"
+    image_file = "resources/images/written_check.jpg"
     # image_file = "../resources/images/example_check_2.PNG"
 
     controller_entry_point(image_file)
