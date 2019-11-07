@@ -15,7 +15,7 @@ Represents a type of field on a check. There are 5 types:
 
 NOTE(Dustin): It might be worth splitting date into Written and 
 NonWritten
-# """
+"""
 @dataclass_json
 class FieldType(Enum):
     FIELD_TYPE_NONE      = 0
@@ -24,7 +24,6 @@ class FieldType(Enum):
     FIELD_TYPE_AMOUNT    = 3
     FIELD_TYPE_ROUTING   = 4
     FIELD_TYPE_ACCOUNT   = 5
-    FIELD_TYPE_MEMO      = 6
 
 """
 Represents a bounding box on an image. 

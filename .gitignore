@@ -1,5 +1,10 @@
 **/__pycache__
 
+backend/data_extraction/handwriting_extract/src/TFWordBeamSearch.so
+backend/data_extraction/handwriting_extract/src/TFWordBeamSearch_origina.so
+
+logs/
+
 .vscode
 */.vscode
 *.json
@@ -9,7 +14,9 @@
 uploads/*
 resources/output/
 resources/*.zip
-backend/data_extraction/letter_recognition/model/snapshot-24.data-00000-of-00001
+backend/data_extraction/handwriting_extract/model/snapshot-24.data-00000-of-00001
 snapshot-24.data-00000-of-00001
 backend/logs/
-backend/data_extraction/letter_recognition/src/logs/
+backend/data_extraction/handwriting_extract/src/logs/
+frontend/logs/
+backend/data_extraction/logs/

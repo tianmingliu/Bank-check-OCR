@@ -69,6 +69,90 @@ def remove_shadow(image):
     return result, norm_result
 
 """
+width: width of the image
+height: height of the image
+x: x position
+y: y position
+direction: 0 North
+           1 East
+           2 South
+           3 West
+@return true if the (x,y) is within bounds. False otherwise
+
+Note(Dustin): y - 1 is North
+              x - 1 is West
+"""
+def check_neighbor(width: int, height: int, x: int, y: int, direction: int):
+    # if north
+    if direction == 0:
+        if y - 1 < 0:
+            return False
+        else:
+            return True
+    # if east
+    elif direction == 1:
+        if x + 1 >= width:
+            return False
+        else:
+            return True
+    # if south
+    elif direction == 2:
+        if y + 1 >= height:
+            return False
+        else:
+            return True
+    # if west
+    elif direction == 3:
+        if x - 1 < 0:
+            return False
+        else:
+            return True
+    # wrong direction provided
+    else:
+        return False
+
+"""
+An experiment to determine if we can brute force finding the lines
+
+@param image
+"""
+def find_lines(img):
+    height = img.shape[0]
+    width  = img.shape[1]
+
+    blank_image = np.zeros((height,width,3), np.uint8)
+
+    black = [0, 0, 0]
+    white = [255, 255, 255] 
+
+    min_length = 5 # minumum length in pixels of a line
+
+    # for each pixel
+    for j in range(height):
+
+        start_x = 0        # starting pixel of the line
+        current_length = 0 # current length of the line
+        for i in range(width):
+            channels_xy = img[j,i]
+
+            # check only left/right for now            
+            if check_neighbor(width, height, i + 1, j, 1):
+                channels_xy_right = img[j, i + 1]
+                if all(channels_xy == black) and all(channels_xy_right == black):
+                    current_length += 1
+                else:
+                    if current_length >= min_length:
+                        # blank_image[j,i] = white
+                        cv2.line(blank_image, (start_x, j), (start_x + current_length, j + 5), white, 1)
+                    current_length = 0
+                    start_x = i + 1
+
+    # cv2.imshow("Finding lines image...", img)
+    # cv2.imshow("Finding lines blank...", blank_image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows() 
+
+"""
 Accepts an image as inout and performs a series of 
 preprocessing analysis on the image.
 
@@ -81,6 +165,7 @@ def preprocessEntryPoint(image):
     # TODO(Dustin): Preserve aspect ratio as much as possible
     # Rescale the image if need be
     smol_image, _, _ = downsize_image(image, 1080, 720)
+    # smol_image = image
 
     # Remove any background noise like small dots
     new_image = cv2.cvtColor(smol_image, cv2.COLOR_BGR2GRAY)
@@ -103,5 +188,10 @@ def preprocessEntryPoint(image):
 
     #new_image = remove_shadow(res)
     new_image = res
+
+    # find_lines(new_image)
+
+    # A test for detecting lines
+    # detect_lines(new_image) 
 
     return new_image, smol_image
