@@ -1,0 +1,18 @@
+
+To install dependencies:
+
+pip install tensorflow=1.14
+pip install editdistance
+pip install autocorrect
+pip install cv2
+
+Shared library (Linux only)
+https://github.com/githubharald/CTCWordBeamSearch
+
+Follow the build instructions under Usage -> Compile in the README.
+
+There is a possibility that you recieve the error:
+TFWordBeamSearch.so: undefined symbol: _ZN10tensorflow12OpDefBuilder4AttrESs
+
+Should this error occur when trying to use the library, open buildTF.sh and remove all instances
+of "-D_GLIBCXX_USE_CXX11_ABI=0"

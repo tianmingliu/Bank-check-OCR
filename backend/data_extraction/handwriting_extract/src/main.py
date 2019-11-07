@@ -5,6 +5,7 @@ import sys
 import cv2
 import editdistance
 import numpy as np
+
 import tensorflow as tf
 
 from backend.data_extraction.handwriting_extract.src.DataLoader import Batch, DataLoader, FilePaths
@@ -205,5 +206,10 @@ def extract(image):
 if __name__ == "__main__":
     filedir = os.path.abspath(os.path.dirname(__file__))
     filename = os.path.join(filedir, "../../../../resources/images/testImage1.png")
+
+    print("FILENAME")
+    print(filename)
+
     img = cv2.imread(filename)
+    
     extract(img)
