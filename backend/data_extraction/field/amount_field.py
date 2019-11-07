@@ -25,10 +25,17 @@ class AmountField(field.Field):
         print("Validating if the passed data is a valid amount")
 
         try:
-            num_amount = float(data.data_info.extractedData)
+            num_amount = float(data.data.extracted_data)
         except ValueError:
             print("Amount number is not a float")
-            return False
+
+            written_amount = str(data.data.extracted_data)
+
+            try:
+                num_amount = word_to_num_helper(written_amount)
+            except ValueError:
+                print ("Invalid written amount")
+                return False
 
         if num_amount <= helper.get_config_data()['thresholds']['amount_min']:
             print("Amount number is lower than minimum: " + str(helper.get_config_data()['thresholds']['amount_min']))
@@ -43,3 +50,39 @@ class AmountField(field.Field):
     def get_type(self):
         return field_data.FieldType.FIELD_TYPE_AMOUNT
 
+
+def word_to_num_helper(textnum, numwords={}):
+    if not numwords:
+        units = [
+            "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+            "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+            "sixteen", "seventeen", "eighteen", "nineteen",
+        ]
+
+        tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+        scales = ["hundred", "thousand", "million", "billion", "trillion"]
+
+        numwords["and"] = (1, 0)
+        for idx, word in enumerate(units):
+            numwords[word] = (1, idx)
+        for idx, word in enumerate(tens):
+            numwords[word] = (1, idx * 10)
+        for idx, word in enumerate(scales):
+            numwords[word] = (10 ** (idx * 3 or 2), 0)
+
+    current = result = 0
+    textnum = textnum.replace('-', ' ')
+    textnum = textnum.lower()
+
+    for word in textnum.split():
+        if word not in numwords:
+            raise ValueError("Illegal word: " + word)
+
+        scale, increment = numwords[word]
+        current = current * scale + increment
+        if scale > 100:
+            result += current
+            current = 0
+
+    return result + current
