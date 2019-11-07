@@ -1,93 +1,96 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
     <head>
         <meta charset="utf-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <title>Upload Your Check</title>
     </head>
     <body> <!-- Don't delete any commented out code for now, it might be useful later on -->
-        <h1 align="center">Deutsche Bank Check Reader</h1>
+        <h1 align="center">DBGT Check Reader</h1>
         <h2 align="center">Upload a Check</h2>
-
-        <form onsubmit="" id="uploadImage">
             <div align="center">
-                <input type="file" id="file" name="file" />
                 <br>
-                <input type="button" id="submit" name="submit" value="Upload" onclick="uploadImage();" />
+                <input type="file" id="myFile" name="file">
+                <br><br><br>
+                <input type="submit" id="submit" value="Upload" onclick="processCheck()">
             </div>
-        </form>
 
         <br><br><br>
 
-        <div id='dataDiv' style="display: none;">
-            <table align="center" border="1" style="border-collapse: collapse;">
-                <tr>
-                    <th colspan="5">Extracted Data</th>
-                </tr>
-                <tr>
-                    <th>Field</th>
-                    <th>Value</th>
-                    <th>PASS/FAIL</th>
-                    <th>Reason</th>
-                </tr><tr>
-                    <td>Account Number</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr><tr>
-                    <td>Routing Number</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr><tr>
-                    <td>Date</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr><tr>
-                    <td>Pay to the Order of</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr><tr>
-                    <td>Image Amount</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr><tr>
-                    <td>Written Amount</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr><tr>
-                    <td>Memo</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr><tr>
-                    <td>Signature</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
+        <form action="" method="get">
+            <div id='dataDiv' style="display: none;">
+                <table align="center" border="1" style="border-collapse: collapse;">
+                    <tr>
+                        <th colspan="5">Extracted Data</th>
+                    </tr>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                        <th>PASS/FAIL</th>
+                        <th>Reason</th>
+                    </tr><tr>
+                        <td>Account Number</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>Routing Number</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>Date</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>Pay to the Order of</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>Image Amount</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>Written Amount</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>Memo</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr><tr>
+                        <td>Signature</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </form>
         <!-- <div align="center"><textarea rows="10" style="width: 300px;" id="test" disabled>TEST</textarea></div>
         <br><br><br>
         TODO Add JSON file
         <div align="center"><a href="http://127.0.0.1:5000/field-data">JSON File</a></div> -->
     </body>
-    <script> //DON'T DELETE THESE YET, JUST IN CASE IT'S NEEDED
-        // if (getUrlVars()["showTable"] == "true") {
-        //     hideUnhide();
-        // }
-        //
-        // function getUrlVars() {
-        //     var vars = {};
-        //     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        //         vars[key] = value;
-        //     });
-        //     return vars;
-        // }
+    <script>
+        $(document).ready(function () {
+            $("#submit").hide();
+
+            $("#myFile").on("change", function () {
+                if ($('#myFile').val() != "") {
+                    $("#submit").show();
+                } else {
+                    $("#submit").hide();
+                }
+
+            })
+        });
 
         /*
          * This function either hides or reveals/shows elements on the page depending on user interaction
@@ -108,25 +111,16 @@
          *
          * Don't delete any commented out code, it may be useful later on.
          */
-        function uploadImage() {
-            /*let uploadForm = document.getElementById('uploadImage');
+        function processCheck() {
+            let img = document.getElementById("myFile").files[0];
+            let fd = new FormData();
+            fd.append('file', img);
 
             let request = new XMLHttpRequest();
-            //POST to httpbin which returns the POST data as JSON
-            request.open('POST', 'https://httpbin.org/post', /* async = */ /*true); /*
-
-            let formData = new FormData(document.getElementById('uploadImage'));
-            request.send(formData);*/
-
-            let file = document.getElementById("file").files[0];
-
-            if (file != null) {
-                // document.getElementById('test').value = file.name;
-                hideUnhide(true);
-            } else {
-                // document.getElementById('test').value = "";
-                hideUnhide(false)
-            }
+            request.open('POST', 'http://127.0.0.1:5000/api/upload', true);
+            request.send(fd)
+            data = request.responseText
+            console.log(data)
         }
     </script>
 </html>
