@@ -19,6 +19,9 @@ class MemoField(field.Field):
             print("Memo is not a string")
             return False
 
+        print("The memo is valid.")
+        return True
+
 
     def get_type(self):
         return field_data.FieldType.FIELD_TYPE_MEMO
