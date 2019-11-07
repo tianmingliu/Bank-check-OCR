@@ -37,7 +37,6 @@ def show(title, image):
     cv2.destroyAllWindows()
 
 def extract_data_entry_point(img, pair: field_data.FieldData):
-
     if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
         print("account type")
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
