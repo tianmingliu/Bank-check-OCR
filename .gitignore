@@ -3,6 +3,7 @@
 backend/data_extraction/handwriting_extract/src/TFWordBeamSearch.so
 backend/data_extraction/handwriting_extract/src/TFWordBeamSearch_origina.so
 
+logs/
 
 .vscode
 */.vscode

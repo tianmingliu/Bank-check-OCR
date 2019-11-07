@@ -1,7 +1,7 @@
 import cv2
 from enum             import Enum
 from dataclasses      import dataclass
-# from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json
 from typing           import List
 
 
@@ -71,7 +71,7 @@ Represents the data for a Field on a check.
 @field data_info: The information for the field that was extracted from
                   the check
 """
-# @dataclass_json
+@dataclass_json
 @dataclass
 class FieldData:
     field_type: FieldType     = FieldType.FIELD_TYPE_NONE
