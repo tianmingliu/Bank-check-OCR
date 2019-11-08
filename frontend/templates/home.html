@@ -6,6 +6,13 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
         <title>Upload Your Check</title>
+        <style>
+            th, td {
+                padding: 15px;
+                text-align: left;
+            }
+            tr:hover {background-color: #f5f5f5;}
+        </style>
     </head>
     <body> <!-- Don't delete any commented out code for now, it might be useful later on -->
         <h1 align="center">DBGT Check Reader</h1>
@@ -64,15 +71,18 @@
                     <td id="sig.valid"></td>
                 </tr>
             </table>
+            <br><br>
+            <input type="submit" id="json" value="Get JSON" onclick="toJson()">
+            <br><br><br>
         </div>
         <!-- <div align="center"><textarea rows="10" style="width: 300px;" id="test" disabled>TEST</textarea></div>
         <br><br><br>
-        TODO Add JSON file
-        <div align="center"><a href="http://127.0.0.1:5000/field-data">JSON File</a></div> -->
+        TODO Add JSON file-->
     </body>
     <script>
         let image;
         let results;
+        var data;
         $(document).ready(function () {
             $("#submit").hide();
             $("#myFile").on("change", function () {
@@ -114,7 +124,7 @@
             request.open('POST', 'http://127.0.0.1:5000/api/upload', false);
             request.send(fd);
 
-            var data = JSON.parse(request.response);
+            data = JSON.parse(request.response);
             image = data.image;
             results = data.results;
             document.getElementById("image").src = image;
@@ -159,6 +169,14 @@
                 }
             }
             hideUnhide(true);
+        }
+
+        function toJson() {
+            var resultsJson = JSON.stringify(data.results, null, 2);
+            var x = window.open();
+            x.document.open();
+            x.document.write('<html><body><pre>' + resultsJson + '</pre></body></html>');
+            x.document.close();
         }
     </script>
 </html>
