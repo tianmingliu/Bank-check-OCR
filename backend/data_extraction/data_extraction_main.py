@@ -4,7 +4,7 @@ import backend.data_extraction.field.data.field_data as field_data
 import backend.data_extraction.field_list as field_list
 # import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
 # import backend.data_extraction.letter_recognition.src.main as hw_extract
-import backend.preprocess.preprocess_main            as prp
+import backend.preprocess.preprocess_main as prp
 import backend.data_extraction.extract_methods as extract
 from skimage.segmentation import clear_border
 from imutils import contours
@@ -31,12 +31,16 @@ bounding box has been set in the field.
 
 @return True if the extraction was successful. False otherwise. 
 """
+
+
 def show(title, image):
     cv2.imshow(title, image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+
 def extract_data_entry_point(img, pair: field_data.FieldData):
+<<<<<<< HEAD
     if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
         print("account type")
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
@@ -62,13 +66,43 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
         print("none type")
     else:
         print("ERROR: Data extract: Invalid type.")
+=======
+
+    try:
+        if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
+            print("account type")
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
+            # show("amount type", img)
+            handwritten_extraction(img, pair)
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
+            # show("amount written type", img)
+            handwritten_extraction(img, pair)
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_DATE:
+            # show("date type", img)
+            handwritten_extraction(img, pair)
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
+            print("memo type")
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
+            # show("pay to the order of type", img)
+            handwritten_extraction(img, pair)
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
+            print("routing type")
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
+            print("signature type")
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
+            print("none type")
+        else:
+            print("ERROR: Data extract: Invalid type.")
+    except:
+        None
+>>>>>>> c9d6f15c9b0b03d8119461502741437bc3d87d64
 
     pair.validation = validate_extracted_field(pair)
 
     # Hard coded for now
     # fieldType = "account/routing"
 
-    # Some struct that will contain the data 
+    # Some struct that will contain the data
     # if fieldType == "handwritten":
     #     handwritten_extraction(pair)
     # elif fieldType == "account/routing":
@@ -139,7 +173,8 @@ extracted data.
 def account_routing_extraction_tesseract(pair):
     # Using tesseract
     filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
+    image_file = os.path.join(
+        filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
     image = cv2.imread(image_file)
     image, smaller_image = prp.preprocessEntryPoint(image)
     cv2.imshow("Image", image)
@@ -191,8 +226,10 @@ def account_routing_extraction_tesseract(pair):
 
 def account_routing_extraction_opencv_single(pair):
     filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\cropped_field2.jpg')
-    ref_image_file = os.path.join(filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
+    image_file = os.path.join(
+        filedir, '..\\..\\resources\\images\\cropped_images\\color\\cropped_field2.jpg')
+    ref_image_file = os.path.join(
+        filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
 
     # init list of reference character names, in same order as they appear in reference
     # image where the digits, their names and:
@@ -200,7 +237,8 @@ def account_routing_extraction_opencv_single(pair):
     # U = On-us (delimit customer account number)
     # A = Amount (delimit transaction amount)
     # D = Dash (delimit parts of numbers, such as routing or account)
-    charNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "T", "U", "A", "D"]
+    charNames = ["1", "2", "3", "4", "5", "6",
+                 "7", "8", "9", "0", "T", "U", "A", "D"]
 
     # load ref MICR image, convert to grayscale and threshold it
     # this will cause digits to appear white on black background
@@ -340,8 +378,10 @@ def account_routing_extraction_opencv_single(pair):
 
 def account_routing_extraction_opencv_simple(pair):
     filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\cropped_field2.jpg')
-    ref_image_file = os.path.join(filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
+    image_file = os.path.join(
+        filedir, '..\\..\\resources\\images\\cropped_images\\color\\cropped_field2.jpg')
+    ref_image_file = os.path.join(
+        filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
 
     # init list of reference character names, in same order as they appear in reference
     # image where the digits, their names and:
@@ -349,7 +389,8 @@ def account_routing_extraction_opencv_simple(pair):
     # U = On-us (delimit customer account number)
     # A = Amount (delimit transaction amount)
     # D = Dash (delimit parts of numbers, such as routing or account)
-    charNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "T", "U", "A", "D"]
+    charNames = ["1", "2", "3", "4", "5", "6",
+                 "7", "8", "9", "0", "T", "U", "A", "D"]
 
     # load ref MICR image, convert to grayscale and threshold it
     # this will cause digits to appear white on black background
@@ -383,16 +424,19 @@ def account_routing_extraction_opencv_simple(pair):
     image = cv2.imread(image_file)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = imutils.resize(image, width=400)
-    image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    image = cv2.threshold(
+        image, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
     # find contours in the MICR image and sort them left to right
-    imageCnts = cv2.findContours(image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    imageCnts = cv2.findContours(
+        image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     imageCnts = imutils.grab_contours(imageCnts)
     imageCnts = contours.sort_contours(imageCnts, method="left-to-right")[0]
 
     # extract digits and symbols from list of contours, then
     # init a dict to map char name to ROI
-    (imageROIs, imageLocs) = extract_digits_and_symbols(image, imageCnts, minW=10, minH=20)
+    (imageROIs, imageLocs) = extract_digits_and_symbols(
+        image, imageCnts, minW=10, minH=20)
     chars = {}
 
     # re-init the clone image so we can draw on it again
@@ -421,9 +465,17 @@ def account_routing_extraction_opencv_simple(pair):
 def account_routing_extraction_opencv_group(image, pair: field_data.FieldData):
     print("Account/Writing extraction")
     filedir = os.path.abspath(os.path.dirname(__file__))
+<<<<<<< HEAD
     #image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
     ref_image_file = os.path.join(filedir, '../../resources/images/micr_e13b_reference.png')
     #image = cv2.imread(image_file)
+=======
+    image_file = os.path.join(
+        filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
+    ref_image_file = os.path.join(
+        filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
+    image = cv2.imread(image_file)
+>>>>>>> c9d6f15c9b0b03d8119461502741437bc3d87d64
     image, smaller_image = prp.preprocessEntryPoint(image)
     cv2.imshow("Test", image)
     # construct argument parse and parse the arguments
@@ -438,17 +490,20 @@ def account_routing_extraction_opencv_group(image, pair: field_data.FieldData):
     # U = On-us (delimit customer account number)
     # A = Amount (delimit transaction amount)
     # D = Dash (delimit parts of numbers, such as routing or account)
-    charNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "T", "U", "A", "D"]
+    charNames = ["1", "2", "3", "4", "5", "6",
+                 "7", "8", "9", "0", "T", "U", "A", "D"]
 
     # load ref MICR image, convert to grayscale and threshold it
     # this will cause digits to appear white on black background
     ref = cv2.imread(ref_image_file)
     ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
     ref = imutils.resize(ref, width=400)
-    ref = cv2.threshold(ref, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    ref = cv2.threshold(
+        ref, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
     # find contours in the MICR image and sort them left to right
-    refCnts = cv2.findContours(ref.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    refCnts = cv2.findContours(
+        ref.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     refCnts = imutils.grab_contours(refCnts)
     refCnts = contours.sort_contours(refCnts, method="left-to-right")[0]
 
@@ -490,14 +545,16 @@ def account_routing_extraction_opencv_group(image, pair: field_data.FieldData):
     # apply a closing operation using rectangular kernel to close gaps
     # between digits, then apply Otsus thresholding method to binarize image
     gradX = cv2.morphologyEx(gradX, cv2.MORPH_CLOSE, rectKernel)
-    thresh = cv2.threshold(gradX, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    thresh = cv2.threshold(
+        gradX, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
     # remove any pixels that are touching borders of image (helps us in next
     # step when pruning contours)
     thresh = clear_border(thresh)
 
     # find contours in thresholded image, init list of group locations
-    groupCnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    groupCnts = cv2.findContours(
+        thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     groupCnts = imutils.grab_contours(groupCnts)
     groupLocs = []
 
@@ -521,13 +578,15 @@ def account_routing_extraction_opencv_group(image, pair: field_data.FieldData):
         # extract group ROI of chars from the grayscale image
         # then apply thresholding to segment the digits from background
         group = gray[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
-        group = cv2.threshold(group, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+        group = cv2.threshold(
+            group, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
         cv2.imshow("Group", group)
         cv2.waitKey(0)
 
         # find char contours in the group, then sort from left to right
-        charCnts = cv2.findContours(group.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        charCnts = cv2.findContours(
+            group.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         charCnts = imutils.grab_contours(charCnts)
         charCnts = contours.sort_contours(charCnts, method="left-to-right")[0]
 
@@ -641,7 +700,8 @@ def extract_digits_and_symbols(image, charCnts, minW=5, minH=15):
                 # need to get next 2 from iterator, then
                 # init bounding box coordinates for symbol
                 parts = [c, next(charIter), next(charIter)]
-                (sXA, sYA, sXB, sYB) = (np.inf, np.inf, -np.inf, -np.inf)  # init to positive and negative infinities
+                # init to positive and negative infinities
+                (sXA, sYA, sXB, sYB) = (np.inf, np.inf, -np.inf, -np.inf)
 
                 # loop over parts
                 for p in parts:
