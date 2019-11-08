@@ -44,7 +44,7 @@ def controller_entry_point(image_file):
     ##################################################
     # Returns a list of fields
     # img, fields = fe.extractFieldsEntryPoint(old_image, pre_image)
-    img, fields = fe.extractFieldsEntryPoint(old_image, img)
+    nimg, fields = fe.extractFieldsEntryPoint(old_image, img)
 
     if fields is None or len(fields) == 0:
         print("No fields were found!")
@@ -75,11 +75,11 @@ def controller_entry_point(image_file):
     ##################################################
     # POST PROCESS PASS
     ##################################################
-    final_img = pop.postprocessEntryPoint(img, dim, fields)
+    final_img = pop.postprocessEntryPoint(old_image, dim, fields)
 
-    # cv2.imwrite('filename', final_img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.imshow('file img', final_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     json_dict = ju.createJSONFromFieldDataList(fields)
     ju.writeToJSONFile(json_dict, "out.json")
@@ -91,10 +91,11 @@ def main():
     # filedir = os.path.abspath(os.path.dirname(__file__))
     # print(filedir)
     # image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
-    image_file = "resources/images/check_example.jpg"
+    # image_file = "resources/images/check_example.jpg"
     # image_file = "resources/images/test_image.jpg"
     # image_file = "resources/images/written_check.jpg"
     # image_file = "../resources/images/example_check_2.PNG"
+    image_file = "tests/test-files/field_extract/input/a_1.jpg"
 
     controller_entry_point(image_file)
 
