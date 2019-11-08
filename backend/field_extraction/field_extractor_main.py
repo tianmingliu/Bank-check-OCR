@@ -586,16 +586,16 @@ def process_date(image):
         # cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
         list.append((x, y, w, h))
     
-    draw_rects(image, list)
+    # draw_rects(image, list)
 
     # Merge overlapping regions
     merged_list = merge_overlapping_bb(image, list)
     
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
     
     merged_list = merge_close_bb(image, merged_list, x_threshold=30)
 
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
 
     return merged_list
 
@@ -628,16 +628,16 @@ def process_field(image, expand_x = 0, expand_y = 0, threshold_x = 0, threshold_
         list.append((x, y, e_width, e_height))
     # end for
 
-    draw_rects(image, list)
+    # draw_rects(image, list)
 
     # Merge overlapping regions
     merged_list = merge_overlapping_bb(image, list)
     
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
     
     merged_list = merge_close_bb(image, merged_list, threshold_x, threshold_y)
 
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
 
     return merged_list
 # end function
@@ -664,16 +664,16 @@ def process_amount(image):
         list.append((x, y, e_width, e_height))
     # end for
 
-    draw_rects(image, list)
+    # draw_rects(image, list)
 
     # Merge overlapping regions
     merged_list = merge_overlapping_bb(image, list)
     
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
     
     merged_list = merge_close_bb(image, merged_list, x_threshold=5)
 
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
 
     return merged_list
 # end function
@@ -806,7 +806,7 @@ def process_lower_region(image):
     dilated = dilate_text(iso_image, kernel_width = 5, kernel_height = 3, iterations = 3)
     # find_contours(dilated)
 
-    show(iso_image, "Lower region")
+    # show(iso_image, "Lower region")
 
     # Routing/Account Image is just the image
     routing = FieldData()
@@ -886,9 +886,9 @@ def extractFieldsEntryPoint(image_orig, image):
 
     # draw the bounding region for visualization
     img_cpy = image.copy()
-    cv2.rectangle(img_cpy, (upper_x, upper_y),   (upper_x + width, upper_y + dim_h),   (128, 0, 128), 2)
-    cv2.rectangle(img_cpy, (middle_x, middle_y), (middle_x + width, middle_y + dim_h), (128, 0, 128), 2)
-    cv2.rectangle(img_cpy, (lower_x, lower_y),   (lower_x + width, lower_y + dim_h),   (128, 0, 128), 2)
+    # cv2.rectangle(img_cpy, (upper_x, upper_y),   (upper_x + width, upper_y + dim_h),   (128, 0, 128), 2)
+    # cv2.rectangle(img_cpy, (middle_x, middle_y), (middle_x + width, middle_y + dim_h), (128, 0, 128), 2)
+    # cv2.rectangle(img_cpy, (lower_x, lower_y),   (lower_x + width, lower_y + dim_h),   (128, 0, 128), 2)
 
     # crop each section
     cropped_upper  = img_cpy[upper_y  : upper_y  + dim_h, upper_x  : width]
