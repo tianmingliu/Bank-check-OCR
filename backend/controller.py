@@ -91,9 +91,9 @@ def main():
     # filedir = os.path.abspath(os.path.dirname(__file__))
     # print(filedir)
     # image_file = os.path.join(filedir, '..\\resources\\images\\check_example.jpg')
-    # image_file = "resources/images/check_example.jpg"
+    image_file = "resources/images/check_example.jpg"
     # image_file = "resources/images/test_image.jpg"
-    image_file = "resources/images/written_check.jpg"
+    # image_file = "resources/images/written_check.jpg"
     # image_file = "../resources/images/example_check_2.PNG"
 
     controller_entry_point(image_file)

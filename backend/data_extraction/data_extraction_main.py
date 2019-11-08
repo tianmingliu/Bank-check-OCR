@@ -73,7 +73,7 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
     #     # print(account_routing_extraction_tesseract(pair))
     #     # print(account_routing_extraction_opencv_single(pair))
     #     # print(account_routing_extraction_opencv_simple(pair))
-    #     print(account_routing_extraction_opencv_group(pair))
+    #     print(account_routing_extraction_opencv_group(pair)) # CHOSEN
     #     print(account_routing_extraction_javascript(pair))
     # else:
     #     non_handwritten_extraction(pair)
