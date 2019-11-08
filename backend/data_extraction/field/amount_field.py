@@ -13,28 +13,25 @@ import backend.data_extraction.config_helper         as helper
 
 class AmountField(field.Field):
 
-    def identify(self, data: field_data.DataPair):
-        print("Identifying if the passed data is the amount...")
-
     """
     Validate the amount field provided. Checks if the value is between the configurable
     max and min and also ensures the data provided is actually a numerical amount.
     Returns false when failing validation and true if pass.
     """
-    def validate(self, data: field_data.DataPair):
+    def validate(self, data: field_data.FieldData):
         print("Validating if the passed data is a valid amount")
 
         try:
-            num_amount = float(data.data.extracted_data)
+            num_amount = float(data.extracted_data)
         except ValueError:
             print("Amount number is not a float")
 
-            written_amount = str(data.data.extracted_data)
+            written_amount = str(data.extracted_data)
 
             try:
                 num_amount = word_to_num_helper(written_amount)
             except ValueError:
-                print ("Invalid written amount")
+                print("Invalid written amount")
                 return False
 
         if num_amount <= helper.get_config_data()['thresholds']['amount_min']:

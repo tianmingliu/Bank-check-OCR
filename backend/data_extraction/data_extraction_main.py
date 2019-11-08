@@ -63,6 +63,8 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
     else:
         print("ERROR: Data extract: Invalid type.")
 
+    pair.validation = validate_extracted_field(pair)
+
     # Hard coded for now
     # fieldType = "account/routing"
 
@@ -101,15 +103,9 @@ extracted data.
 
 def handwritten_extraction(image, pair: field_data.FieldData):
     # data = extract.extract_data_pyocr(pair.image)
-    # pair.data.extracted_data = data["text"]
-    # pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    text = extract.extract_data_handwriting(image)
-    # extract.extract_data_handwriting(image)
+    text = extract.extract_data_pytesseract(image)
     pair.extracted_data = text
-    # print("\tExtracted data: " + pair.data.extracted_data)
-    # print("\tMean confidence: " + str(pair.data.confidence))
-
 
 """
 Performs the non-handwritten extraction from the provided image. If the
@@ -600,9 +596,9 @@ FieldType.
 """
 
 
-def validate_extracted_field(pair):
+def validate_extracted_field(pair: field_data.FieldData):
     try:
-        return field_list.GlobalFieldList[pair.data.field_type].validate()
+        return field_list.GlobalFieldList[pair.field_type].validate(pair)
     except KeyError:
         return False
 

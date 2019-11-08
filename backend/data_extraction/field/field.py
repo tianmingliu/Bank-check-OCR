@@ -11,18 +11,6 @@ There are three major functions:
 3. getType: gets the type of the instanced variable
 """
 class Field(abc.ABC):
-    """
-    Identifies the field passed to it. It can be assumed that data
-    passed in a non-empty string. If the data is identified, field.field_type
-    is set to the appropriate field type.
-
-    @param field: a single field of type FieldData.
-
-    @return True if the field was identified. False otherwise
-    """
-    @abc.abstractmethod
-    def identify(self, field: field_data.DataPair):
-        pass
 
     """
     Validates the field passed to it. It can be assumed the data passed
@@ -33,7 +21,7 @@ class Field(abc.ABC):
     @return True if the field was valid. False otherwise
     """
     @abc.abstractmethod
-    def validate(self, field: field_data.DataPair):
+    def validate(self, field: field_data.FieldData):
         pass
 
     """
