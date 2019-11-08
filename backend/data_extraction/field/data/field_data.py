@@ -12,7 +12,6 @@ Represents a type of field on a check. There are 5 types:
 3. Data
 4. Amount
 5. Routing
-
 NOTE(Dustin): It might be worth splitting date into Written and 
 NonWritten
 """
@@ -32,7 +31,6 @@ class FieldType(Enum):
 
 """
 Represents a bounding box on an image. 
-
 @field x: start x coordinate of bounding rectangle
 @field y: start y coordinate of bounding rectangle
 @field w: width of the bounding rectangle
@@ -42,7 +40,7 @@ Represents a bounding box on an image.
 @dataclass
 class BoundingRect:
     x: float = 0
-    y: float = 0 
+    y: float = 0
     w: float = 0
     h: float = 0
 
@@ -52,9 +50,9 @@ class BoundingRect:
         self.w = w
         self.h = h
 
+        
 """
 Represents the data for a Field on a check. 
-
 @field field_type: The type of field represented for the instance.
 @field bounds: The bounding box for the field on an image of a check
 @field data_info: The information for the field that was extracted from
