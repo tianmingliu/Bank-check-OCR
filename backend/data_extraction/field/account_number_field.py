@@ -24,4 +24,4 @@ class AccountNumberField(field.Field):
             return True
 
     def get_type(self):
-        return field_data.FieldType.FIELD_TYPE_ROUTING
+        return field_data.FieldType.FIELD_TYPE_ACCOUNT
