@@ -29,7 +29,7 @@
                 <tr>
                     <th> Field </th>
                     <th> Value </th>
-                    <th> PASS/FAIL </th>
+                    <th> PASS? </th>
                 </tr><tr>
                     <td> Account Number </td>
                     <td id="an.val"></td>
@@ -124,27 +124,35 @@
                         break;
                     case 1: //Date
                         document.getElementById("date.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("date.valid").innerHTML = results[key]["validation"];
                         break;
                     case 2: //Pay to Order Of
                         document.getElementById("pto.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("pto.valid").innerHTML = results[key]["validation"];
                         break;
                     case 3: //Numeric Amount
                         document.getElementById("namt.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("namt.valid").innerHTML = results[key]["validation"];
                         break;
                     case 4: //Written Amount
                         document.getElementById("wamt.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("wamt.valid").innerHTML = results[key]["validation"];
                         break;
                     case 5: //Signature
                         document.getElementById("sig.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("sig.valid").innerHTML = results[key]["validation"];
                         break;
                     case 6: //Memo
                         document.getElementById("memo.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("memo.valid").innerHTML = results[key]["validation"];
                         break;
                     case 7: //Routing
                         document.getElementById("rn.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("rn.valid").innerHTML = results[key]["validation"];
                         break;
                     case 8: //Account
                         document.getElementById("an.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("an.valid").innerHTML = results[key]["validation"];
                         break;
                     default:
                         break;

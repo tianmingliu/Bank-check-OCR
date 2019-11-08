@@ -6,8 +6,12 @@ class DateField(field.Field):
 
     def validate(self, data: field_data.FieldData):
         print("Validating if the passed data is a valid date")
-        date = data.data_info.extractedData
-        day, month, year = date.split('/')
+        date = data.extracted_data
+        try:
+            day, month, year = date.split('/')
+        except ValueError:
+            print("The date is invalid")
+            return False
 
         try:
             datetime.datetime(int(year), int(month), int(day))

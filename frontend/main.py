@@ -9,7 +9,7 @@ from backend.controller import controller_entry_point
 
 
 UPLOAD_FOLDER = os.getcwd() + "/uploads/"
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'pdf'])
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
