@@ -2,7 +2,7 @@ import os
 import base64
 from flask import Flask, flash, request, redirect, jsonify, send_from_directory, render_template
 from werkzeug.utils import secure_filename
-
+import json
 import cv2 
 
 from backend.controller import controller_entry_point

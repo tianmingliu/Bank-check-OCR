@@ -2,6 +2,7 @@ import backend.data_extraction.field.data.field_data as fd
 
 from dataclasses_json import dataclass_json
 from typing import List
+import json
 
 """
 Writes a list to a specified file in JSON format.
@@ -13,17 +14,15 @@ fields is a tuple of (fields, image)
 """
 # def createJSONFromFieldDataList(fields: List[fd.DataPair]):
 def createJSONFromFieldDataList(fields):
-    json_str = ""
+    json_str = "{\n"
     id = 0
     for (pair, _) in fields:
         print(type(pair))
         json_str += str("\"element" + str(id) + "\": " + pair.to_json(indent=4) + ",\n")
         id += 1
-    return json_str[:-2] + "\n"
+    return json.loads(json_str[:-2] + "\n}\n")
 
-def writeToJSONFile(json_str, filename): 
+def writeToJSONFile(json_str, filename):
     fp = open(filename, 'w+')
-    fp.write("{\n")
-    fp.write(json_str)
-    fp.write("}\n")
+    json.dump(json_str, fp, indent=4)
     fp.close()

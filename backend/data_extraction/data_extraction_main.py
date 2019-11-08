@@ -40,18 +40,18 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
     if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
         print("account type")
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
-        show("amount type", img)
+        # show("amount type", img)
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
-        show("amount written type", img)
+        # show("amount written type", img)
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_DATE:
-        show("date type", img)
+        # show("date type", img)
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
         print("memo type")
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
-        show("pay to the order of type", img)
+        # show("pay to the order of type", img)
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
         print("routing type")
@@ -99,15 +99,11 @@ extracted data.
 
 
 def handwritten_extraction(image, pair: field_data.FieldData):
-    # data = extract.extract_data_pyocr(pair.image)
-    # pair.data.extracted_data = data["text"]
-    # pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    text = extract.extract_data_handwriting(image)
-    # extract.extract_data_handwriting(image)
-    pair.extracted_data = text
-    # print("\tExtracted data: " + pair.data.extracted_data)
-    # print("\tMean confidence: " + str(pair.data.confidence))
+    # text = extract.extract_data_handwriting(image)
+    # pair.extracted_data = text
+    pair.extracted_data = extract.extract_data_pyocr(image)['text']
+
 
 
 """
