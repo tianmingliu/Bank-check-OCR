@@ -69,7 +69,7 @@ def extract_data_handwriting(image):
     print("PyTesseract: " + e2)
     print("Handwriting: " + e3)
 
-    return e3
+    return e2
 
 
 if __name__ == "__main__":

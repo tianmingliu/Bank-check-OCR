@@ -55,6 +55,7 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
         print("routing type")
+        #account_routing_extraction_opencv_group(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
         print("signature type")
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
@@ -103,7 +104,7 @@ extracted data.
 def handwritten_extraction(image, pair: field_data.FieldData):
     # data = extract.extract_data_pyocr(pair.image)
     print("Handwritten extraction: ")
-    text = extract.extract_data_pytesseract(image)
+    text = extract.extract_data_handwriting(image)
     pair.extracted_data = text
 
 
@@ -417,12 +418,12 @@ def account_routing_extraction_opencv_simple(pair):
     cv2.waitKey(0)
 
 
-def account_routing_extraction_opencv_group(pair):
+def account_routing_extraction_opencv_group(image, pair: field_data.FieldData):
     print("Account/Writing extraction")
     filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
-    ref_image_file = os.path.join(filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
-    image = cv2.imread(image_file)
+    #image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
+    ref_image_file = os.path.join(filedir, '../../resources/images/micr_e13b_reference.png')
+    #image = cv2.imread(image_file)
     image, smaller_image = prp.preprocessEntryPoint(image)
     cv2.imshow("Test", image)
     # construct argument parse and parse the arguments
@@ -468,7 +469,7 @@ def account_routing_extraction_opencv_group(pair):
 
     # load the input image, grab its dimensions, and apply array slicing
     # to keep only the bottom 20% of the image (that's where the account info is)
-    image = cv2.imread(image_file)
+    # image = cv2.imread(image_file)
     # (h, w) = image.shape[:2]
     # delta = int(h - (h * 0.2))
     # bottom = image[delta:h, 0:w]
@@ -561,6 +562,8 @@ def account_routing_extraction_opencv_group(pair):
     print("Check OCR: {}".format(" ".join(output)))
     cv2.imshow("Check OCR", image)
     cv2.waitKey(0)
+    pair.extracted_data = output[0]
+    pair.field_type = field_data.FieldType.FIELD_TYPE_ROUTING
 
 
 def account_routing_extraction_javascript(pair):
