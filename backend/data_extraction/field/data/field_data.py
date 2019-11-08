@@ -1,7 +1,7 @@
 import cv2
 from enum             import Enum
 from dataclasses      import dataclass
-# from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json
 from typing           import List
 
 
@@ -17,14 +17,18 @@ NOTE(Dustin): It might be worth splitting date into Written and
 NonWritten
 """
 # @dataclass_json
+
 class FieldType(Enum):
-    FIELD_TYPE_NONE      = 0
-    FIELD_TYPE_SIGNATURE = 1
-    FIELD_TYPE_DATE      = 2
-    FIELD_TYPE_AMOUNT    = 3
-    FIELD_TYPE_ROUTING   = 4
-    FIELD_TYPE_ACCOUNT   = 5
-    FIELD_TYPE_PAY_TO_ORDER = 6
+    FIELD_TYPE_NONE            = 0
+    FIELD_TYPE_DATE            = 1
+    FIELD_TYPE_PAY_TO_ORDER_OF = 2
+    FIELD_TYPE_AMOUNT          = 3
+    FIELD_TYPE_AMOUNT_WRITTEN  = 4
+    FIELD_TYPE_SIGNATURE       = 5
+    FIELD_TYPE_MEMO            = 6
+    FIELD_TYPE_ROUTING         = 7
+    FIELD_TYPE_ACCOUNT         = 8
+
 
 """
 Represents a bounding box on an image. 
@@ -69,7 +73,7 @@ Represents the data for a Field on a check.
 @field data_info: The information for the field that was extracted from
                   the check
 """
-# @dataclass_json
+@dataclass_json
 @dataclass
 class FieldData:
     field_type: FieldType     = FieldType.FIELD_TYPE_NONE

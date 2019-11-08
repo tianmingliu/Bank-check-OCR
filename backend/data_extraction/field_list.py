@@ -21,5 +21,5 @@ GlobalFieldList = {
     field_data.FieldType.FIELD_TYPE_ROUTING:   routing_number_field.RoutingNumberField(),
     field_data.FieldType.FIELD_TYPE_ACCOUNT:   account_number_field.AccountNumberField(),
     field_data.FieldType.FIELD_TYPE_SIGNATURE: signature_field.SignatureField(),
-    field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER: pay_to_order.PayToOrderField,
+    field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF: pay_to_order.PayToOrderField,
 }

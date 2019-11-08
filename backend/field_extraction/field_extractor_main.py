@@ -1,4 +1,24 @@
-import backend.data_extraction.field.data.field_data as field_data
+"""
+Attempted approaches:
+- Naive aabb detection
+  - the problem with approach is the spacing between characters and lines are inconsistent
+
+- Splitting the image into pieces
+  - checks have an inconsistent format for spacing. makes it difficult to, say, pull apart the middle region
+
+- EAST text detection
+  - handwriting has inconsentent spacing, which throws the algorithm off. Bounding boxes overlap and are
+    inconsistent, and needed a aabb merger. Even then, there are inconsistent results
+
+
+"""
+
+
+import backend.data_extraction.field.data.field_data           as field_data
+
+from backend.data_extraction.field.data.field_data import FieldType
+from backend.data_extraction.field.data.field_data import FieldData
+from backend.data_extraction.field.data.field_data import BoundingRect
 
 import numpy as np
 import cv2
@@ -8,7 +28,7 @@ import pytesseract
 import argparse
 
 east_loc = "resources/east/frozen_east_text_detection.pb"
-min_confidence = 0.5
+min_confidence = 0.5 
 east_width = 320  # must be multiple of 32
 east_height = 320  # must be multiple of 32
 # padding_x = 0.1
@@ -27,7 +47,7 @@ A box has the tuple: (startX, startY, endX, endY)
 def check_bounding_collision(boxA: tuple, boxB: tuple):
     print("Checking collision...")
     print("    Box A: " + str(boxA))
-    print("    Box B: " + str(boxB))
+    print("    Box B: " + str(boxB)) 
 
     box_sx = boxA[0]
     box_sy = boxA[1]
@@ -164,15 +184,6 @@ def detect_text(image, padding_x: float, padding_y: float):
         endX = min(origW, endX + (dX * 2))
         endY = min(origH, endY + (dY * 2))
 
-        # extract the actual padded ROI
-        # roi = orig[startY:endY, startX:endX]
-
-        # in order to apply Tesseract v4 to OCR text we must supply
-        # (1) a language, (2) an OEM flag of 4, indicating that the we
-        # wish to use the LSTM neural net model for OCR, and finally
-        # (3) an OEM value, in this case, 7 which implies that we are
-        # treating the ROI as a single line of text
-        # config = ("-l eng --oem 1 --psm 7")
         text = "" #pytesseract.image_to_string(roi, config=config)
 
         # add the bounding box coordinates and OCR'd text to the list
@@ -182,13 +193,9 @@ def detect_text(image, padding_x: float, padding_y: float):
     # sort the results bounding box coordinates from top to bottom
     results = sorted(results, key=lambda r:r[0][1])
 
-    print("Number of boxes: " + str(len(results)))
-
     # check for collisions between the boxes
     new_results = []
     for ((a_start_x, a_start_y, a_end_x, a_end_y), _) in results:
-        print("run")
-
         has_collision = False
         idx = 0
         for (b_start_x, b_start_y, b_end_x, b_end_y) in new_results:
@@ -237,10 +244,6 @@ def detect_text(image, padding_x: float, padding_y: float):
 
     # loop over the results
     for (startX, startY, endX, endY) in new_results:
-        # display the text OCR'd by Tesseract
-        print("OCR TEXT")
-        print("========")
-
         # strip out non-ASCII text so we can draw the text on the image
         # using OpenCV, then draw the text and a bounding box surrounding
         # the text region of the input image
@@ -256,6 +259,9 @@ def detect_text(image, padding_x: float, padding_y: float):
 END EAST TEXT DETECTION
 """
 
+"""
+OLD IMPLEMENTATION
+"""
 def old_implementation(image_orig, image):
         # _, mask = cv2.threshold(image,180,255,cv2.THRESH_TOZERO_INV)
     # image_final = cv2.bitwise_and(image, image, mask=mask)
@@ -285,6 +291,20 @@ def old_implementation(image_orig, image):
 
     # image, contours, hierarchy = cv2.findContours(dilated,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     contours, _ = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # for contour in contours:
+    #     [x, y, w, h] = cv2.boundingRect(contour)
+    #     # get rectangle bounding contour
+    #     # (x, y, w, h) = cv2.boundingRect(contour)
+
+    #     # Don't plot small false positives that aren't text
+    #     if w < 35 and h < 35:
+    #         continue
+
+    #     # draw rectangle around contour on original image
+    #     img_cpy = iso_image.copy()
+    #     cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
+    #     show(img_cpy, "Test")
     
     # END ORIGINAL
 
@@ -292,6 +312,11 @@ def old_implementation(image_orig, image):
     # cv2.imshow('captcha_result', img_cpy)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
+
+
+"""
+END OLD IMPLEMENTATION
+"""
 
 """
 Isolates text on the the provide image. Blackens the 
@@ -305,11 +330,34 @@ def isolate_text(image):
 
     return new_img
 
+def dilate_text(image, kernel_width = 3, kernel_height = 3, iterations = 3):
+     # to manipulate the orientation of dilution , large x means horizonatally dilating  more, large y means vertically dilating more
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (kernel_width,
+                                                         kernel_height)) 
+    
+    # dilate , more the iteration more the dilation
+    dilated = cv2.dilate(image, kernel, iterations = iterations)
+    return dilated
+
+def find_contours(image):
+    contours, _ = cv2.findContours(image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    for contour in contours:
+        [x, y, w, h] = cv2.boundingRect(contour)
+
+        # Don't plot small false positives that aren't text
+        if w < 35 and h < 35:
+            continue
+
+        # draw rectangle around contour on original image
+        img_cpy = cv2.cvtColor(image.copy(), cv2.COLOR_GRAY2BGR)
+        cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
+        show(img_cpy, "Test")
 
 """
 For the following processing functions:
 @param image a cropped image that requires special processing
-@return a list of cropped images
+@return a list of tuples with the format (FieldData, image)
 
 process_upper_image:
 - Assumption: important information is located in the top right
@@ -318,6 +366,7 @@ process_middle_region:
 
 
 process_lower_region:
+
 """
 def show(img, title):
     cv2.imshow(title, img)
@@ -339,7 +388,13 @@ def process_upper_region(image):
     # show(cropped_left, "Upper Left")
     # show(cropped_right, "Upper Right")
 
-    detect_text(cropped_right, .5, .1)
+    date = FieldData()
+    date.bounds = BoundingRect(right_x, 0, dim_w, height)
+    date.field_type = FieldType.FIELD_TYPE_DATE
+
+    return [(date, cropped_right)]
+
+    # detect_text(cropped_right, .5, .1)
 
 
 def process_middle_region(image):
@@ -347,114 +402,113 @@ def process_middle_region(image):
     width  = image.shape[1]
 
     dim_h = int(height / 3)
+    removed_upper_left = 150 # number of pixels to remove from this region
 
     top_y = 0
     lower_y = top_y + dim_h - 20
 
-    cropped_upper = image[top_y : top_y + dim_h, 0 : width]
+    # UPPER REGION
+    # -------------------------------------
+    cropped_upper = image[top_y : top_y + dim_h, removed_upper_left : width]
+    left_upper = cropped_upper[0: cropped_upper.shape[0], 0 : int(cropped_upper.shape[1] / 3) * 2]
+    right_upper = cropped_upper[0: cropped_upper.shape[0], int(cropped_upper.shape[1] / 3) * 2 : cropped_upper.shape[1]]
+    
+    # Pay to the order of field
+    iso_left_upper = isolate_text(left_upper)
+    # show(iso_left_upper, "Pay to the order of")
+
+    pay = FieldData()
+    pay.bounds = BoundingRect(removed_upper_left, 0, int(cropped_upper.shape[1] / 3) * 2, dim_h)
+    pay.field_type = FieldType.FIELD_TYPE_PAY_TO_ORDER_OF
+    
+    # amount field
+    iso_right_upper = isolate_text(right_upper)
+    # show(iso_right_upper, "Amount")
+
+    amount = FieldData()
+    amount.bounds = BoundingRect(int(cropped_upper.shape[1] / 3) * 2, 
+                                 0, 
+                                 cropped_upper.shape[1] - int(cropped_upper.shape[1] / 3) * 2, 
+                                 height)
+    amount.field_type = FieldType.FIELD_TYPE_AMOUNT
+
+    # LOWER REGION
+    #-------------------------------------
     cropped_lower = image[lower_y : height, 0 : width]
+    lower_left = cropped_lower[0 : cropped_lower.shape[0], 0 : int(cropped_lower.shape[1] / 4) * 3]
 
-    # show(cropped_upper, "Upper Middle")
-    # show(cropped_lower, "Lower Middle")
+    # Written amount
+    iso_lower = isolate_text(lower_left)    
+    # show(iso_lower, "Written Amount")
 
-    iso_upper = isolate_text(cropped_upper)
-    iso_lower = isolate_text(cropped_lower)
+    written_amount = FieldData()
+    written_amount.bounds = BoundingRect(0, lower_y, int(cropped_lower.shape[1] / 4) * 3, height - lower_y)
+    written_amount.field_type = FieldType.FIELD_TYPE_AMOUNT_WRITTEN
 
-    # detect_text(iso_upper, .8, .4)
+    return [(pay, iso_left_upper), 
+            (amount, iso_right_upper), 
+            (written_amount, iso_lower)
+           ]
+
+    # detect_text(iso_upper, .8, .6)
     # detect_text(iso_lower, .8, .4)
 
+"""
+NOTE(Dustin): Idea: find the middle two lines. Which one is longer? Found the written amount. 
+Above it will be the "Pay to the order of" field and amount. 
+
+Locatlity of pixel colors. For each pixel, check its neighbors. 
+If pixels to the left or right are black, potentially found a line. Provide a 
+threshold for a length of a line. After a line scan, write the pixels to a 
+copy image. 
+
+"""
+# import numpy as np
+# from matplotlib import pyplot as plt
+def detect_lines(img, color):
+
+    kernel_size = 5
+    blur_gray = cv2.GaussianBlur(img,(kernel_size, kernel_size),0)
+    edges = cv2.Canny(blur_gray,50,150)
+
+    rho = 1  # distance resolution in pixels of the Hough grid
+    theta = np.pi / 180  # angular resolution in radians of the Hough grid
+    threshold = 100  # minimum number of votes (intersections in Hough grid cell)
+    min_line_length = 100  # minimum number of pixels making up a line
+    max_line_gap = 5  # maximum gap in pixels between connectable line segments
+    blank = img.copy() * 0
+
+    # Run Hough on edge detected image
+    # Output "lines" is an array containing endpoints of detected line segments
+    lines = cv2.HoughLinesP(edges, rho, theta, threshold, np.array([]),
+                   min_line_length, max_line_gap)
+
+    for line in lines:
+        for x1,y1,x2,y2 in line:
+            cv2.line(blank,(x1,y1),(x2,y2),color,5)
+
+    cv2.imshow("Lines", blank)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 def process_lower_region(image):
     height = image.shape[0]
     width  = image.shape[1]
 
     iso_image = isolate_text(image)
+    dilated = dilate_text(iso_image, kernel_width = 5, kernel_height = 3, iterations = 3)
+    # find_contours(dilated)
 
+    # show(iso_image, "Lower region")
+
+    lower = FieldData()
+    lower.bounds = BoundingRect(0, 0, width, height)
+    lower.field_type = FieldType.FIELD_TYPE_NONE
+
+    return [(lower, iso_image)]
+
+    # detect_lines(iso_image, (255,255,255))
     # detect_text(iso_image, .1, .1)
-
-    # kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 3))
-    # dilated = cv2.dilate(iso_image, kernel, iterations=3)
-
-    # show(dilated, "Dilated img")
-
-    # contours, _ = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    # new_results = []
-    # for contour in contours:
-    #     [x, y, w, h] = cv2.boundingRect(contour)
-
-    #     has_collision = False
-    #     idx = 0
-    #     for (a_start_x, a_start_y, a_end_x, a_end_y) in new_results:
-    #         if check_bounding_collision((a_start_x, a_start_y, a_end_x, a_end_y), (x, y, x + w, y + h)):
-    #             has_collision = True
-    #             break
-    #         else:
-    #             idx += 1
-
-    #     if has_collision:
-    #         # determine new max/min
-    #         min_x = 0
-    #         min_y = 0
-    #         max_x = 0
-    #         max_y = 0
-
-    #         if a_start_x <= x:
-    #             min_x = a_start_x
-    #         else:
-    #             min_x = x
-            
-    #         if a_start_y <= y:
-    #             min_y = a_start_y
-    #         else:
-    #             min_y = y
-
-    #         if a_end_x >= x + w:
-    #             max_x = a_end_x
-    #         else:
-    #             max_x = x + w
-            
-    #         if a_end_y >= y + h:
-    #             max_y = a_end_y
-    #         else:
-    #             max_y = y + h
-
-    #         # set the new bounding box
-    #         new_results[idx] = (min_x, min_y, max_x, max_y)
-    #     else:
-    #         minx = x
-    #         miny = y
-    #         maxx = x + w
-    #         maxy = y + h 
-
-    #         xthresh = .8
-    #         ythresh = .8
-
-    #         ratiox = ((maxx - minx) / width)
-    #         ratioy = ((maxy - miny) / height)
-    #         if not (ratiox >= xthresh and ratioy >= ythresh):
-    #             new_results.append((x, y, x + w, y + h))
-    #         else:
-    #             print("Very large box! ratiox: " + str(ratiox) + " ratioy: " + str(ratioy))
-    #             print("Image dim: " + str(width) + " " + str(height))
-    #             print("Cropped dim: " + str(maxx - minx) + " " + str((maxy - miny)))
-        
-
-    # for contour in contours:
-    #     [x, y, w, h] = cv2.boundingRect(contour)
-    #     # get rectangle bounding contour
-    #     # (x, y, w, h) = cv2.boundingRect(contour)
-
-    #     # Don't plot small false positives that aren't text
-    #     if w < 35 and h < 35:
-    #         continue
-
-    #     # draw rectangle around contour on original image
-    #     img_cpy = iso_image.copy()
-    #     cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
-    #     show(img_cpy, "Test")
-
-
     
 
 """
@@ -466,8 +520,7 @@ for further processing in a later pipelin stage.
 
 @param image: Image of the check to extract fields from
 
-@return A list of DataPair containg the bounding boxes of fields
-extracted from the image and the cropped image.
+@return A list of tuples containing a DataPair and a cropped image.
 """
 def extractFieldsEntryPoint(image_orig, image):
 
@@ -493,14 +546,25 @@ def extractFieldsEntryPoint(image_orig, image):
     cv2.rectangle(img_cpy, (middle_x, middle_y), (middle_x + width, middle_y + dim_h), (128, 0, 128), 2)
     cv2.rectangle(img_cpy, (lower_x, lower_y),   (lower_x + width, lower_y + dim_h),   (128, 0, 128), 2)
 
+    # crop each section
     cropped_upper  = img_cpy[upper_y  : upper_y  + dim_h, upper_x  : width]
     cropped_middle = img_cpy[middle_y : middle_y + dim_h, middle_x : width]
     cropped_lower  = img_cpy[lower_y  : lower_y  + dim_h, lower_x  : width]
 
-    process_upper_region(cropped_upper)
-    process_middle_region(cropped_middle)
-    process_lower_region(cropped_lower)
+    # process each section
+    upper_images  = process_upper_region(cropped_upper)
+    middle_images = process_middle_region(cropped_middle)
+    lower_images  = process_lower_region(cropped_lower)
 
+    # compile the list of fields
     list = []
+    for img in upper_images:
+        list.append(img)
+    
+    for img in middle_images:
+        list.append(img)
+    
+    for img in lower_images:
+        list.append(img)
 
     return img_cpy, list

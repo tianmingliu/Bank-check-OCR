@@ -2,8 +2,8 @@ import sys
 
 import backend.data_extraction.field.data.field_data as field_data
 import backend.data_extraction.field_list as field_list
-import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
-import backend.data_extraction.letter_recognition.src.main as hw_extract
+# import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
+# import backend.data_extraction.letter_recognition.src.main as hw_extract
 import backend.preprocess.preprocess_main            as prp
 import backend.data_extraction.extract_methods as extract
 from skimage.segmentation import clear_border
@@ -31,23 +31,52 @@ bounding box has been set in the field.
 
 @return True if the extraction was successful. False otherwise. 
 """
+def show(title, image):
+    cv2.imshow(title, image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
+def extract_data_entry_point(img, pair: field_data.FieldData):
 
-def extract_data_entry_point(pair: field_data.DataPair):
+    if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
+        print("account type")
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
+        show("amount type", img)
+        handwritten_extraction(img, pair)
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
+        show("amount written type", img)
+        handwritten_extraction(img, pair)
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_DATE:
+        show("date type", img)
+        handwritten_extraction(img, pair)
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
+        print("memo type")
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
+        show("pay to the order of type", img)
+        handwritten_extraction(img, pair)
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
+        print("routing type")
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
+        print("signature type")
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
+        print("none type")
+    else:
+        print("ERROR: Data extract: Invalid type.")
+
     # Hard coded for now
-    fieldType = "account/routing"
+    # fieldType = "account/routing"
 
     # Some struct that will contain the data 
-    if fieldType == "handwritten":
-        handwritten_extraction(pair)
-    elif fieldType == "account/routing":
-        # print(account_routing_extraction_tesseract(pair))
-        # print(account_routing_extraction_opencv_single(pair))
-        # print(account_routing_extraction_opencv_simple(pair))
-        print(account_routing_extraction_opencv_group(pair))
-        print(account_routing_extraction_javascript(pair))
-    else:
-        non_handwritten_extraction(pair)
+    # if fieldType == "handwritten":
+    #     handwritten_extraction(pair)
+    # elif fieldType == "account/routing":
+    #     # print(account_routing_extraction_tesseract(pair))
+    #     # print(account_routing_extraction_opencv_single(pair))
+    #     # print(account_routing_extraction_opencv_simple(pair))
+    #     print(account_routing_extraction_opencv_group(pair))
+    #     print(account_routing_extraction_javascript(pair))
+    # else:
+    #     non_handwritten_extraction(pair)
 
     # Now identify the type of data
     # if not identify_extracted_field(pair):
@@ -70,13 +99,14 @@ extracted data.
 """
 
 
-def handwritten_extraction(pair: field_data.DataPair):
+def handwritten_extraction(image, pair: field_data.FieldData):
     # data = extract.extract_data_pyocr(pair.image)
     # pair.data.extracted_data = data["text"]
     # pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    text = extract.extract_data_handwriting(pair.image)
-    pair.data.extracted_data = text
+    text = extract.extract_data_handwriting(image)
+    # extract.extract_data_handwriting(image)
+    pair.extracted_data = text
     # print("\tExtracted data: " + pair.data.extracted_data)
     # print("\tMean confidence: " + str(pair.data.confidence))
 
@@ -635,4 +665,4 @@ def extract_digits_and_symbols(image, charCnts, minW=5, minH=15):
 
 
 if __name__ == '__main__':
-    extract_data_entry_point(None)
+    extract_data_entry_point(None, None)
