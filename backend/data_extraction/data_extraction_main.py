@@ -2,8 +2,8 @@ import sys
 
 import backend.data_extraction.field.data.field_data as field_data
 import backend.data_extraction.field_list as field_list
-import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
-import backend.data_extraction.letter_recognition.src.main as hw_extract
+# import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
+# import backend.data_extraction.letter_recognition.src.main as hw_extract
 import backend.preprocess.preprocess_main            as prp
 import backend.data_extraction.extract_methods as extract
 from skimage.segmentation import clear_border
@@ -31,23 +31,52 @@ bounding box has been set in the field.
 
 @return True if the extraction was successful. False otherwise. 
 """
+def show(title, image):
+    cv2.imshow(title, image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
+def extract_data_entry_point(img, pair: field_data.FieldData):
 
-def extract_data_entry_point(pair: field_data.DataPair):
+    if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
+        print("account type")
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
+        show("amount type", img)
+        handwritten_extraction(img, pair)
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
+        show("amount written type", img)
+        handwritten_extraction(img, pair)
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_DATE:
+        show("date type", img)
+        handwritten_extraction(img, pair)
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
+        print("memo type")
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
+        show("pay to the order of type", img)
+        handwritten_extraction(img, pair)
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
+        print("routing type")
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
+        print("signature type")
+    elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
+        print("none type")
+    else:
+        print("ERROR: Data extract: Invalid type.")
+
     # Hard coded for now
-    fieldType = "account/routing"
+    # fieldType = "account/routing"
 
     # Some struct that will contain the data 
-    if fieldType == "handwritten":
-        handwritten_extraction(pair)
-    elif fieldType == "account/routing":
-        print(account_routing_extraction_tesseract(pair))
-        # print(account_routing_extraction_opencv_single(pair))
-        # print(account_routing_extraction_opencv_simple(pair))
-        # print(account_routing_extraction_opencv_group(pair))
-        # print(account_routing_extraction_javascript(pair))
-    else:
-        non_handwritten_extraction(pair)
+    # if fieldType == "handwritten":
+    #     handwritten_extraction(pair)
+    # elif fieldType == "account/routing":
+    #     # print(account_routing_extraction_tesseract(pair))
+    #     # print(account_routing_extraction_opencv_single(pair))
+    #     # print(account_routing_extraction_opencv_simple(pair))
+    #     print(account_routing_extraction_opencv_group(pair))
+    #     print(account_routing_extraction_javascript(pair))
+    # else:
+    #     non_handwritten_extraction(pair)
 
     # Now identify the type of data
     # if not identify_extracted_field(pair):
@@ -70,13 +99,14 @@ extracted data.
 """
 
 
-def handwritten_extraction(pair: field_data.DataPair):
+def handwritten_extraction(image, pair: field_data.FieldData):
     # data = extract.extract_data_pyocr(pair.image)
     # pair.data.extracted_data = data["text"]
     # pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    text = extract.extract_data_handwriting(pair.image)
-    pair.data.extracted_data = text
+    text = extract.extract_data_handwriting(image)
+    # extract.extract_data_handwriting(image)
+    pair.extracted_data = text
     # print("\tExtracted data: " + pair.data.extracted_data)
     # print("\tMean confidence: " + str(pair.data.confidence))
 
@@ -112,7 +142,7 @@ extracted data.
 def account_routing_extraction_tesseract(pair):
     # Using tesseract
     filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg ')
+    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
     image = cv2.imread(image_file)
     image, smaller_image = prp.preprocessEntryPoint(image)
     cv2.imshow("Image", image)
@@ -442,15 +472,15 @@ def account_routing_extraction_opencv_group(pair):
 
     # load the input image, grab its dimensions, and apply array slicing
     # to keep only the bottom 20% of the image (that's where the account info is)
-    # image = cv2.imread(image_file)
+    image = cv2.imread(image_file)
     # (h, w) = image.shape[:2]
     # delta = int(h - (h * 0.2))
     # bottom = image[delta:h, 0:w]
 
     # convert bottom image to grayscale, apply blackhat morphological operator
     # to find dark regions against a light background (the routing/account #s)
-    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blackhat = cv2.morphologyEx(image, cv2.MORPH_BLACKHAT, rectKernel)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, rectKernel)
 
     # compute the Scharr gradient of the blackhat image, then scale
     # the rest back into the range [0, 255]
@@ -493,7 +523,7 @@ def account_routing_extraction_opencv_group(pair):
 
         # extract group ROI of chars from the grayscale image
         # then apply thresholding to segment the digits from background
-        group = image[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
+        group = gray[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
         group = cv2.threshold(group, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
         cv2.imshow("Group", group)
@@ -538,28 +568,9 @@ def account_routing_extraction_opencv_group(pair):
 
 
 def account_routing_extraction_javascript(pair):
-    # Using tesseract
-    filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg ')
-    image = cv2.imread(image_file)
-    image, smaller_image = prp.preprocessEntryPoint(image)
-    cv2.imshow("Image", image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # TODO: implement
+    return False
 
-    tools = pyocr.get_available_tools()
-    if len(tools) == 0:
-        print("No OCR tool found")
-        sys.exit(1)
-
-    tool = tools[0]
-
-    langs = tool.get_available_languages()
-    lang = langs[1]
-    print(lang)
-
-    SYMBOL_CONFIDENCE_THRESHOLD_PERCENT = 45
-    #TODO: did not finish this method
 
 """
 Scans the GlobalFieldList looking for a matching field using the data
@@ -654,4 +665,4 @@ def extract_digits_and_symbols(image, charCnts, minW=5, minH=15):
 
 
 if __name__ == '__main__':
-    extract_data_entry_point(None)
+    extract_data_entry_point(None, None)

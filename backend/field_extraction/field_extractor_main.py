@@ -11,7 +11,6 @@ Attempted approaches:
     inconsistent, and needed a aabb merger. Even then, there are inconsistent results
 
 
-
 """
 
 
