@@ -45,9 +45,9 @@ Adapted from: https://www.pyimagesearch.com/2018/09/17/opencv-ocr-and-text-recog
 A box has the tuple: (startX, startY, endX, endY)
 """
 def check_bounding_collision(boxA: tuple, boxB: tuple):
-    print("Checking collision...")
-    print("    Box A: " + str(boxA))
-    print("    Box B: " + str(boxB)) 
+    # print("Checking collision...")
+    # print("    Box A: " + str(boxA))
+    # print("    Box B: " + str(boxB)) 
 
     box_sx = boxA[0]
     box_sy = boxA[1]
@@ -324,7 +324,8 @@ background and whitens text.
 """
 def isolate_text(image):
     _, threshed = cv2.threshold(image, 100, 255, 
-       cv2.THRESH_BINARY|cv2.THRESH_OTSU) 
+       cv2.THRESH_OTSU) 
+    # cv2.THRESH_BINARY|
     new_img = cv2.adaptiveThreshold(threshed,255,cv2.ADAPTIVE_THRESH_MEAN_C,
             cv2.THRESH_BINARY_INV,11,2)
 
@@ -355,103 +356,165 @@ def find_contours(image):
         show(img_cpy, "Test")
 
 """
-For the following processing functions:
-@param image a cropped image that requires special processing
-@return a list of tuples with the format (FieldData, image)
+Performs mser on a given image.
 
-process_upper_image:
-- Assumption: important information is located in the top right
-
-process_middle_region:
-
-
-process_lower_region:
-
+Returns the msers.
 """
+def impl_mser(image):
+    mser = cv2.MSER_create()
+    regions = mser.detectRegions(image)
+    return regions[0]
+
 def show(img, title):
     cv2.imshow(title, img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def process_upper_region(image):
-    height = image.shape[0]
-    width  = image.shape[1]
+"""
+Merge bounding boxes that are close together based on an
+x, y threshold.
+"""
+def merge_close_bb(image, bb_list, x_threshold = 0, y_threshold = 0):
+    new_list = []
 
-    dim_w = int(width / 2)
+    for (a_start_x, a_start_y, a_width, a_height) in bb_list:
+        can_merge = False
+        idx = 0
 
-    left_x = 0
-    right_x = left_x + dim_w
+        a_end_x = a_start_x + a_width
+        a_end_y = a_start_y + a_height
 
-    cropped_right = image[0 : height, right_x : right_x + dim_w]
-    cropped_right = isolate_text(cropped_right)
+        for (b_start_x, b_start_y, b_width, b_height) in new_list:
+            
+            b_end_x = b_start_x + b_width
+            b_end_y = b_start_y + b_height
 
-    # show(cropped_left, "Upper Left")
-    # show(cropped_right, "Upper Right")
+            # adjust second box based on the threshold 
+            b_new_start_x = b_start_x - x_threshold
+            b_new_start_y = b_start_y - y_threshold
 
-    date = FieldData()
-    date.bounds = BoundingRect(right_x, 0, dim_w, height)
-    date.field_type = FieldType.FIELD_TYPE_DATE
+            b_new_end_x = b_end_x + x_threshold
+            b_new_end_y = b_end_y + y_threshold
 
-    return [(date, cropped_right)]
+            # see if the boxes overlap
+            if check_bounding_collision((a_start_x, a_start_y, a_end_x, a_end_y), 
+                                        (b_new_start_x, b_new_start_y, b_new_end_x, b_new_end_y)):
+                can_merge = True
 
-    # detect_text(cropped_right, .5, .1)
+                # determine new max/min
+                min_x = 0
+                min_y = 0
+                max_x = 0
+                max_y = 0
 
+                if a_start_x <= b_start_x:
+                    min_x = a_start_x
+                else:
+                    min_x = b_start_x
+            
+                if a_start_y <= b_start_y:
+                    min_y = a_start_y
+                else:
+                    min_y = b_start_y
 
-def process_middle_region(image):
-    height = image.shape[0]
-    width  = image.shape[1]
+                if a_end_x >= b_end_x:
+                    max_x = a_end_x
+                else:
+                    max_x = b_end_x
+            
+                if a_end_y >= b_end_y:
+                    max_y = a_end_y
+                else:
+                    max_y = b_end_y
 
-    dim_h = int(height / 3)
-    removed_upper_left = 150 # number of pixels to remove from this region
+                # update the box
+                new_list[idx] = (min_x, min_y, max_x - min_x, max_y - min_y)
 
-    top_y = 0
-    lower_y = top_y + dim_h - 20
+                break
 
-    # UPPER REGION
-    # -------------------------------------
-    cropped_upper = image[top_y : top_y + dim_h, removed_upper_left : width]
-    left_upper = cropped_upper[0: cropped_upper.shape[0], 0 : int(cropped_upper.shape[1] / 3) * 2]
-    right_upper = cropped_upper[0: cropped_upper.shape[0], int(cropped_upper.shape[1] / 3) * 2 : cropped_upper.shape[1]]
-    
-    # Pay to the order of field
-    iso_left_upper = isolate_text(left_upper)
-    # show(iso_left_upper, "Pay to the order of")
+            idx += 1
+        # end loop
 
-    pay = FieldData()
-    pay.bounds = BoundingRect(removed_upper_left, 0, int(cropped_upper.shape[1] / 3) * 2, dim_h)
-    pay.field_type = FieldType.FIELD_TYPE_PAY_TO_ORDER_OF
-    
-    # amount field
-    iso_right_upper = isolate_text(right_upper)
-    # show(iso_right_upper, "Amount")
+        if not can_merge:
+            new_list.append((a_start_x, a_start_y, a_end_x - a_start_x, a_end_y - a_start_y))
+    # end loop
 
-    amount = FieldData()
-    amount.bounds = BoundingRect(int(cropped_upper.shape[1] / 3) * 2, 
-                                 0, 
-                                 cropped_upper.shape[1] - int(cropped_upper.shape[1] / 3) * 2, 
-                                 height)
-    amount.field_type = FieldType.FIELD_TYPE_AMOUNT
+    return new_list
 
-    # LOWER REGION
-    #-------------------------------------
-    cropped_lower = image[lower_y : height, 0 : width]
-    lower_left = cropped_lower[0 : cropped_lower.shape[0], 0 : int(cropped_lower.shape[1] / 4) * 3]
+"""
+Merge overlapping bounding boxes and return a new list.
 
-    # Written amount
-    iso_lower = isolate_text(lower_left)    
-    # show(iso_lower, "Written Amount")
+@param bb_list should be a list of tuples (x, y, w, h)
 
-    written_amount = FieldData()
-    written_amount.bounds = BoundingRect(0, lower_y, int(cropped_lower.shape[1] / 4) * 3, height - lower_y)
-    written_amount.field_type = FieldType.FIELD_TYPE_AMOUNT_WRITTEN
+@return a list of tuples (x, y, w, h)
+"""
+def merge_overlapping_bb(image, bb_list):
+    new_list = []
+    # check_bounding_collision(boxA: tuple, boxB: tuple)
+    # box = (start_x, start_y, end_x, end_yu)
+    for ((a_start_x, a_start_y, a_width, a_height)) in bb_list:
+        has_collision = False
+        idx = 0
 
-    return [(pay, iso_left_upper), 
-            (amount, iso_right_upper), 
-            (written_amount, iso_lower)
-           ]
+        a_end_x = a_start_x + a_width
+        a_end_y = a_start_y + a_height
 
-    # detect_text(iso_upper, .8, .6)
-    # detect_text(iso_lower, .8, .4)
+        for (b_start_x, b_start_y, b_width, b_height) in new_list:
+
+            b_end_x = b_start_x + b_width
+            b_end_y = b_start_y + b_height
+
+            if check_bounding_collision((a_start_x, a_start_y, a_end_x, a_end_y), (b_start_x, b_start_y, b_end_x, b_end_y)):
+                has_collision = True
+                break
+            else:
+                idx += 1
+
+        # end loop 
+
+        if has_collision:
+            # determine new max/min
+            min_x = 0
+            min_y = 0
+            max_x = 0
+            max_y = 0
+
+            if a_start_x <= b_start_x:
+                min_x = a_start_x
+            else:
+                min_x = b_start_x
+            
+            if a_start_y <= b_start_y:
+                min_y = a_start_y
+            else:
+                min_y = b_start_y
+
+            if a_end_x >= b_end_x:
+                max_x = a_end_x
+            else:
+                max_x = b_end_x
+            
+            if a_end_y >= b_end_y:
+                max_y = a_end_y
+            else:
+                max_y = b_end_y
+
+            # set the new bounding box
+            new_list[idx] = (min_x, min_y, max_x - min_x, max_y - min_y)
+            # new_list.append((a_start_x, a_start_y, a_end_x - a_start_x, a_end_y - a_start_y))
+        else:
+            new_list.append((a_start_x, a_start_y, a_end_x - a_start_x, a_end_y - a_start_y))
+
+    # end loop
+
+    return new_list
+
+def draw_rects(image, rects):
+    img_cpy = image.copy()
+    for (x, y, w, h) in rects:
+        cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
+    show(img_cpy, "Drawing rectangles")
+
 
 """
 NOTE(Dustin): Idea: find the middle two lines. Which one is longer? Found the written amount. 
@@ -491,6 +554,250 @@ def detect_lines(img, color):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+
+"""
+Process the date field type.
+
+@return a list of bounding boxes contained in the 
+tuple (x_start, y_start, width, height)
+"""
+def process_date(image):
+    height = image.shape[0]
+    width  = image.shape[1]
+
+    regions = impl_mser(image)
+
+    # Get all possible bounding regions
+    img_cpy = image.copy()
+    list = []
+    for box in regions:
+        [x, y, w, h] = cv2.boundingRect(box)
+
+        if w < 35 and h < 35:
+            continue
+
+        if h < 5:
+            continue
+
+        # if the bb is to tall, then it is probably incorrect
+        if h >= int(height / 2):
+            continue
+
+        # cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
+        list.append((x, y, w, h))
+    
+    draw_rects(image, list)
+
+    # Merge overlapping regions
+    merged_list = merge_overlapping_bb(image, list)
+    
+    draw_rects(image, merged_list)
+    
+    merged_list = merge_close_bb(image, merged_list, x_threshold=30)
+
+    draw_rects(image, merged_list)
+
+    return merged_list
+
+"""
+TODO(Dustin): If the generated bb is above a specified size, 
+remove it. So like, 90% of the image
+"""
+def process_field(image, expand_x = 0, expand_y = 0, threshold_x = 0, threshold_y = 0):
+    height = image.shape[0]
+    width  = image.shape[1]
+
+    regions = impl_mser(image)
+
+    list = []
+    for box in regions:
+        [x, y, w, h] = cv2.boundingRect(box)
+
+        if w < 35 and h < 35:
+            continue
+
+        if h < 5:
+            continue
+
+        if w >= int(width * .80) and h >= int(height * .80):
+            continue
+
+        # cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
+        e_width  = min(width, w+expand_x)
+        e_height = min(height, h+expand_y)
+        list.append((x, y, e_width, e_height))
+    # end for
+
+    draw_rects(image, list)
+
+    # Merge overlapping regions
+    merged_list = merge_overlapping_bb(image, list)
+    
+    draw_rects(image, merged_list)
+    
+    merged_list = merge_close_bb(image, merged_list, threshold_x, threshold_y)
+
+    draw_rects(image, merged_list)
+
+    return merged_list
+# end function
+
+def process_amount(image):
+    height = image.shape[0]
+    width  = image.shape[1]
+
+    regions = impl_mser(image)
+
+    list = []
+    for box in regions:
+        [x, y, w, h] = cv2.boundingRect(box)
+
+        if w < 35 and h < 35:
+            continue
+
+        if h < 5:
+            continue
+
+        # cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
+        e_width  = min(width, w+10)
+        e_height = min(height, h+10)
+        list.append((x, y, e_width, e_height))
+    # end for
+
+    draw_rects(image, list)
+
+    # Merge overlapping regions
+    merged_list = merge_overlapping_bb(image, list)
+    
+    draw_rects(image, merged_list)
+    
+    merged_list = merge_close_bb(image, merged_list, x_threshold=5)
+
+    draw_rects(image, merged_list)
+
+    return merged_list
+# end function
+
+"""
+For the following processing functions:
+@param image a cropped image that requires special processing
+@return a list of tuples with the format (FieldData, image)
+
+process_upper_image:
+- Assumption: important information is located in the top right
+
+process_middle_region:
+
+
+process_lower_region:
+"""
+def process_upper_region(image):
+    height = image.shape[0]
+    width  = image.shape[1]
+
+    dim_w = int(width / 2)
+
+    left_x = 0
+    right_x = left_x + dim_w
+
+    cropped_right = image[0 : height, right_x : right_x + dim_w]
+    bb_list = process_date(cropped_right)
+
+    possible_dates = []
+    for (x, y, w, h) in bb_list:
+        img_cpy = cropped_right.copy()
+
+        img_cpy = img_cpy[y : y + h, x : x + w]
+        img_cpy = isolate_text(img_cpy)
+        img_cpy = cv2.medianBlur(img_cpy, 3)
+
+        date = FieldData()
+        date.bounds = BoundingRect(x, y, w, h)
+        date.field_type = FieldType.FIELD_TYPE_DATE
+
+        possible_dates.append((date, img_cpy))
+    # end loop
+
+    return possible_dates
+# end function
+
+def process_middle_region(image):
+    height = image.shape[0]
+    width  = image.shape[1]
+
+    dim_h = int(height / 3)
+    removed_upper_left = 150 # number of pixels to remove from this region
+
+    top_y = 0
+    lower_y = top_y + dim_h - 20
+
+    # UPPER REGION
+    # -------------------------------------
+    cropped_upper = image[top_y : top_y + dim_h, removed_upper_left : width]
+    left_upper = cropped_upper[0: cropped_upper.shape[0], 0 : int(cropped_upper.shape[1] / 3) * 2]
+    right_upper = cropped_upper[0: cropped_upper.shape[0], int(cropped_upper.shape[1] / 3) * 2 : cropped_upper.shape[1]]
+    
+    # Pay to the order of field
+    # iso_left_upper = isolate_text(left_upper)
+    # show(iso_left_upper, "Pay to the order of")
+
+    pay_order_bb = process_field(left_upper, 10, 10, 50)
+    possible_pay_order = []
+    for (x, y, w, h) in pay_order_bb:
+        # prep image
+        img_cpy = left_upper.copy()
+        img_cpy = img_cpy[y : y + h, x : x + w]
+        # img_cpy = isolate_text(img_cpy)
+        img_cpy = cv2.medianBlur(img_cpy, 3)
+
+        pay_order = FieldData()
+        pay_order.bounds = BoundingRect(x, y, w, h)
+        pay_order.field_type = FieldType.FIELD_TYPE_PAY_TO_ORDER_OF
+
+        possible_pay_order.append((pay_order, img_cpy))
+    # end for
+
+    # amount field
+    amount_bb = process_field(right_upper, 10, 10, 50)
+    possible_amount = []
+    for (x, y, w, h) in amount_bb:
+        # prep image
+        img_cpy = right_upper.copy()
+        img_cpy = img_cpy[y : y + h, x : x + w]
+        # img_cpy = isolate_text(img_cpy)
+        img_cpy = cv2.medianBlur(img_cpy, 3)
+
+        amount = FieldData()
+        amount.bounds = BoundingRect(x, y, w, h)
+        amount.field_type = FieldType.FIELD_TYPE_AMOUNT
+
+        possible_amount.append((amount, img_cpy))
+    # end for
+
+    # # LOWER REGION
+    # #-------------------------------------
+    cropped_lower = image[lower_y : height, 0 : width]
+    lower_left = cropped_lower[0 : cropped_lower.shape[0], 0 : int(cropped_lower.shape[1] / 4) * 3]
+    
+    written_amount_bb = process_field(lower_left, 100, 10, 500)
+    possible_written_amount = []
+    for (x, y, w, h) in written_amount_bb:
+        # prep image
+        img_cpy = left_upper.copy()
+        img_cpy = img_cpy[y : y + h, x : x + w]
+        # img_cpy = isolate_text(img_cpy)
+        img_cpy = cv2.medianBlur(img_cpy, 3)
+
+        written = FieldData()
+        written.bounds = BoundingRect(x, y, w, h)
+        written.field_type = FieldType.FIELD_TYPE_AMOUNT_WRITTEN
+
+        possible_written_amount.append((written, img_cpy))
+    # end for
+    
+    return possible_pay_order + possible_amount + possible_written_amount
+# end function
+
 def process_lower_region(image):
     height = image.shape[0]
     width  = image.shape[1]
@@ -499,16 +806,53 @@ def process_lower_region(image):
     dilated = dilate_text(iso_image, kernel_width = 5, kernel_height = 3, iterations = 3)
     # find_contours(dilated)
 
-    # show(iso_image, "Lower region")
+    show(iso_image, "Lower region")
 
-    lower = FieldData()
-    lower.bounds = BoundingRect(0, 0, width, height)
-    lower.field_type = FieldType.FIELD_TYPE_NONE
+    # Routing/Account Image is just the image
+    routing = FieldData()
+    routing.bounds = BoundingRect(0, 0, width, height)
+    routing.field_type = FieldType.FIELD_TYPE_ROUTING
+    possible_routing = [(routing, image)]
 
-    return [(lower, iso_image)]
+    # Memo
+    left_img = image[0 : int(height / 2), 0 : int(width / 2)]
+    memo_bb = process_field(left_img, 10, 10, 50)
+    possible_memo = []
+    for (x, y, w, h) in memo_bb:
+        # prep image
+        img_cpy = left_img.copy()
+        img_cpy = img_cpy[y : y + h, x : x + w]
+        # img_cpy = isolate_text(img_cpy)
+        img_cpy = cv2.medianBlur(img_cpy, 3)
 
-    # detect_lines(iso_image, (255,255,255))
-    # detect_text(iso_image, .1, .1)
+        pay_order = FieldData()
+        pay_order.bounds = BoundingRect(x, y, w, h)
+        pay_order.field_type = FieldType.FIELD_TYPE_MEMO
+
+        possible_memo.append((pay_order, img_cpy))
+    # end for
+
+
+    # Signature
+    right_img = image[0 : int(height / 2), int(width / 2) : width]
+    sig_bb = process_field(right_img, 10, 10, 50)
+    possible_sig = []
+    for (x, y, w, h) in sig_bb:
+        # prep image
+        img_cpy = right_img.copy()
+        img_cpy = img_cpy[y : y + h, x : x + w]
+        # img_cpy = isolate_text(img_cpy)
+        img_cpy = cv2.medianBlur(img_cpy, 3)
+
+        signature = FieldData()
+        signature.bounds = BoundingRect(x, y, w, h)
+        signature.field_type = FieldType.FIELD_TYPE_SIGNATURE
+
+        possible_sig.append((signature, img_cpy))
+    # end for
+
+    return possible_routing + possible_memo + possible_sig
+# end function
     
 
 """
@@ -552,7 +896,7 @@ def extractFieldsEntryPoint(image_orig, image):
     cropped_lower  = img_cpy[lower_y  : lower_y  + dim_h, lower_x  : width]
 
     # process each section
-    upper_images  = process_upper_region(cropped_upper)
+    upper_images  = process_upper_region(cropped_upper) # BB WORKING
     middle_images = process_middle_region(cropped_middle)
     lower_images  = process_lower_region(cropped_lower)
 

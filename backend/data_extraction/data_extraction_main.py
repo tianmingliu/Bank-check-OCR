@@ -37,22 +37,21 @@ def show(title, image):
     cv2.destroyAllWindows()
 
 def extract_data_entry_point(img, pair: field_data.FieldData):
-
     if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
         print("account type")
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
-        show("amount type", img)
+        # show("amount type", img)
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
-        show("amount written type", img)
+        # show("amount written type", img)
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_DATE:
-        show("date type", img)
+        # show("date type", img)
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
         print("memo type")
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
-        show("pay to the order of type", img)
+        # show("pay to the order of type", img)
         handwritten_extraction(img, pair)
     elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
         print("routing type")
@@ -62,6 +61,8 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
         print("none type")
     else:
         print("ERROR: Data extract: Invalid type.")
+
+    pair.validation = validate_extracted_field(pair)
 
     # Hard coded for now
     # fieldType = "account/routing"
@@ -73,7 +74,7 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
     #     # print(account_routing_extraction_tesseract(pair))
     #     # print(account_routing_extraction_opencv_single(pair))
     #     # print(account_routing_extraction_opencv_simple(pair))
-    #     print(account_routing_extraction_opencv_group(pair))
+    #     print(account_routing_extraction_opencv_group(pair)) # CHOSEN
     #     print(account_routing_extraction_javascript(pair))
     # else:
     #     non_handwritten_extraction(pair)
@@ -101,14 +102,9 @@ extracted data.
 
 def handwritten_extraction(image, pair: field_data.FieldData):
     # data = extract.extract_data_pyocr(pair.image)
-    # pair.data.extracted_data = data["text"]
-    # pair.data.confidence = data["mean_conf"]
     print("Handwritten extraction: ")
-    text = extract.extract_data_handwriting(image)
-    # extract.extract_data_handwriting(image)
+    text = extract.extract_data_pytesseract(image)
     pair.extracted_data = text
-    # print("\tExtracted data: " + pair.data.extracted_data)
-    # print("\tMean confidence: " + str(pair.data.confidence))
 
 
 """
@@ -600,9 +596,9 @@ FieldType.
 """
 
 
-def validate_extracted_field(pair):
+def validate_extracted_field(pair: field_data.FieldData):
     try:
-        return field_list.GlobalFieldList[pair.data.field_type].validate()
+        return field_list.GlobalFieldList[pair.field_type].validate(pair)
     except KeyError:
         return False
 

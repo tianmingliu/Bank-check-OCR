@@ -16,6 +16,7 @@ NOTE(Dustin): It might be worth splitting date into Written and
 NonWritten
 """
 # @dataclass_json
+
 class FieldType(Enum):
     FIELD_TYPE_NONE            = 0
     FIELD_TYPE_DATE            = 1
@@ -26,6 +27,7 @@ class FieldType(Enum):
     FIELD_TYPE_MEMO            = 6
     FIELD_TYPE_ROUTING         = 7
     FIELD_TYPE_ACCOUNT         = 8
+
 
 """
 Represents a bounding box on an image. 
@@ -48,18 +50,7 @@ class BoundingRect:
         self.w = w
         self.h = h
 
-"""
-Represents the actual data of a field on a check.
-@field extractedData: String representation of the data.
-@field confidence: how confident it is that the extracted
-                   data is accurate
-"""
-# @dataclass_json
-@dataclass
-class FieldDataInfo:
-    extracted_data: str   = ""
-    confidence: float = 0.0
-
+        
 """
 Represents the data for a Field on a check. 
 @field field_type: The type of field represented for the instance.
@@ -72,9 +63,8 @@ Represents the data for a Field on a check.
 class FieldData:
     field_type: FieldType     = FieldType.FIELD_TYPE_NONE
     bounds:     BoundingRect  = BoundingRect(0.0, 0.0, 0.0, 0.0)
-    #data_info:  FieldDataInfo = FieldDataInfo()
     extracted_data: str = ""
-    confidence: float = 0.0
+    validation: bool = False
 
 
 @dataclass
