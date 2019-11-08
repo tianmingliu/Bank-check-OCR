@@ -81,10 +81,10 @@ def controller_entry_point(image_file):
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    json_str = ju.createJSONFromFieldDataList(fields)
-    ju.writeToJSONFile(json_str, "out.json")
+    json_dict = ju.createJSONFromFieldDataList(fields)
+    ju.writeToJSONFile(json_dict, "out.json")
 
-    return final_img
+    return final_img, json_dict
 
 def main():
     # image_file = "resources/images/simple_check.jpg"

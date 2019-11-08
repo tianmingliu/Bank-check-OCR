@@ -1,73 +1,67 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
     <head>
         <meta charset="utf-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
         <title>Upload Your Check</title>
     </head>
     <body> <!-- Don't delete any commented out code for now, it might be useful later on -->
-        <h1 align="center">Deutsche Bank Check Reader</h1>
+        <h1 align="center">DBGT Check Reader</h1>
         <h2 align="center">Upload a Check</h2>
-
-        <form onsubmit="" id="uploadImage">
             <div align="center">
-                <input type="file" id="file" name="file" />
                 <br>
-                <input type="button" id="submit" name="submit" value="Upload" onclick="uploadImage();" />
+                <input type="file" id="myFile" name="file">
+                <br><br><br>
+                <input type="submit" id="submit" value="Upload" onclick="processCheck()">
             </div>
-        </form>
 
         <br><br><br>
 
-        <div id='dataDiv' style="display: none;">
+        <div id='dataDiv' align="center" style="display: none;">
+            <img id="image" style="max-width: 50%; max-length: 50%">
+            <br><br>
             <table align="center" border="1" style="border-collapse: collapse;">
                 <tr>
                     <th colspan="5">Extracted Data</th>
                 </tr>
                 <tr>
-                    <th>Field</th>
-                    <th>Value</th>
-                    <th>PASS/FAIL</th>
-                    <th>Reason</th>
+                    <th> Field </th>
+                    <th> Value </th>
+                    <th> PASS? </th>
                 </tr><tr>
-                    <td>Account Number</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td> Account Number </td>
+                    <td id="an.val"></td>
+                    <td id="an.valid"></td>
                 </tr><tr>
-                    <td>Routing Number</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td> Routing Number </td>
+                    <td id="rn.val"></td>
+                    <td id="rn.valid"></td>
                 </tr><tr>
-                    <td>Date</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td> Date </td>
+                    <td id="date.val"></td>
+                    <td id="date.valid"></td>
                 </tr><tr>
-                    <td>Pay to the Order of</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td> Pay to the Order of </td>
+                    <td id="pto.val"></td>
+                    <td id="pto.valid"></td>
                 </tr><tr>
-                    <td>Image Amount</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td> Numeric Amount </td>
+                    <td id="namt.val"></td>
+                    <td id="namt.valid"></td>
                 </tr><tr>
-                    <td>Written Amount</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td> Written Amount </td>
+                    <td id="wamt.val"></td>
+                    <td id="wamt.valid"></td>
                 </tr><tr>
-                    <td>Memo</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td> Memo </td>
+                    <td id="memo.val"></td>
+                    <td id="memo.valid"></td>
                 </tr><tr>
-                    <td>Signature</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td> Signature </td>
+                    <td id="sig.val"></td>
+                    <td id="sig.valid"></td>
                 </tr>
             </table>
         </div>
@@ -76,18 +70,21 @@
         TODO Add JSON file
         <div align="center"><a href="http://127.0.0.1:5000/field-data">JSON File</a></div> -->
     </body>
-    <script> //DON'T DELETE THESE YET, JUST IN CASE IT'S NEEDED
-        // if (getUrlVars()["showTable"] == "true") {
-        //     hideUnhide();
-        // }
-        //
-        // function getUrlVars() {
-        //     var vars = {};
-        //     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        //         vars[key] = value;
-        //     });
-        //     return vars;
-        // }
+    <script>
+        let image;
+        let results;
+        $(document).ready(function () {
+            $("#submit").hide();
+            $("#myFile").on("change", function () {
+                hideUnhide(false);
+                if ($('#myFile').val() != "") {
+                    $("#submit").show();
+                } else {
+                    $("#submit").hide();
+                }
+
+            })
+        });
 
         /*
          * This function either hides or reveals/shows elements on the page depending on user interaction
@@ -108,25 +105,60 @@
          *
          * Don't delete any commented out code, it may be useful later on.
          */
-        function uploadImage() {
-            /*let uploadForm = document.getElementById('uploadImage');
+        function processCheck() {
+            let img = document.getElementById("myFile").files[0];
+            let fd = new FormData();
+            fd.append('file', img);
 
             let request = new XMLHttpRequest();
-            //POST to httpbin which returns the POST data as JSON
-            request.open('POST', 'https://httpbin.org/post', /* async = */ /*true); /*
+            request.open('POST', 'http://127.0.0.1:5000/api/upload', false);
+            request.send(fd);
 
-            let formData = new FormData(document.getElementById('uploadImage'));
-            request.send(formData);*/
-
-            let file = document.getElementById("file").files[0];
-
-            if (file != null) {
-                // document.getElementById('test').value = file.name;
-                hideUnhide(true);
-            } else {
-                // document.getElementById('test').value = "";
-                hideUnhide(false)
+            var data = JSON.parse(request.response);
+            image = data.image;
+            results = data.results;
+            document.getElementById("image").src = image;
+            for (var key in results) {
+                switch(results[key]["field_type"]) {
+                    case 0:
+                        break;
+                    case 1: //Date
+                        document.getElementById("date.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("date.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 2: //Pay to Order Of
+                        document.getElementById("pto.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("pto.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 3: //Numeric Amount
+                        document.getElementById("namt.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("namt.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 4: //Written Amount
+                        document.getElementById("wamt.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("wamt.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 5: //Signature
+                        document.getElementById("sig.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("sig.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 6: //Memo
+                        document.getElementById("memo.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("memo.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 7: //Routing
+                        document.getElementById("rn.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("rn.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 8: //Account
+                        document.getElementById("an.val").innerHTML = results[key]["extracted_data"];
+                        document.getElementById("an.valid").innerHTML = results[key]["validation"];
+                        break;
+                    default:
+                        break;
+                }
             }
+            hideUnhide(true);
         }
     </script>
 </html>
