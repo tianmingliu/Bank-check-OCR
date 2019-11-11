@@ -40,34 +40,6 @@ def show(title, image):
 
 
 def extract_data_entry_point(img, pair: field_data.FieldData):
-<<<<<<< HEAD
-    if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
-        print("account type")
-    elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
-        # show("amount type", img)
-        handwritten_extraction(img, pair)
-    elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
-        # show("amount written type", img)
-        handwritten_extraction(img, pair)
-    elif pair.field_type == field_data.FieldType.FIELD_TYPE_DATE:
-        # show("date type", img)
-        handwritten_extraction(img, pair)
-    elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
-        print("memo type")
-    elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
-        # show("pay to the order of type", img)
-        handwritten_extraction(img, pair)
-    elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
-        print("routing type")
-        #account_routing_extraction_opencv_group(img, pair)
-    elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
-        print("signature type")
-    elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
-        print("none type")
-    else:
-        print("ERROR: Data extract: Invalid type.")
-=======
-
     try:
         if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
             print("account type")
@@ -87,6 +59,7 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
             print("routing type")
+            account_routing_extraction_opencv_group(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
             print("signature type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
@@ -95,7 +68,6 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
             print("ERROR: Data extract: Invalid type.")
     except:
         None
->>>>>>> c9d6f15c9b0b03d8119461502741437bc3d87d64
 
     pair.validation = validate_extracted_field(pair)
 
@@ -138,7 +110,7 @@ extracted data.
 def handwritten_extraction(image, pair: field_data.FieldData):
     # data = extract.extract_data_pyocr(pair.image)
     print("Handwritten extraction: ")
-    text = extract.extract_data_handwriting(image)
+    text = extract.extract_data_pytesseract(image)
     pair.extracted_data = text
 
 
@@ -465,17 +437,9 @@ def account_routing_extraction_opencv_simple(pair):
 def account_routing_extraction_opencv_group(image, pair: field_data.FieldData):
     print("Account/Writing extraction")
     filedir = os.path.abspath(os.path.dirname(__file__))
-<<<<<<< HEAD
     #image_file = os.path.join(filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
     ref_image_file = os.path.join(filedir, '../../resources/images/micr_e13b_reference.png')
     #image = cv2.imread(image_file)
-=======
-    image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
-    ref_image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
-    image = cv2.imread(image_file)
->>>>>>> c9d6f15c9b0b03d8119461502741437bc3d87d64
     image, smaller_image = prp.preprocessEntryPoint(image)
     cv2.imshow("Test", image)
     # construct argument parse and parse the arguments
@@ -622,7 +586,6 @@ def account_routing_extraction_opencv_group(image, pair: field_data.FieldData):
     cv2.imshow("Check OCR", image)
     cv2.waitKey(0)
     pair.extracted_data = output[0]
-    pair.field_type = field_data.FieldType.FIELD_TYPE_ROUTING
 
 
 def account_routing_extraction_javascript(pair):
