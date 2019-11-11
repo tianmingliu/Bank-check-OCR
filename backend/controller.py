@@ -19,6 +19,8 @@ Controls the overall pipeline:
 5. Postprocess
 6. Write to JSON file
 7. Send postprocess data to the frontend 
+
+making a change
 """
 def controller_entry_point(image_file):
     
