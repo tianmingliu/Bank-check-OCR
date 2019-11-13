@@ -566,16 +566,16 @@ def process_field(image, expand_x = 0, expand_y = 0, threshold_x = 0, threshold_
         list.append((x, y, e_width, e_height))
     # end for
 
-    draw_rects(image, list)
+    # draw_rects(image, list)
 
     # Merge overlapping regions
     merged_list = merge_overlapping_bb(image, list)
     
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
     
     merged_list = merge_close_bb(image, merged_list, threshold_x, threshold_y)
 
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
 
     return merged_list
 # end function
@@ -750,8 +750,8 @@ def process_middle_region(image):
     #     idx += 1
     # end for
 
-    # # LOWER REGION
-    # #-------------------------------------
+    # LOWER REGION
+    #-------------------------------------
     cropped_lower = image[lower_y : height, 0 : width]
     lower_left = cropped_lower[0 : cropped_lower.shape[0], 0 : int(cropped_lower.shape[1] / 4) * 3]
     
@@ -759,7 +759,7 @@ def process_middle_region(image):
     possible_written_amount = []
     for (x, y, w, h) in written_amount_bb:
         # prep image
-        img_cpy = left_upper.copy()
+        img_cpy = lower_left.copy()
         img_cpy = img_cpy[y : y + h, x : x + w]
         # img_cpy = isolate_text(img_cpy)
         img_cpy = cv2.medianBlur(img_cpy, 3)
@@ -770,7 +770,29 @@ def process_middle_region(image):
 
         possible_written_amount.append((written, img_cpy))
     # end for
-    
+
+    """
+    # TEST FOR FINDING ALL BOXES IN SINGLE IMAGE
+    # -------------------------------------------------------------
+    total = process_field(image, 100, 0, 10, 100)
+    possible_total = []
+    for (x, y, w, h) in total:
+        # prep image
+        img_cpy = image.copy()
+        img_cpy = img_cpy[y : y + h, x : x + w]
+        # img_cpy = isolate_text(img_cpy)
+        img_cpy = cv2.medianBlur(img_cpy, 3)
+
+        written = FieldData()
+        written.bounds = BoundingRect(x, y, w, h)
+        written.field_type = FieldType.FIELD_TYPE_AMOUNT_WRITTEN
+
+        cv_utils.show(img_cpy, "Total box")
+
+        possible_total.append((written, img_cpy))
+    # end for
+    return []
+    """
     return possible_pay_order + possible_amount + possible_written_amount
 # end function
 
@@ -850,15 +872,23 @@ def extractFieldsEntryPoint(image_orig, image):
 
     dim_w = int(width / 3)
     dim_h = int(height / 3)
-    
-    upper_x = 0
-    upper_y = 0
 
-    middle_x = 0
-    middle_y = upper_y + dim_h
+    dim_middle_h = int(height / 4)
 
-    lower_x = 0
-    lower_y = middle_y + dim_h
+    upper_x_start = 0
+    upper_y_start = 0
+    upper_x_end   = width
+    upper_y_end   = dim_middle_h
+
+    middle_x_start = 0
+    middle_y_start = upper_y_end
+    middle_x_end   = width
+    middle_y_end   = middle_y_start + dim_h
+
+    lower_x_start = 0
+    lower_y_start = middle_y_end
+    lower_x_end   = 0
+    lower_y_end   = height
 
     # draw the bounding region for visualization
     img_cpy = image.copy()
@@ -867,9 +897,9 @@ def extractFieldsEntryPoint(image_orig, image):
     # cv2.rectangle(img_cpy, (lower_x, lower_y),   (lower_x + width, lower_y + dim_h),   (128, 0, 128), 2)
 
     # crop each section
-    cropped_upper  = img_cpy[upper_y  : upper_y  + dim_h, upper_x  : width]
-    cropped_middle = img_cpy[middle_y : middle_y + dim_h, middle_x : width]
-    cropped_lower  = img_cpy[lower_y  : lower_y  + dim_h, lower_x  : width]
+    cropped_upper  = img_cpy[upper_y_start  : upper_y_end,  upper_x_start : upper_x_end]
+    cropped_middle = img_cpy[middle_y_start : middle_y_end, upper_x_start : upper_x_end]
+    cropped_lower  = img_cpy[lower_y_start  : lower_y_end,  upper_x_start : upper_x_end]
 
     # process each section
     upper_images  = process_upper_region(cropped_upper) # BB WORKING
