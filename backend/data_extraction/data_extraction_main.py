@@ -111,78 +111,23 @@ def non_handwritten_extraction(pair: field_data.DataPair):
 
 
 """
-Performs the non-handwritten extraction from the provided image. If the
-extraction was successful, field.data_info is filled out with the
-extracted data.
+Performs account and routing extraction from the provided image. Checks the given
+pair parameters' field_type field to see if it wants the routing or the account number, and then
+sets the pair's extracted_data field to the accordingly, and returns the pair. If not successful, blank 
+or garbage information is returned, otherwise both the extracted_data for routing and account would be a 
+single string of digits.
 
-@param image: image to extract the data from
-@param field: a single field of type FieldData. 
+@param img: image to extract the data from - this is a cropped version of full image, containing only the bottom 3rd
+@param pair: the value that contains the type of the field that is requested, and the extracted_data itself to be returned
 
-@return True if the extraction was successful. False otherwise.
+@return pair regardless of if extraction was successful; difference is only in the accuracy of pair.extracted_data
 """
-
-
-def account_routing_extraction_tesseract(pair):
-    # Using tesseract
-    filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
-    image = cv2.imread(image_file)
-    image, smaller_image = prp.preprocessEntryPoint(image)
-    cv2.imshow("Image", image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-    tools = pyocr.get_available_tools()
-    if len(tools) == 0:
-        print("No OCR tool found")
-        sys.exit(1)
-
-    tool = tools[0]
-
-    langs = tool.get_available_languages()
-    lang = langs[1]
-    print(lang)
-
-    # filename = "{}.jpg".format("temp")
-    # cv2.imwrite(filename, image)
-
-    txt = tool.image_to_string(
-        Image.open(image_file),
-        lang=lang,
-        builder=pyocr.builders.TextBuilder()
-    )
-
-    word_boxes = tool.image_to_string(
-        Image.open(image_file),
-        lang=lang,
-        builder=pyocr.builders.WordBoxBuilder()
-    )
-
-    line_and_word_boxes = tool.image_to_string(
-        Image.open(image_file),
-        lang=lang,
-        builder=pyocr.builders.LineBoxBuilder()
-    )
-
-    digits = tool.image_to_string(
-        Image.open(image_file),
-        lang=lang,
-        builder=pyocr.tesseract.DigitBuilder()
-    )
-
-    return {"txt: ": txt,
-            "wordbox: ": word_boxes[0].content + ' ' + word_boxes[1].content + ' ' + word_boxes[2].content,
-            "lineAndWordBox: ": line_and_word_boxes[0].content, "digits: ": digits}
-
 
 
 def account_routing_extraction(img, pair: field_data.FieldData):
     print("Account/Writing extraction")
     if img is not None:
         filedir = os.path.abspath(os.path.dirname(__file__))
-        # image_file = os.path.join(
-        #     filedir, '..\\..\\resources\\images\\cropped_images\\color\\lower_region_2.png')
         ref_image_file = os.path.join(
             filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
 
@@ -307,11 +252,6 @@ def account_routing_extraction(img, pair: field_data.FieldData):
                 # the classification for char ROI will be ref char name w/largest template matching score
                 groupOutput.append(charNames[np.argmax(scores)])
 
-            # draw (padded) bounding box surrounding group along w/OCR output of group
-            # cv2.rectangle(image, (gX - 10, gY + delta - 10), (gX + gW + 10, gY + gY + delta), (0, 0, 255), 2)
-            # cv2.putText(image, "".join(groupOutput), (gX - 10, gY + delta - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.95,
-            #             (0, 0, 255), 3)
-
             # add group output to overall check OCR output
             output.append("".join(groupOutput))
 
@@ -368,7 +308,16 @@ def validate_extracted_field(pair: field_data.FieldData):
 
 
 """
-This function extracts the digits and symbols from the check image
+This function extracts each digit and symbol from the given image. If it is successful, it returns a tuple containing a
+list of the roi (regions of interest, regions containing the chars to extract) and a list of locs (the actual locations
+of those rois)
+
+@param image: image to extract the data from - cropped version of full image, containing only an image of group of chars 
+@param charCnts: list of character contours (what is used to determine each characters' location and identity)
+@param minW: minimum width of a char for it to count as a character
+@param minH: minimum height of a char for it to count as a character
+
+@return tuple containing a list of rois and a list of locs
 """
 
 
