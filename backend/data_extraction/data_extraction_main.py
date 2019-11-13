@@ -41,7 +41,6 @@ def show(title, image):
 
 
 def extract_data_entry_point(img, pair: field_data.FieldData):
-
     try:
         if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
             print("account type")
@@ -175,6 +174,7 @@ def account_routing_extraction_tesseract(pair):
     return {"txt: ": txt,
             "wordbox: ": word_boxes[0].content + ' ' + word_boxes[1].content + ' ' + word_boxes[2].content,
             "lineAndWordBox: ": line_and_word_boxes[0].content, "digits: ": digits}
+
 
 
 def account_routing_extraction(img, pair: field_data.FieldData):
