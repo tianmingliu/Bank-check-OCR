@@ -3,7 +3,7 @@ import backend.preprocess.preprocess_main            as prp
 import backend.field_extraction.field_extractor_main as fe
 import backend.data_extraction.data_extraction_main  as de
 import backend.postprocess.postprocess_main          as pop
-import backend.json_utils.json_utils                 as ju
+import backend.utils.json_utils                      as ju
 import os
 
 import cv2
@@ -20,7 +20,6 @@ Controls the overall pipeline:
 6. Write to JSON file
 7. Send postprocess data to the frontend 
 
-making a change
 """
 def controller_entry_point(image_file):
     
@@ -79,9 +78,9 @@ def controller_entry_point(image_file):
     ##################################################
     final_img = pop.postprocessEntryPoint(old_image, dim, fields)
 
-    cv2.imshow('file img', final_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow('file img', final_img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     json_dict = ju.createJSONFromFieldDataList(fields)
     ju.writeToJSONFile(json_dict, "out.json")
