@@ -15,6 +15,7 @@ import cv2
 import pyocr
 from PIL import Image
 import os
+import re
 
 """
 Entry point for the Data Extraction stage of the pipeline.
@@ -44,7 +45,8 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
     try:
         if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
             print("account type")
-        elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
+            account_routing_extraction(img, pair)
+        if pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
             # show("amount type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
@@ -60,6 +62,7 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
             print("routing type")
+            account_routing_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
             print("signature type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
@@ -70,28 +73,6 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
         None
 
     pair.validation = validate_extracted_field(pair)
-
-    # Hard coded for now
-    # fieldType = "account/routing"
-
-    # Some struct that will contain the data
-    # if fieldType == "handwritten":
-    #     handwritten_extraction(pair)
-    # elif fieldType == "account/routing":
-    #     # print(account_routing_extraction_tesseract(pair))
-    #     # print(account_routing_extraction_opencv_single(pair))
-    #     # print(account_routing_extraction_opencv_simple(pair))
-    #     print(account_routing_extraction_opencv_group(pair)) # CHOSEN
-    #     print(account_routing_extraction_javascript(pair))
-    # else:
-    #     non_handwritten_extraction(pair)
-
-    # Now identify the type of data
-    # if not identify_extracted_field(pair):
-    #     return False
-
-    # Then validate
-    # return validate_extracted_field(pair)
     return pair
 
 
@@ -108,9 +89,9 @@ extracted data.
 
 
 def handwritten_extraction(image, pair: field_data.FieldData):
-    # data = extract.extract_data_pyocr(pair.image)
-    print("Handwritten extraction: ")
     text = extract.extract_data_pytesseract(image)
+    if text == "":
+        text = extract.extract_data_handwriting(image)
     pair.extracted_data = text
 
 
@@ -196,402 +177,154 @@ def account_routing_extraction_tesseract(pair):
             "lineAndWordBox: ": line_and_word_boxes[0].content, "digits: ": digits}
 
 
-def account_routing_extraction_opencv_single(pair):
-    filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\cropped_images\\color\\cropped_field2.jpg')
-    ref_image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
-
-    # init list of reference character names, in same order as they appear in reference
-    # image where the digits, their names and:
-    # T = Transit (delimit bank branch routing transit #)
-    # U = On-us (delimit customer account number)
-    # A = Amount (delimit transaction amount)
-    # D = Dash (delimit parts of numbers, such as routing or account)
-    charNames = ["1", "2", "3", "4", "5", "6",
-                 "7", "8", "9", "0", "T", "U", "A", "D"]
-
-    # load ref MICR image, convert to grayscale and threshold it
-    # this will cause digits to appear white on black background
-    ref = cv2.imread(ref_image_file)
-    ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
-    ref = imutils.resize(ref, width=400)
-    ref = cv2.threshold(ref, 0, 255, cv2.THRESH_BINARY_INV |
-                        cv2.THRESH_OTSU)[1]
-
-    # find contours in the MICR image (i.e,. the outlines of the
-    # characters) and sort them from left to right
-    refCnts = cv2.findContours(ref.copy(), cv2.RETR_EXTERNAL,
-                               cv2.CHAIN_APPROX_SIMPLE)
-    refCnts = imutils.grab_contours(refCnts)
-    refCnts = contours.sort_contours(refCnts, method="left-to-right")[0]
-
-    # extract the digits and symbols from the list of contours, then
-    # initialize a dictionary to map the character name to the ROI
-    refROIs = extract_digits_and_symbols(ref, refCnts,
-                                         minW=10, minH=20)[0]
-    chars = {}
-
-    # loop over the reference ROIs
-    for (name, roi) in zip(charNames, refROIs):
-        # resize the ROI to a fixed size, then update the characters
-        # dictionary, mapping the character name to the ROI
-        roi = cv2.resize(roi, (36, 36))
-        chars[name] = roi
-
-    # initialize a rectangular kernel (wider than it is tall) along with
-    # an empty list to store the output of the check OCR
-    # rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (17, 7))
-    output = []
-
-    # get actual image
-    image = cv2.imread(image_file)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # image = imutils.resize(image, width=400)
-    # image = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
-    # blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, rectKernel)
-
-    # compute the Scharr gradient of the blackhat image, then scale
-    # the rest back into the range [0, 255]
-    # gradX = cv2.Sobel(blackhat, ddepth=cv2.CV_32F, dx=1, dy=0,
-    #                   ksize=-1)
-    # gradX = np.absolute(gradX)
-    # (minVal, maxVal) = (np.min(gradX), np.max(gradX))
-    # gradX = (255 * ((gradX - minVal) / (maxVal - minVal)))
-    # gradX = gradX.astype("uint8")
-
-    # apply a closing operation using the rectangular kernel to help
-    # cloes gaps in between rounting and account digits, then apply
-    # Otsu's thresholding method to binarize the image
-    # gradX = cv2.morphologyEx(gradX, cv2.MORPH_CLOSE, rectKernel)
-    # thresh = cv2.threshold(gradX, 0, 255,
-    #                        cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-
-    # remove any pixels that are touching the borders of the image (this
-    # simply helps us in the next step when we prune contours)
-    # thresh = clear_border(thresh)
-
-    cv2.imshow("Image 1", gray)
-    cv2.waitKey(0)
-
-    # find contours in the thresholded image, then initialize the
-    # list of group locations
-    # groupCnts = cv2.findContours(gray.copy(), cv2.RETR_EXTERNAL,
-    #                              cv2.CHAIN_APPROX_SIMPLE)
-    # groupCnts = imutils.grab_contours(groupCnts)
-    # groupLocs = []
-    #
-    # # loop over the group contours
-    # for (i, c) in enumerate(groupCnts):
-    #     # compute the bounding box of the contour
-    #     (x, y, w, h) = cv2.boundingRect(c)
-    #
-    #     # only accept the contour region as a grouping of characters if
-    #     # the ROI is sufficiently large
-    #     if w > 50 and h >= 15:
-    #         groupLocs.append((x, y, w, h))
-    #
-    # # sort the digit locations from left-to-right
-    # groupLocs = sorted(groupLocs, key=lambda x: x[0])
-
-    # initialize the group output of characters
-    groupOutput = []
-
-    # extract the group ROI of characters from the grayscale
-    # image, then apply thresholding to segment the digits from
-    # the background of the credit card
-    # group = gray[gY - 5:gY + gH + 5, gX - 5:gX + gW + 5]
-    # group = cv2.threshold(group, 0, 255,
-    #                       cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
-    #
-    # cv2.imshow("Group", group)
-    # cv2.waitKey(0)
-
-    # find character contours in the group, then sort them from
-    # left to right
-    charCnts = cv2.findContours(gray.copy(), cv2.RETR_EXTERNAL,
-                                cv2.CHAIN_APPROX_SIMPLE)
-    charCnts = imutils.grab_contours(charCnts)
-    charCnts = contours.sort_contours(charCnts,
-                                      method="left-to-right")[0]
-
-    # find the characters and symbols in the group
-    (rois, locs) = extract_digits_and_symbols(gray, charCnts, 10, 20)
-
-    # loop over the ROIs from the group
-    for roi in rois:
-        # initialize the list of template matching scores and
-        # resize the ROI to a fixed size
-        scores = []
-        roi = cv2.resize(roi, (36, 36))
-
-        # loop over the reference character name and corresponding
-        # ROI
-        for charName in charNames:
-            # apply correlation-based template matching, take the
-            # score, and update the scores list
-            result = cv2.matchTemplate(roi, chars[charName],
-                                       cv2.TM_CCOEFF)
-            (_, score, _, _) = cv2.minMaxLoc(result)
-            scores.append(score)
-
-        # the classification for the character ROI will be the
-        # reference character name with the *largest* template
-        # matching score
-        groupOutput.append(charNames[np.argmax(scores)])
-
-    # add the group output to the overall check OCR output
-    output.append("".join(groupOutput))
-
-    # display the output check OCR information to the screen
-    print("Check OCR: {}".format(" ".join(output)))
-
-
-def account_routing_extraction_opencv_simple(pair):
-    filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\cropped_images\\color\\cropped_field2.jpg')
-    ref_image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
-
-    # init list of reference character names, in same order as they appear in reference
-    # image where the digits, their names and:
-    # T = Transit (delimit bank branch routing transit #)
-    # U = On-us (delimit customer account number)
-    # A = Amount (delimit transaction amount)
-    # D = Dash (delimit parts of numbers, such as routing or account)
-    charNames = ["1", "2", "3", "4", "5", "6",
-                 "7", "8", "9", "0", "T", "U", "A", "D"]
-
-    # load ref MICR image, convert to grayscale and threshold it
-    # this will cause digits to appear white on black background
-    ref = cv2.imread(ref_image_file)
-    ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
-    ref = imutils.resize(ref, width=400)
-    ref = cv2.threshold(ref, 0, 255, cv2.THRESH_BINARY_INV |
-                        cv2.THRESH_OTSU)[1]
-
-    # find contours in the MICR image (i.e,. the outlines of the
-    # characters) and sort them from left to right
-    refCnts = cv2.findContours(ref.copy(), cv2.RETR_EXTERNAL,
-                               cv2.CHAIN_APPROX_SIMPLE)
-    refCnts = imutils.grab_contours(refCnts)
-    refCnts = contours.sort_contours(refCnts, method="left-to-right")[0]
-
-    # extract the digits and symbols from the list of contours, then
-    # initialize a dictionary to map the character name to the ROI
-    refROIs = extract_digits_and_symbols(ref, refCnts,
-                                         minW=10, minH=20)[0]
-    chars = {}
-
-    # loop over the reference ROIs
-    for (name, roi) in zip(charNames, refROIs):
-        # resize the ROI to a fixed size, then update the characters
-        # dictionary, mapping the character name to the ROI
-        roi = cv2.resize(roi, (36, 36))
-        chars[name] = roi
-
-    # get actual image
-    image = cv2.imread(image_file)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = imutils.resize(image, width=400)
-    image = cv2.threshold(
-        image, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
-
-    # find contours in the MICR image and sort them left to right
-    imageCnts = cv2.findContours(
-        image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    imageCnts = imutils.grab_contours(imageCnts)
-    imageCnts = contours.sort_contours(imageCnts, method="left-to-right")[0]
-
-    # extract digits and symbols from list of contours, then
-    # init a dict to map char name to ROI
-    (imageROIs, imageLocs) = extract_digits_and_symbols(
-        image, imageCnts, minW=10, minH=20)
-    chars = {}
-
-    # re-init the clone image so we can draw on it again
-    clone = np.dstack([image.copy()] * 3)
-
-    # loop over reference ROIs and locations
-    for (name, roi, loc) in zip(charNames, imageROIs, imageLocs):
-        # draw bounding box surrounding character on output image
-        (xA, yA, xB, yB) = loc
-        cv2.rectangle(clone, (xA, yA), (xB, yB), (0, 255, 0), 2)
-
-        # resize the ROI to a fixed size, then update the chars dict,
-        # mapping char name to ROI
-        roi = cv2.resize(roi, (36, 36))
-        chars[name] = roi
-
-        # display char ROI to ur screen
-        cv2.imshow("Char", roi)
-        cv2.waitKey(0)
-
-    # show output of better method
-    cv2.imshow("Better Method", clone)
-    cv2.waitKey(0)
-
-
-def account_routing_extraction_opencv_group(pair):
+def account_routing_extraction(img, pair: field_data.FieldData):
     print("Account/Writing extraction")
-    filedir = os.path.abspath(os.path.dirname(__file__))
-    image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\cropped_images\\color\\routing_account_line_8.jpg')
-    ref_image_file = os.path.join(
-        filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
-    image = cv2.imread(image_file)
-    image, smaller_image = prp.preprocessEntryPoint(image)
-    cv2.imshow("Test", image)
-    # construct argument parse and parse the arguments
-    # ap = argparse.ArgumentParser()
-    # ap.add_argument("-i", "--image", required=True, help="path to input image")
-    # ap.add_argument("-r", "--reference", required=True, help="path to reference MICR E-13B font")
-    # args = vars(ap.parse_args())
+    if img is not None:
+        filedir = os.path.abspath(os.path.dirname(__file__))
+        # image_file = os.path.join(
+        #     filedir, '..\\..\\resources\\images\\cropped_images\\color\\lower_region_2.png')
+        ref_image_file = os.path.join(
+            filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
 
-    # init list of reference character names, in same order as they appear in reference
-    # image where the digits, their names and:
-    # T = Transit (delimit bank branch routing transit #)
-    # U = On-us (delimit customer account number)
-    # A = Amount (delimit transaction amount)
-    # D = Dash (delimit parts of numbers, such as routing or account)
-    charNames = ["1", "2", "3", "4", "5", "6",
-                 "7", "8", "9", "0", "T", "U", "A", "D"]
+        # init list of reference character names, in same order as they appear in reference
+        # image where the digits, their names and:
+        # T = Transit (delimit bank branch routing transit #)
+        # U = On-us (delimit customer account number)
+        # A = Amount (delimit transaction amount)
+        # D = Dash (delimit parts of numbers, such as routing or account)
+        charNames = ["1", "2", "3", "4", "5", "6",
+                     "7", "8", "9", "0", "T", "U", "A", "D"]
 
-    # load ref MICR image, convert to grayscale and threshold it
-    # this will cause digits to appear white on black background
-    ref = cv2.imread(ref_image_file)
-    ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
-    ref = imutils.resize(ref, width=400)
-    ref = cv2.threshold(
-        ref, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+        # load ref MICR image, convert to grayscale and threshold it
+        # this will cause digits to appear white on black background
+        ref = cv2.imread(ref_image_file)
+        ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
+        ref = imutils.resize(ref, width=400)
+        ref = cv2.threshold(
+            ref, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
 
-    # find contours in the MICR image and sort them left to right
-    refCnts = cv2.findContours(
-        ref.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    refCnts = imutils.grab_contours(refCnts)
-    refCnts = contours.sort_contours(refCnts, method="left-to-right")[0]
+        # find contours in the MICR image and sort them left to right
+        refCnts = cv2.findContours(
+            ref.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        refCnts = imutils.grab_contours(refCnts)
+        refCnts = contours.sort_contours(refCnts, method="left-to-right")[0]
 
-    # extract digits and symbols from list of contours
-    refROIs = extract_digits_and_symbols(ref, refCnts, minW=10, minH=20)[0]
-    chars = {}
+        # extract digits and symbols from list of contours
+        refROIs = extract_digits_and_symbols(ref, refCnts, minW=10, minH=20)[0]
+        chars = {}
 
-    # loop over reference ROIs
-    for (name, roi) in zip(charNames, refROIs):
-        # resize the ROI to a fixed size, then update the chars dict,
-        # mapping char name to ROI
-        roi = cv2.resize(roi, (36, 36))
-        chars[name] = roi
-
-    # init rectangular kernel along w/an empty list to store output of OCR
-    rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (17, 7))
-    output = []
-
-    # load the input image, grab its dimensions, and apply array slicing
-    # to keep only the bottom 20% of the image (that's where the account info is)
-    image = cv2.imread(image_file)
-    # (h, w) = image.shape[:2]
-    # delta = int(h - (h * 0.2))
-    # bottom = image[delta:h, 0:w]
-
-    # convert bottom image to grayscale, apply blackhat morphological operator
-    # to find dark regions against a light background (the routing/account #s)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blackhat = cv2.morphologyEx(gray, cv2.MORPH_BLACKHAT, rectKernel)
-
-    # compute the Scharr gradient of the blackhat image, then scale
-    # the rest back into the range [0, 255]
-    gradX = cv2.Sobel(blackhat, ddepth=cv2.CV_32F, dx=1, dy=0, ksize=-1)
-    gradX = np.absolute(gradX)
-    (minVal, maxVal) = (np.min(gradX), np.max(gradX))
-    gradX = (255 * ((gradX - minVal) / (maxVal - minVal)))
-    gradX = gradX.astype("uint8")
-
-    # apply a closing operation using rectangular kernel to close gaps
-    # between digits, then apply Otsus thresholding method to binarize image
-    gradX = cv2.morphologyEx(gradX, cv2.MORPH_CLOSE, rectKernel)
-    thresh = cv2.threshold(
-        gradX, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-
-    # remove any pixels that are touching borders of image (helps us in next
-    # step when pruning contours)
-    thresh = clear_border(thresh)
-
-    # find contours in thresholded image, init list of group locations
-    groupCnts = cv2.findContours(
-        thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    groupCnts = imutils.grab_contours(groupCnts)
-    groupLocs = []
-
-    # loop over group contours
-    for (i, c) in enumerate(groupCnts):
-        # compute bounding box of contour
-        (x, y, w, h) = cv2.boundingRect(c)
-
-        # only accept contour region as a grouping of chars if ROI sufficiently large
-        if w > 50 and h > 15:
-            groupLocs.append((x, y, w, h))
-
-    # sort the digit locs from left to right
-    groupLocs = sorted(groupLocs, key=lambda x: x[0])
-
-    # loop over group locations
-    for (gX, gY, gW, gH) in groupLocs:
-        # init the group output of chars
-        groupOutput = []
-
-        # extract group ROI of chars from the grayscale image
-        # then apply thresholding to segment the digits from background
-        group = gray[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
-        group = cv2.threshold(
-            group, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
-
-        cv2.imshow("Group", group)
-        cv2.waitKey(0)
-
-        # find char contours in the group, then sort from left to right
-        charCnts = cv2.findContours(
-            group.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        charCnts = imutils.grab_contours(charCnts)
-        charCnts = contours.sort_contours(charCnts, method="left-to-right")[0]
-
-        # find chars and symbols in the group
-        (rois, locs) = extract_digits_and_symbols(group, charCnts)
-
-        # loop over ROIS from group
-        for roi in rois:
-            # init list of template matching scores and resize ROI to fixed size
-            scores = []
+        # loop over reference ROIs
+        for (name, roi) in zip(charNames, refROIs):
+            # resize the ROI to a fixed size, then update the chars dict,
+            # mapping char name to ROI
             roi = cv2.resize(roi, (36, 36))
+            chars[name] = roi
 
-            # loop over ref char name and corresponding ROi
-            for charName in charNames:
-                # apply correlation-based template matching, take score, update scores list
-                result = cv2.matchTemplate(roi, chars[charName], cv2.TM_CCOEFF)
-                (_, score, _, _) = cv2.minMaxLoc(result)
-                scores.append(score)
+        # init rectangular kernel along w/an empty list to store output of OCR
+        rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (17, 7))
+        output = []
 
-            # the classification for char ROI will be ref char name w/largest template matching score
-            groupOutput.append(charNames[np.argmax(scores)])
+        # load the input image, grab its dimensions, and apply array slicing
+        # to keep only the bottom 40% of the image (that's where the account/routing info is)
+        (h, w) = img.shape[:2]
+        delta = int(h - (h * 0.45))
+        bottom = img[delta:h, 0:w]
 
-        # draw (padded) bounding box surrounding group along w/OCR output of group
-        # cv2.rectangle(image, (gX - 10, gY + delta - 10), (gX + gW + 10, gY + gY + delta), (0, 0, 255), 2)
-        # cv2.putText(image, "".join(groupOutput), (gX - 10, gY + delta - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.95,
-        #             (0, 0, 255), 3)
+        # convert bottom image to grayscale, apply blackhat morphological operator
+        # to find dark regions against a light background (the routing/account #s)
+        # gray = cv2.cvtColor(bottom, cv2.COLOR_BGR2GRAY)
+        blackhat = cv2.morphologyEx(bottom, cv2.MORPH_BLACKHAT, rectKernel)
 
-        # add group output to overall check OCR output
-        output.append("".join(groupOutput))
+        # compute the Scharr gradient of the blackhat image, then scale
+        # the rest back into the range [0, 255]
+        gradX = cv2.Sobel(blackhat, ddepth=cv2.CV_32F, dx=1, dy=0, ksize=-1)
+        gradX = np.absolute(gradX)
+        (minVal, maxVal) = (np.min(gradX), np.max(gradX))
+        gradX = (255 * ((gradX - minVal) / (maxVal - minVal)))
+        gradX = gradX.astype("uint8")
 
-    # display output check OCR info to screen
-    print("Check OCR: {}".format(" ".join(output)))
-    cv2.imshow("Check OCR", image)
-    cv2.waitKey(0)
+        # apply a closing operation using rectangular kernel to close gaps
+        # between digits, then apply Otsus thresholding method to binarize image
+        gradX = cv2.morphologyEx(gradX, cv2.MORPH_CLOSE, rectKernel)
+        thresh = cv2.threshold(
+            gradX, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
+        # remove any pixels that are touching borders of image (helps us in next
+        # step when pruning contours)
+        thresh = clear_border(thresh)
 
-def account_routing_extraction_javascript(pair):
-    # TODO: implement
-    return False
+        # find contours in thresholded image, init list of group locations
+        groupCnts = cv2.findContours(
+            thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        groupCnts = imutils.grab_contours(groupCnts)
+        groupLocs = []
+
+        # loop over group contours
+        for (i, c) in enumerate(groupCnts):
+            # compute bounding box of contour
+            (x, y, w, h) = cv2.boundingRect(c)
+
+            # only accept contour region as a grouping of chars if ROI sufficiently large
+            if w > 50 and h > 15:
+                groupLocs.append((x, y, w, h))
+
+        # sort the digit locs from left to right
+        groupLocs = sorted(groupLocs, key=lambda x: x[0])
+
+        # loop over group locations
+        for (gX, gY, gW, gH) in groupLocs:
+            # init the group output of chars
+            groupOutput = []
+
+            # extract group ROI of chars from the grayscale image
+            # then apply thresholding to segment the digits from background
+            group = bottom[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
+            group = cv2.threshold(
+                group, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+
+            # find char contours in the group, then sort from left to right
+            charCnts = cv2.findContours(
+                group.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            charCnts = imutils.grab_contours(charCnts)
+            charCnts = contours.sort_contours(charCnts, method="left-to-right")[0]
+
+            # find chars and symbols in the group
+            (rois, locs) = extract_digits_and_symbols(group, charCnts)
+
+            # loop over ROIS from group
+            for roi in rois:
+                # init list of template matching scores and resize ROI to fixed size
+                scores = []
+                roi = cv2.resize(roi, (36, 36))
+
+                # loop over ref char name and corresponding ROi
+                for charName in charNames:
+                    # apply correlation-based template matching, take score, update scores list
+                    result = cv2.matchTemplate(roi, chars[charName], cv2.TM_CCOEFF)
+                    (_, score, _, _) = cv2.minMaxLoc(result)
+                    scores.append(score)
+
+                # the classification for char ROI will be ref char name w/largest template matching score
+                groupOutput.append(charNames[np.argmax(scores)])
+
+            # draw (padded) bounding box surrounding group along w/OCR output of group
+            # cv2.rectangle(image, (gX - 10, gY + delta - 10), (gX + gW + 10, gY + gY + delta), (0, 0, 255), 2)
+            # cv2.putText(image, "".join(groupOutput), (gX - 10, gY + delta - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.95,
+            #             (0, 0, 255), 3)
+
+            # add group output to overall check OCR output
+            output.append("".join(groupOutput))
+
+        # display output check OCR info to screen
+        print("Check OCR: {}".format(" ".join(output)))
+
+        if pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
+            print('routing ' + output[0].translate({ord(c): None for c in 'TUAD'}))
+            pair.extracted_data = output[0].translate({ord(c): None for c in 'TUAD'})
+        elif pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
+            print('account ' + output[1].translate({ord(c): None for c in 'TUAD'}))
+            pair.extracted_data = output[1].translate({ord(c): None for c in 'TUAD'})
+        return pair
 
 
 """
