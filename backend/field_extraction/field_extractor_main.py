@@ -628,16 +628,16 @@ def process_field(image, expand_x = 0, expand_y = 0, threshold_x = 0, threshold_
         list.append((x, y, e_width, e_height))
     # end for
 
-    # draw_rects(image, list)
+    draw_rects(image, list)
 
     # Merge overlapping regions
     merged_list = merge_overlapping_bb(image, list)
     
-    # draw_rects(image, merged_list)
+    draw_rects(image, merged_list)
     
     merged_list = merge_close_bb(image, merged_list, threshold_x, threshold_y)
 
-    # draw_rects(image, merged_list)
+    draw_rects(image, merged_list)
 
     return merged_list
 # end function
