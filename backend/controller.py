@@ -3,7 +3,7 @@ import backend.preprocess.preprocess_main            as prp
 import backend.field_extraction.field_extractor_main as fe
 import backend.data_extraction.data_extraction_main  as de
 import backend.postprocess.postprocess_main          as pop
-import backend.json_utils.json_utils                 as ju
+import backend.utils.json_utils                      as ju
 import os
 
 import cv2
@@ -19,6 +19,7 @@ Controls the overall pipeline:
 5. Postprocess
 6. Write to JSON file
 7. Send postprocess data to the frontend 
+
 """
 def controller_entry_point(image_file):
     
@@ -95,7 +96,7 @@ def main():
     # image_file = "resources/images/test_image.jpg"
     # image_file = "../resources/images/written_check.jpg"
     # image_file = "../resources/images/example_check_2.PNG"
-    image_file = "../tests/test-files/field_extract/input/a_1.jpg"
+    image_file = "resources/images/example_check_2.PNG"
 
     controller_entry_point(image_file)
 

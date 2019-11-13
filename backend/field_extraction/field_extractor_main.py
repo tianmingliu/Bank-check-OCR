@@ -11,10 +11,13 @@ Attempted approaches:
     inconsistent, and needed a aabb merger. Even then, there are inconsistent results
 
 
+TODO(Dustin): Make sure during field extraction, all process call process_field
+rather than running their own function
 """
 
 
 import backend.data_extraction.field.data.field_data           as field_data
+import backend.utils.cv_utils                                  as cv_utils
 
 from backend.data_extraction.field.data.field_data import FieldType
 from backend.data_extraction.field.data.field_data import FieldData
@@ -127,6 +130,7 @@ def decode_predictions(scores, geometry):
 def detect_text(image, padding_x: float, padding_y: float):
     orig = image.copy()
     image = cv2.cvtColor(image,cv2.COLOR_GRAY2RGB)
+    cv_utils.show(image, "Detecting text image")
     (origH, origW) = image.shape[:2]
 
     # set the new width and height and then determine the ratio in change
@@ -243,7 +247,8 @@ def detect_text(image, padding_x: float, padding_y: float):
 
 
     # loop over the results
-    for (startX, startY, endX, endY) in new_results:
+    # for (startX, startY, endX, endY) in new_results:
+    for ((startX, startY, endX, endY), _) in results:
         # strip out non-ASCII text so we can draw the text on the image
         # using OpenCV, then draw the text and a bounding box surrounding
         # the text region of the input image
@@ -252,70 +257,10 @@ def detect_text(image, padding_x: float, padding_y: float):
         # cv2.putText(output, text, (startX, startY - 20), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
 
         # show the output image
-        cv2.imshow("Text Detection", output)
-        cv2.waitKey(0)
+        cv_utils.show(output, "Text Detection")
 
 """
 END EAST TEXT DETECTION
-"""
-
-"""
-OLD IMPLEMENTATION
-"""
-def old_implementation(image_orig, image):
-        # _, mask = cv2.threshold(image,180,255,cv2.THRESH_TOZERO_INV)
-    # image_final = cv2.bitwise_and(image, image, mask=mask)
-
-    # cv2.imshow("Original image", image_orig)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    # _, mask = cv2.threshold(image,180,255,cv2.THRESH_TOZERO_INV)
-    # _, new_img = cv2.threshold(image,150,255,cv2.THRESH_OTSU)  # for black text , cv.THRESH_BINARY_INV
-    th, threshed = cv2.threshold(image, 100, 255, 
-       cv2.THRESH_BINARY|cv2.THRESH_OTSU) 
-    new_img = cv2.adaptiveThreshold(threshed,255,cv2.ADAPTIVE_THRESH_MEAN_C,
-            cv2.THRESH_BINARY_INV,11,2)
-
-    # cv2.imshow("New image", new_img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5,
-                                                         3))  # to manipulate the orientation of dilution , large x means horizonatally dilating  more, large y means vertically dilating more
-    dilated = cv2.dilate(new_img, kernel, iterations=3)  # dilate , more the iteration more the dilation
-
-    cv2.imshow("Dilation", dilated)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-    # image, contours, hierarchy = cv2.findContours(dilated,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-    contours, _ = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    # for contour in contours:
-    #     [x, y, w, h] = cv2.boundingRect(contour)
-    #     # get rectangle bounding contour
-    #     # (x, y, w, h) = cv2.boundingRect(contour)
-
-    #     # Don't plot small false positives that aren't text
-    #     if w < 35 and h < 35:
-    #         continue
-
-    #     # draw rectangle around contour on original image
-    #     img_cpy = iso_image.copy()
-    #     cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
-    #     show(img_cpy, "Test")
-    
-    # END ORIGINAL
-
-    
-    # cv2.imshow('captcha_result', img_cpy)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-
-"""
-END OLD IMPLEMENTATION
 """
 
 """
@@ -353,22 +298,7 @@ def find_contours(image):
         # draw rectangle around contour on original image
         img_cpy = cv2.cvtColor(image.copy(), cv2.COLOR_GRAY2BGR)
         cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
-        show(img_cpy, "Test")
-
-"""
-Performs mser on a given image.
-
-Returns the msers.
-"""
-def impl_mser(image):
-    mser = cv2.MSER_create()
-    regions = mser.detectRegions(image)
-    return regions[0]
-
-def show(img, title):
-    cv2.imshow(title, img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        cv_utils.show(img_cpy, "Test")
 
 """
 Merge bounding boxes that are close together based on an
@@ -513,7 +443,8 @@ def draw_rects(image, rects):
     img_cpy = image.copy()
     for (x, y, w, h) in rects:
         cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
-    # show(img_cpy, "Drawing rectangles")
+    cv_utils.show(img_cpy, "Drawing rectangles")
+
 
 
 """
@@ -534,25 +465,33 @@ def detect_lines(img, color):
     blur_gray = cv2.GaussianBlur(img,(kernel_size, kernel_size),0)
     edges = cv2.Canny(blur_gray,50,150)
 
+    white = (255, 255, 255)
     rho = 1  # distance resolution in pixels of the Hough grid
     theta = np.pi / 180  # angular resolution in radians of the Hough grid
     threshold = 100  # minimum number of votes (intersections in Hough grid cell)
     min_line_length = 100  # minimum number of pixels making up a line
-    max_line_gap = 5  # maximum gap in pixels between connectable line segments
+    max_line_gap = 50  # maximum gap in pixels between connectable line segments
+
+    # sets image to black
     blank = img.copy() * 0
+    # turns it white
+    # blank = np.full(blank.shape, 255, np.uint8)
 
     # Run Hough on edge detected image
     # Output "lines" is an array containing endpoints of detected line segments
     lines = cv2.HoughLinesP(edges, rho, theta, threshold, np.array([]),
                    min_line_length, max_line_gap)
 
+    if lines is None:
+        return
+
     for line in lines:
         for x1,y1,x2,y2 in line:
-            cv2.line(blank,(x1,y1),(x2,y2),color,5)
+            cv2.line(blank,(x1,y1),(x2,y2),white,1)
 
-    cv2.imshow("Lines", blank)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    final = cv2.bitwise_or(img, blank)
+    cv_utils.show(final, "Lines")
+    return final
 
 
 """
@@ -565,7 +504,7 @@ def process_date(image):
     height = image.shape[0]
     width  = image.shape[1]
 
-    regions = impl_mser(image)
+    regions = cv_utils.impl_mser(image)
 
     # Get all possible bounding regions
     img_cpy = image.copy()
@@ -607,7 +546,7 @@ def process_field(image, expand_x = 0, expand_y = 0, threshold_x = 0, threshold_
     height = image.shape[0]
     width  = image.shape[1]
 
-    regions = impl_mser(image)
+    regions = cv_utils.impl_mser(image)
 
     list = []
     for box in regions:
@@ -628,25 +567,30 @@ def process_field(image, expand_x = 0, expand_y = 0, threshold_x = 0, threshold_
         list.append((x, y, e_width, e_height))
     # end for
 
-    draw_rects(image, list)
+    # draw_rects(image, list)
 
     # Merge overlapping regions
     merged_list = merge_overlapping_bb(image, list)
     
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
     
     merged_list = merge_close_bb(image, merged_list, threshold_x, threshold_y)
 
-    draw_rects(image, merged_list)
+    # draw_rects(image, merged_list)
 
     return merged_list
 # end function
 
+"""
+Process the amount field with the given image.
+
+@return a list of bounding boxes (x start pixel, y start pixel, width, height)
+"""
 def process_amount(image):
     height = image.shape[0]
     width  = image.shape[1]
 
-    regions = impl_mser(image)
+    regions = cv_utils.impl_mser(image)
 
     list = []
     for box in regions:
@@ -757,6 +701,14 @@ def process_middle_region(image):
         possible_pay_order.append((pay_order, img_cpy))
     # end for
 
+    idx = 0
+    for (pay, img) in possible_pay_order:
+        img_cpy = img.copy()
+        cv_utils.show(img_cpy, "IMAGE")
+
+        detect_lines(img_cpy, (128, 128, 0))
+
+
     # amount field
     amount_bb = process_field(right_upper, 10, 10, 50)
     possible_amount = []
@@ -774,8 +726,33 @@ def process_middle_region(image):
         possible_amount.append((amount, img_cpy))
     # end for
 
-    # # LOWER REGION
-    # #-------------------------------------
+    # idx = 0
+    # for (amount, img) in possible_amount:
+    #     # rect = amount.bounds
+    #     img_cpy = img.copy()
+    #     cv_utils.show(img_cpy, "IMAGE")
+    #     detect_lines(img_cpy, (128, 128, 0))
+        
+    #     msers = cv_utils.impl_mser(img)
+
+    #     for box in msers:
+    #         img_cpy = img.copy()
+    #         height = img_cpy.shape[0]
+    #         width  = img_cpy.shape[1]
+
+    #         (x, y, w, h) = cv2.boundingRect(box)
+
+    #         if w >= int(width * .80) and h >= int(height * .80):
+    #             continue
+
+    #         cv2.rectangle(img_cpy, (x, y), (x + w, y + h), (128, 0, 128), 2)
+    #         cv_utils.show(img_cpy, "Another mser " + str(idx))
+    #     # end for
+    #     idx += 1
+    # end for
+
+    # LOWER REGION
+    #-------------------------------------
     cropped_lower = image[lower_y : height, 0 : width]
     lower_left = cropped_lower[0 : cropped_lower.shape[0], 0 : int(cropped_lower.shape[1] / 4) * 3]
     
@@ -783,7 +760,7 @@ def process_middle_region(image):
     possible_written_amount = []
     for (x, y, w, h) in written_amount_bb:
         # prep image
-        img_cpy = left_upper.copy()
+        img_cpy = lower_left.copy()
         img_cpy = img_cpy[y : y + h, x : x + w]
         # img_cpy = isolate_text(img_cpy)
         img_cpy = cv2.medianBlur(img_cpy, 3)
@@ -794,7 +771,29 @@ def process_middle_region(image):
 
         possible_written_amount.append((written, img_cpy))
     # end for
-    
+
+    """
+    # TEST FOR FINDING ALL BOXES IN SINGLE IMAGE
+    # -------------------------------------------------------------
+    total = process_field(image, 100, 0, 10, 100)
+    possible_total = []
+    for (x, y, w, h) in total:
+        # prep image
+        img_cpy = image.copy()
+        img_cpy = img_cpy[y : y + h, x : x + w]
+        # img_cpy = isolate_text(img_cpy)
+        img_cpy = cv2.medianBlur(img_cpy, 3)
+
+        written = FieldData()
+        written.bounds = BoundingRect(x, y, w, h)
+        written.field_type = FieldType.FIELD_TYPE_AMOUNT_WRITTEN
+
+        cv_utils.show(img_cpy, "Total box")
+
+        possible_total.append((written, img_cpy))
+    # end for
+    return []
+    """
     return possible_pay_order + possible_amount + possible_written_amount
 # end function
 
@@ -874,15 +873,23 @@ def extractFieldsEntryPoint(image_orig, image):
 
     dim_w = int(width / 3)
     dim_h = int(height / 3)
-    
-    upper_x = 0
-    upper_y = 0
 
-    middle_x = 0
-    middle_y = upper_y + dim_h
+    dim_middle_h = int(height / 4)
 
-    lower_x = 0
-    lower_y = middle_y + dim_h
+    upper_x_start = 0
+    upper_y_start = 0
+    upper_x_end   = width
+    upper_y_end   = dim_middle_h
+
+    middle_x_start = 0
+    middle_y_start = upper_y_end
+    middle_x_end   = width
+    middle_y_end   = middle_y_start + dim_h
+
+    lower_x_start = 0
+    lower_y_start = middle_y_end
+    lower_x_end   = 0
+    lower_y_end   = height
 
     # draw the bounding region for visualization
     img_cpy = image.copy()
@@ -891,9 +898,9 @@ def extractFieldsEntryPoint(image_orig, image):
     # cv2.rectangle(img_cpy, (lower_x, lower_y),   (lower_x + width, lower_y + dim_h),   (128, 0, 128), 2)
 
     # crop each section
-    cropped_upper  = img_cpy[upper_y  : upper_y  + dim_h, upper_x  : width]
-    cropped_middle = img_cpy[middle_y : middle_y + dim_h, middle_x : width]
-    cropped_lower  = img_cpy[lower_y  : lower_y  + dim_h, lower_x  : width]
+    cropped_upper  = img_cpy[upper_y_start  : upper_y_end,  upper_x_start : upper_x_end]
+    cropped_middle = img_cpy[middle_y_start : middle_y_end, upper_x_start : upper_x_end]
+    cropped_lower  = img_cpy[lower_y_start  : lower_y_end,  upper_x_start : upper_x_end]
 
     # process each section
     upper_images  = process_upper_region(cropped_upper) # BB WORKING
