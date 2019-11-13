@@ -513,7 +513,7 @@ def draw_rects(image, rects):
     img_cpy = image.copy()
     for (x, y, w, h) in rects:
         cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
-    show(img_cpy, "Drawing rectangles")
+    # show(img_cpy, "Drawing rectangles")
 
 
 """

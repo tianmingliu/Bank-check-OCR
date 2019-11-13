@@ -42,6 +42,7 @@ def show(title, image):
 def extract_data_entry_point(img, pair: field_data.FieldData):
     try:
         if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
+            # show("account", img)
             print("account type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
             # show("amount type", img)
@@ -53,16 +54,22 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
             # show("date type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
+            # show("memo", img)
+            handwritten_extraction(img, pair)
             print("memo type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
             # show("pay to the order of type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
             print("routing type")
+            # show("routing", img)
             account_routing_extraction_opencv_group(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
+            # show("signature", img)
+            handwritten_extraction(img, pair)
             print("signature type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
+            # show("none", img)
             print("none type")
         else:
             print("ERROR: Data extract: Invalid type.")
@@ -102,15 +109,13 @@ extracted data.
 
 @param image: image to extract the data from
 @param field: a single field of type FieldData. 
-
-@return True if the extraction was successful. False otherwise.
 """
 
 
 def handwritten_extraction(image, pair: field_data.FieldData):
-    # data = extract.extract_data_pyocr(pair.image)
-    print("Handwritten extraction: ")
     text = extract.extract_data_pytesseract(image)
+    if text == "":
+        text = extract.extract_data_handwriting(image)
     pair.extracted_data = text
 
 
