@@ -3,8 +3,9 @@ import base64
 from flask import Flask, flash, request, redirect, jsonify, send_from_directory, render_template
 from werkzeug.utils import secure_filename
 import json
-import cv2 
-
+import cv2
+from backend.data_extraction.field.data.field_data import FieldData
+from backend.data_extraction.data_extraction_main import validate_extracted_field
 from backend.controller import controller_entry_point
 
 
@@ -13,6 +14,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+result = {}
 
 
 def allowed_file(filename):
@@ -52,7 +55,8 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             # Send the image to the backend
-            img, res = controller_entry_point(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            global result
+            img, result = controller_entry_point(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             cv2.imwrite(path, img)
 
@@ -61,8 +65,34 @@ def upload_file():
             #                         filename=filename))
             return jsonify(
                 image=image_to_data(path),
-                results=res
+                results=result
             )
+
+@app.route('/api/revalidate', methods=['POST'])
+def revalidate_data():
+    new_data = request.get_json(force=True)
+    for key in result:
+        if result[key]["field_type"] == 1:
+            result[key]["extracted_data"] = new_data['date']['data']
+        elif result[key]["field_type"] == 2:
+            result[key]["extracted_data"] = new_data['paytoorder']['data']
+        elif result[key]["field_type"] == 3:
+            result[key]["extracted_data"] = new_data['amount']['data']
+        elif result[key]["field_type"] == 4:
+            result[key]["extracted_data"] = new_data['writtenamount']['data']
+        elif result[key]["field_type"] == 5:
+            result[key]["extracted_data"] = new_data['signature']['data']
+        elif result[key]["field_type"] == 6:
+            result[key]["extracted_data"] = new_data['memo']['data']
+        elif result[key]["field_type"] == 7:
+            result[key]["extracted_data"] = new_data['routing']['data']
+        elif result[key]["field_type"] == 8:
+            result[key]["extracted_data"] = new_data['account']['data']
+
+        result[key]["validation"] = validate_extracted_field(FieldData.from_dict(result[key]))
+
+    print(result)
+    return jsonify(result)
 
 @app.route('/', methods=['GET'])
 def render_home():

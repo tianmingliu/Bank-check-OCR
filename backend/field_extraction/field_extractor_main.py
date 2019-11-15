@@ -446,6 +446,7 @@ def draw_rects(image, rects):
     cv_utils.show(img_cpy, "Drawing rectangles")
 
 
+
 """
 NOTE(Dustin): Idea: find the middle two lines. Which one is longer? Found the written amount. 
 Above it will be the "Pay to the order of" field and amount. 
