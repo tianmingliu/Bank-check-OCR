@@ -61,15 +61,7 @@ def extract_data_pytesseract(image):
 
 
 def extract_data_handwriting(image):
-    e1 = extract_data_pyocr(image)
-    e2 = extract_data_pytesseract(image)
-    e3 = hw.extract(image)
-
-    print("PyOCR: " + e1['text'])
-    print("PyTesseract: " + e2)
-    print("Handwriting: " + e3)
-
-    return e2
+    return hw.extract(image)
 
 
 if __name__ == "__main__":

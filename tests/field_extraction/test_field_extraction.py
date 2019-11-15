@@ -102,12 +102,12 @@ def test_preprocess_extract():
         img, fields = fe.extractFieldsEntryPoint(old_image, img)
         write_image(file_out_dir + "field_extract_" + file, img)
 
-        for (field, image) in fields:
-            cv2.imshow("Field", image)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+        # for (field, image) in fields:
+        #     cv2.imshow("Field", image)
+        #     cv2.waitKey(0)
+        #     cv2.destroyAllWindows()
 
-            print("Field type: " + str(field.field_type))
+        #     print("Field type: " + str(field.field_type))
 
 def test_hardcoded():
     file = "resources/images/check_example.jpg"
