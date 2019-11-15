@@ -131,7 +131,6 @@ single string of digits.
 def account_routing_extraction(img, pair: field_data.FieldData):
     print("Account/Writing extraction")
     if img is not None:
-        show("routing", img)
         filedir = os.path.abspath(os.path.dirname(__file__))
         ref_image_file = os.path.join(
             filedir, '../../resources/images/micr_e13b_reference.png')
@@ -270,24 +269,6 @@ def account_routing_extraction(img, pair: field_data.FieldData):
             print('account ' + output[1].translate({ord(c): None for c in 'TUAD'}))
             pair.extracted_data = output[1].translate({ord(c): None for c in 'TUAD'})
         return pair
-
-
-"""
-Scans the GlobalFieldList looking for a matching field using the data
-found in field.data_info. If a match is found, then field.field_type is
-set to the appriate FieldType.
-
-@param field: a single field of type FieldData. 
-
-@return True if the field was identified. False otherwise. 
-"""
-
-
-def identify_extracted_field(pair):
-    for field in field_list.GlobalFieldList.values():
-        if field.identify(pair.data):
-            return True
-    return False
 
 
 """
