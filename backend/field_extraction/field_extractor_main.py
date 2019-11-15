@@ -851,7 +851,26 @@ def process_lower_region(image):
 
     return possible_routing + possible_memo + possible_sig
 # end function
-    
+
+"""
+To split an image, need: img, x_start, y_start,
+x_max, y_max
+
+@param img: image to split
+@param min_x
+@param min_y
+@param max_x
+@param max_y
+
+@return new_image the region to crop
+@return old_image the old image
+
+Format of return:
+(new_image, old_image)
+"""
+def crop(img, min_x, min_y, max_x, max_y):
+    new_image = img[min_y : max_y,  min_x : max_x]
+    return (new_image, img)
 
 """
 Provided an image of a check, a series of fields are
