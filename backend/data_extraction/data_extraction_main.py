@@ -131,9 +131,10 @@ single string of digits.
 def account_routing_extraction(img, pair: field_data.FieldData):
     print("Account/Writing extraction")
     if img is not None:
+        show("routing", img)
         filedir = os.path.abspath(os.path.dirname(__file__))
         ref_image_file = os.path.join(
-            filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
+            filedir, '../../resources/images/micr_e13b_reference.png')
 
         # init list of reference character names, in same order as they appear in reference
         # image where the digits, their names and:
