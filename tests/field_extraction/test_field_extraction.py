@@ -7,9 +7,6 @@ import backend.data_extraction.data_extraction_main  as de
 
 """
 TODO(Dustin):
-- Crop Tests
-    - Middle
-    - Lower
 - Isolate text on images (might not do this - it could get tested for extract)
 - Detect lines on image (might not do this one right now)
 - Extract text from an image
@@ -374,10 +371,10 @@ Upper Testing Strategy
 - Crop upper fifth then crop right half then remove upper fourth
 
 Middle Testing Strategy:
-
+- cry
 
 Lower Testing Strategy:
-
+- make another glass of coffee
 
 Upper Results: Crop top third. Crop right half. Crop lower half.
    min_x = width/2
@@ -385,11 +382,31 @@ Upper Results: Crop top third. Crop right half. Crop lower half.
    min_y = height/2
    max_y = height
 
-Middle Results:
-
+Middle Results: Middle results are reported in percentages. Row denotes a new cropped image.
+   Middle Region min_y: 30%
+                 max_y: 70%          <- percent of entire check
+   Pay Row:      min_y: 0%
+                 max_y: 40%          <- percent of middle region
+   Pay Field:    min_x: 12%
+                 max_x: 73%          <- percent of pay region
+   Amount Field: min_x: 77.5%
+                 max_x: 95.0%        <- percent of pay region
+   Written Row:  min_y: 40%
+                 max_y: 100%         <- percent of middle region
+   Written Field min_x: 5%
+                 max_x: 75%          <- percent of written region
 
 Lower Results:
-
+    Lower Region   min_y: 70%
+                   max_y: 90%        <- percent of the entire check
+    Top Region     min_y: 5%
+                   max_y: 55%        <- percent of the lower region
+    Memo Region    min_y: 8%
+                   max_x: 45%        <- percent of the top region
+    Sig Region     min_x: 50%
+                   max_x: 92%        <- percont of the top region
+    Account Region min_x: 55%
+                   max_y: 100%       <- percent of the lower region
 
 
 """
@@ -690,12 +707,180 @@ def test_split_image():
                 current_max_percent -= 0.05
             current_min_percent += 0.05
 
-
+        # Verdict
+        # min: 5% consistently was within bounds
+        # max: could do between 75% - 80% but 80% often included "DOL"
+        #     75% is a safe bet and does not cut off much of the written amount line
+        verdict_min = 0.05
+        verdict_max = 0.75
 
 
     test_header("Crop the bottom part of the image with varying sizes. Output name is tests/test-files/field_extrac/output/crop_image/img_name_bottom_crop.jpg")
     lower_out_dir = out_dir + "lower/"
 
+    # Prep output directories
+    cropped_dir = os.getcwd() + "/" + lower_out_dir + "cropped/"
+    top_dir     = os.getcwd() + "/" + lower_out_dir + "top/"
+    memo_dir    = os.getcwd() + "/" + lower_out_dir + "memo/"
+    sig_dir     = os.getcwd() + "/" + lower_out_dir + "signature/"
+    account_dir = os.getcwd() + "/" + lower_out_dir + "account/"
+
+    if not os.path.isdir(cropped_dir):
+        os.mkdir(cropped_dir)
+    if not os.path.isdir(top_dir):
+        os.mkdir(top_dir)
+    if not os.path.isdir(memo_dir):
+        os.mkdir(memo_dir)
+    if not os.path.isdir(sig_dir):
+        os.mkdir(sig_dir)
+    if not os.path.isdir(account_dir):
+        os.mkdir(account_dir)
+    # Finished prepping output directories
+
+    for file in filenames:
+        file_split = file.split(".")
+        file_no_extension = file_split[0] + "/"
+        fullpath = file_processed_dir + file
+        image = cv2.imread(fullpath)
+
+        height = image.shape[0]
+        width  = image.shape[1]
+
+        # Prep output directories for each test file
+        # check if a directory with name: middle_out_dir + file (without extension)
+        # if does not exist create it
+        file_cropped = cropped_dir + file_no_extension
+        file_top     = top_dir + file_no_extension
+        file_memo    = memo_dir + file_no_extension
+        file_sig     = sig_dir + file_no_extension
+        file_account = account_dir + file_no_extension
+
+        if not os.path.isdir(file_cropped):
+            os.mkdir(file_cropped)
+        if not os.path.isdir(file_top):
+            os.mkdir(file_top)
+        if not os.path.isdir(file_memo):
+            os.mkdir(file_memo)
+        if not os.path.isdir(file_sig):
+            os.mkdir(file_sig)
+        if not os.path.isdir(file_account):
+            os.mkdir(file_account)
+        # Finished preppring directories
+
+
+        # Determine the cropped region of the image
+        start_min_percent = 0.45
+        start_max_percent = 1.00
+        current_min_percent = start_min_percent
+        current_max_percent = start_max_percent
+
+        min_x = 0
+        max_x = width
+        min_y = 0
+        max_y = height
+        while current_min_percent < start_max_percent:
+            current_max_percent = start_max_percent
+            min_y = int(height * current_min_percent)
+
+            while current_max_percent > current_min_percent:
+                max_y = int(height * current_max_percent)
+
+                out_filename = file_cropped + str(current_min_percent) + "_" + str(current_max_percent) + ".jpg"
+
+                # crop + write image to file
+                new_image, old_image = fe.crop(image, min_x, min_y, max_x, max_y)
+                write_image(out_filename, new_image)
+
+                current_max_percent -= 0.05
+            current_min_percent += 0.05
+
+        # Verdict
+        # min_y 70%
+        # max_y 95%
+        verdict_min = 0.7
+        verdict_max = 0.95
+        min_y = int(verdict_min * height)
+        max_y = int(verdict_max * height)
+        cropped_image, old_image = fe.crop(image, min_x, min_y, max_x, max_y)
+
+        cropped_height = cropped_image.shape[0]
+        cropped_width  = cropped_image.shape[1]
+
+        # Determine the region for the memo and signature
+        start_min_percent = 0.05
+        start_max_percent = 0.90
+        current_min_percent = start_min_percent
+        current_max_percent = start_max_percent
+
+        min_x = 0
+        max_x = cropped_width
+        min_y = 0
+        max_y = cropped_height
+        while current_min_percent < start_max_percent:
+            current_max_percent = start_max_percent
+            min_y = int(cropped_height * current_min_percent)
+
+            while current_max_percent > current_min_percent:
+                max_y = int(cropped_height * current_max_percent)
+
+                out_filename = file_top + str(current_min_percent) + "_" + str(current_max_percent) + ".jpg"
+
+                # crop + write image to file
+                new_image, old_image = fe.crop(cropped_image, min_x, min_y, max_x, max_y)
+                write_image(out_filename, new_image)
+
+                current_max_percent -= 0.05
+            current_min_percent += 0.05
+
+        # Verdict for Top region:
+        # min_y 5%
+        # max_y 55%
+        verdict_top_min = 0.05
+        verdict_top_max = 0.55
+        min_y = int(verdict_top_min * cropped_height)
+        max_y = int(verdict_top_max * cropped_height)
+        top_image, old_image = fe.crop(cropped_image, min_x, min_y, max_x, max_y)
+
+        top_height = top_image.shape[0]
+        top_width  = top_image.shape[1]
+
+        # Now find the bounds for the memo
+        start_min_percent = 0.05
+        start_max_percent = 0.90
+        current_min_percent = start_min_percent
+        current_max_percent = start_max_percent
+
+        min_x = 0
+        max_x = top_width
+        min_y = 0
+        max_y = top_height
+        while current_min_percent < start_max_percent:
+            current_max_percent = start_max_percent
+            min_x = int(top_width * current_min_percent)
+
+            while current_max_percent > current_min_percent:
+                max_x = int(top_width * current_max_percent)
+
+                out_filename = file_memo + str(current_min_percent) + "_" + str(current_max_percent) + ".jpg"
+
+                # crop + write image to file
+                new_image, old_image = fe.crop(top_image, min_x, min_y, max_x, max_y)
+                write_image(out_filename, new_image)
+
+                current_max_percent -= 0.05
+            current_min_percent += 0.05
+
+        # Verdict for Memo region
+        # min_x 8%
+        # max_x 45%
+
+        # Verdict for Signature region
+        # min_x 50%
+        # max_x 92%
+
+        # Verdict for Account Region
+        # min_y 55%
+        # max_y 100%
 
 
 
@@ -709,6 +894,37 @@ def test_detect_lines():
 
     test_header("Given a preprocessed image with the text isolated, detect lines on the image. Output folder is")
 
+
+def test_field_extraction():
+    out_dir = file_out_dir + "field_extraction/"
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
+
+    test_header("Test field extraction")
+
+    for file in filenames:
+        file_split = file.split(".")
+        file_no_extension = file_split[0] + "/"
+        fullpath = file_processed_dir + file
+
+        file_dir = out_dir + file_no_extension
+        if not os.path.isdir(file_dir):
+            os.mkdir(file_dir)
+
+        image = cv2.imread(fullpath)
+        height = image.shape[0]
+        width  = image.shape[1]
+
+        old_img, fields = fe.extractFieldsEntryPoint(None, image)
+
+
+        for (field, img) in fields:
+            output_filename = file_dir + str(field.field_type) + ".jpg"
+            write_image(output_filename, img)
+
+            de.extract_data_entry_point(img, field)
+
+        
 
 def main():
 
@@ -728,6 +944,7 @@ def main():
     # Image Tests
     #----------------------------------------
     test_split_image()
+    test_field_extraction()
 
     # Bounding Box Tests
     #----------------------------------------

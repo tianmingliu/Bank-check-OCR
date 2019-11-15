@@ -872,6 +872,159 @@ def crop(img, min_x, min_y, max_x, max_y):
     new_image = img[min_y : max_y,  min_x : max_x]
     return (new_image, img)
 
+def upper_extract(image):
+    height = image.shape[0]
+    width  = image.shape[1]
+
+    # crop right half
+    min_x = int(width * 0.5)
+    max_x = width
+    min_y = int(height * 0.5)
+    max_y = height
+
+    date_img = image[min_y  : max_y,  min_x : max_x]
+
+    date = FieldData()
+    date.bounds = BoundingRect(min_x, min_y, max_x - min_x, max_y - min_y)
+    date.field_type = FieldType.FIELD_TYPE_DATE
+
+    return [(date, date_img)]
+
+def middle_extract(image):
+    height = image.shape[0]
+    width  = image.shape[1]
+
+    # Get the pay row
+    pay_min_x = 0
+    pay_max_x = width
+    pay_min_y = 0
+    pay_max_y = int(height * 0.40)
+    pay_width  = pay_max_x - pay_min_x
+    pay_height = pay_max_y - pay_min_y
+    prow_img = image[pay_min_y : pay_max_y, pay_min_x : pay_max_x]
+
+    # Get the pay to the order of field bounds
+    pfield_min_x = int(pay_width * 0.12)
+    pfield_max_x = int(pay_width * 0.73)
+    pfield_min_y = int(pay_height * 0.0)
+    pfield_max_y = int(pay_height * 1.0)
+    pfield_width  = pfield_max_x - pfield_min_x
+    pfield_height = pfield_max_y - pfield_min_y
+
+    # Get the amount bounds
+    amount_min_x = int(pay_width * 0.775)
+    amount_max_x = int(pay_width * 0.950)
+    amount_min_y = 0
+    amount_max_y = pay_height
+    amount_width  = amount_max_x - amount_min_x
+    amount_height = amount_max_y - amount_min_y
+
+    # Get the written row
+    wrow_min_x = 0
+    wrow_max_x = width
+    wrow_min_y = int(height * 0.40)
+    wrow_max_y = int(height * 1.00)
+    wwidth  = wrow_max_x - wrow_min_x
+    wheight = wrow_max_y - wrow_min_y
+    wrow_img = image[wrow_min_y : wrow_max_y, wrow_min_x : wrow_max_x]
+
+    # Get the written amount field bounds
+    written_min_x = int(wwidth * 0.05)
+    written_max_x = int(wwidth * 0.75)
+    written_min_y = 0
+    written_max_y = wheight
+    written_width  = written_max_x - written_min_x
+    written_height = written_max_y - written_min_y
+
+    # Create the pay field
+    pay_img = prow_img[pfield_min_y : pfield_max_y,  pfield_min_x : pfield_max_x]
+    pay = FieldData()
+    pay.bounds = BoundingRect(pfield_min_x, pfield_min_y, pfield_width, pfield_height)
+    pay.field_type = FieldType.FIELD_TYPE_PAY_TO_ORDER_OF
+    pay_field = (pay, pay_img)
+
+    # Create the amount field
+    amount_img = prow_img[amount_min_y : amount_max_y,  amount_min_x : amount_max_x]
+    amount = FieldData()
+    amount.bounds = BoundingRect(amount_min_x, amount_min_y, amount_width, amount_height)
+    amount.field_type = FieldType.FIELD_TYPE_AMOUNT
+    amount_field = (amount, amount_img)
+
+    # Create the pay field
+    written_img = wrow_img[written_min_y : written_max_y,  written_min_x : written_max_x]
+    written = FieldData()
+    written.bounds = BoundingRect(written_min_x, written_min_y, written_width, written_height)
+    written.field_type = FieldType.FIELD_TYPE_AMOUNT_WRITTEN
+    written_field = (written, written_img)
+
+    return [pay_field, amount_field, written_field]
+
+def lower_extract(image):
+    height = image.shape[0]
+    width  = image.shape[1]
+
+    # Get the top row
+    top_min_x = 0
+    top_max_x = width
+    top_min_y = int(height * 0.05)
+    top_max_y = int(height * 0.65)
+    top_width  = top_max_x - top_min_x
+    top_height = top_max_y - top_min_y
+    top_img = image[top_min_y : top_max_y, top_min_x : top_max_x]
+
+    # Get the memo region bounds
+    memo_min_x = int(top_width * 0.08)
+    memo_max_x = int(top_width * 0.45)
+    memo_min_y = 0
+    memo_max_y = top_height
+    memo_width  = memo_max_x - memo_min_x
+    memo_height = memo_max_y - memo_min_y
+
+    # Get the signature region bounds
+    sig_min_x = int(top_width * 0.50)
+    sig_max_x = int(top_width * 0.92)
+    sig_min_y = 0
+    sig_max_y = top_height
+    sig_width  = sig_max_x - sig_min_x
+    sig_height = sig_max_y - sig_min_y
+
+    # Get the bottom row
+    acc_min_x = 0
+    acc_max_x = width
+    acc_min_y = int(height * 0.55)
+    acc_max_y = int(height * 1.00)
+    acc_width  = acc_max_x - acc_min_x
+    acc_height = acc_max_y - acc_min_y
+    low_img = image[acc_min_y : acc_max_y, acc_min_x : acc_max_x]
+
+    # Create the memo field
+    memo_img = top_img[memo_min_y : memo_max_y,  memo_min_x : memo_max_x]
+    memo = FieldData()
+    memo.bounds = BoundingRect(memo_min_x, memo_min_y, memo_width, memo_height)
+    memo.field_type = FieldType.FIELD_TYPE_MEMO
+    memo_field = (memo, memo_img)
+
+    # Create the signature field
+    sig_img = top_img[sig_min_y : sig_max_y,  sig_min_x : sig_max_x]
+    sig = FieldData()
+    sig.bounds = BoundingRect(sig_min_x, sig_min_y, sig_width, sig_height)
+    sig.field_type = FieldType.FIELD_TYPE_SIGNATURE
+    sig_field = (sig, sig_img)
+
+    # Create the routing/account field
+    rout_img = image[acc_min_y : acc_max_y,  acc_min_x : acc_max_x]
+    rout = FieldData()
+    rout.bounds = BoundingRect(acc_min_x, acc_min_y, acc_width, acc_height)
+    rout.field_type = FieldType.FIELD_TYPE_ROUTING
+    rout_field = (rout, rout_img)
+
+    acc = FieldData()
+    acc.bounds = BoundingRect(acc_min_x, acc_min_y, acc_width, acc_height)
+    acc.field_type = FieldType.FIELD_TYPE_ACCOUNT
+    acc_field = (acc, rout_img)
+
+    return [memo_field, sig_field, rout_field, acc_field]
+
 """
 Provided an image of a check, a series of fields are
 extracted from the image. For each field found, a FieldData
@@ -895,19 +1048,19 @@ def extractFieldsEntryPoint(image_orig, image):
     dim_middle_h = int(height / 4)
 
     upper_x_start = 0
-    upper_y_start = 0
     upper_x_end   = width
-    upper_y_end   = dim_middle_h
+    upper_y_start = 0
+    upper_y_end   = int(height * .33)
 
     middle_x_start = 0
-    middle_y_start = upper_y_end
     middle_x_end   = width
-    middle_y_end   = middle_y_start + dim_h
+    middle_y_start = int(height * .30)
+    middle_y_end   = int(height * .70)
 
     lower_x_start = 0
-    lower_y_start = middle_y_end
-    lower_x_end   = 0
-    lower_y_end   = height
+    lower_x_end   = width
+    lower_y_start = int(height * .70)
+    lower_y_end   = int(height * .90)
 
     # draw the bounding region for visualization
     img_cpy = image.copy()
@@ -921,9 +1074,13 @@ def extractFieldsEntryPoint(image_orig, image):
     cropped_lower  = img_cpy[lower_y_start  : lower_y_end,  upper_x_start : upper_x_end]
 
     # process each section
-    upper_images  = process_upper_region(cropped_upper) # BB WORKING
-    middle_images = process_middle_region(cropped_middle)
-    lower_images  = process_lower_region(cropped_lower)
+    #upper_images  = process_upper_region(cropped_upper) # BB WORKING
+    #middle_images = process_middle_region(cropped_middle)
+    #lower_images  = process_lower_region(cropped_lower)
+
+    upper_images  = upper_extract(cropped_upper) # BB WORKING
+    middle_images = middle_extract(cropped_middle)
+    lower_images  = lower_extract(cropped_lower)
 
     # compile the list of fields
     list = []
