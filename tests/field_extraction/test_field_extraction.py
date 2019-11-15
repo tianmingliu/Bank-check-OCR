@@ -120,13 +120,76 @@ def test_hardcoded():
         print("TYPE:")
         de.extract_data_entry_point(field_img, field)
 
+def test_header(header):
+    print("TEST: " + header)
+
+def test_scenario(scenario, expected):
+    print("\tScenario: " + scenario)
+    print("\t\tExpected: " + str(expected))
+
+def test_actual(result):
+    print("\t\tActual: " + str(result))
+
+def test_result(left, right):
+    if left == right:
+        print("\tTest Pass")
+    else:
+        print("\tTest Fail")
+
+    print()
+
+def test_bounding_box_collision():
+    test_header("Bounding Box Collision")
+
+    # Overlap y, no overlap x: no collision
+    exp = False
+    test_scenario("Overlap X Axis, No Overlap Y Axis", exp)
+    box_a = (0, 0, 100, 100)
+    box_b = (50, 200, 150, 300)
+    act = fe.check_bounding_collision(box_a, box_b)
+    test_actual(act)
+    test_result(exp, act)
+
+    # Overlap y, no overlap x: no collision
+    test_scenario("Overlap Y Axis, No Overlap X Axis", False)
+    box_a = (0, 0, 100, 100)
+    box_b = (150, 50, 250, 150)
+    act = fe.check_bounding_collision(box_a, box_b)
+    test_actual(act)
+    test_result(exp, act)
+
+    # Overlap x, overlap y: collision
+    exp = True
+    test_scenario("Overlap Y Axis, Overlap X Axis", exp)
+    box_a = (0, 0, 100, 100)
+    box_b = (50, 50, 150, 150)
+    act = fe.check_bounding_collision(box_a, box_b)
+    test_actual(act)
+    test_result(exp, act)
+
+    # Box A inside Box b: collision
+    exp = True
+    test_scenario("Box A inside box b", exp)
+    box_a = (50, 50, 100, 100)
+    box_b = (0, 0, 150, 150)
+    act = fe.check_bounding_collision(box_a, box_b)
+    test_actual(act)
+    test_result(exp, act)
+
+
+
+    # Box B inside Box A: collision
+    
 
 def main():
-    test_preprocess_extract()
+    print("\nTEST SUITE: Running Field Extraction Tests\n")
+
+    # test_preprocess_extract()
     # test_extraction()
     # test_mser()
     # test_hardcoded()
-    
+
+    test_bounding_box_collision()
 
 
 if __name__ == "__main__":
