@@ -43,6 +43,7 @@ def show(title, image):
 def extract_data_entry_point(img, pair: field_data.FieldData):
     try:
         if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
+            # show("account", img)
             print("account type")
             account_routing_extraction(img, pair)
         if pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
@@ -55,6 +56,8 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
             # show("date type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
+            # show("memo", img)
+            handwritten_extraction(img, pair)
             print("memo type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
             # show("pay to the order of type", img)
@@ -63,8 +66,11 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
             print("routing type")
             account_routing_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
+            # show("signature", img)
+            handwritten_extraction(img, pair)
             print("signature type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
+            # show("none", img)
             print("none type")
         else:
             print("ERROR: Data extract: Invalid type.")
@@ -82,8 +88,6 @@ extracted data.
 
 @param image: image to extract the data from
 @param field: a single field of type FieldData. 
-
-@return True if the extraction was successful. False otherwise.
 """
 
 
@@ -129,7 +133,7 @@ def account_routing_extraction(img, pair: field_data.FieldData):
     if img is not None:
         filedir = os.path.abspath(os.path.dirname(__file__))
         ref_image_file = os.path.join(
-            filedir, '..\\..\\resources\\images\\micr_e13b_reference.png')
+            filedir, '../../resources/images/micr_e13b_reference.png')
 
         # init list of reference character names, in same order as they appear in reference
         # image where the digits, their names and:
@@ -265,24 +269,6 @@ def account_routing_extraction(img, pair: field_data.FieldData):
             print('account ' + output[1].translate({ord(c): None for c in 'TUAD'}))
             pair.extracted_data = output[1].translate({ord(c): None for c in 'TUAD'})
         return pair
-
-
-"""
-Scans the GlobalFieldList looking for a matching field using the data
-found in field.data_info. If a match is found, then field.field_type is
-set to the appriate FieldType.
-
-@param field: a single field of type FieldData. 
-
-@return True if the field was identified. False otherwise. 
-"""
-
-
-def identify_extracted_field(pair):
-    for field in field_list.GlobalFieldList.values():
-        if field.identify(pair.data):
-            return True
-    return False
 
 
 """

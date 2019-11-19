@@ -6,6 +6,7 @@ import backend.data_extraction.field.account_number_field as account_number_fiel
 import backend.data_extraction.field.signature_field       as signature_field
 import backend.data_extraction.field.data.field_data       as field_data
 import backend.data_extraction.field.pay_to_order_field as pay_to_order
+import backend.data_extraction.field.memo_field as memo
 
 
 # NOTE(Dustin): Maybe use an ordered map instead? Have the key
@@ -23,4 +24,5 @@ GlobalFieldList = {
     field_data.FieldType.FIELD_TYPE_ACCOUNT:   account_number_field.AccountNumberField(),
     field_data.FieldType.FIELD_TYPE_SIGNATURE: signature_field.SignatureField(),
     field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF: pay_to_order.PayToOrderField(),
+    field_data.FieldType.FIELD_TYPE_MEMO: memo.MemoField(),
 }
