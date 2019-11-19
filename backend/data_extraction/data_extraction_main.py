@@ -1,21 +1,13 @@
-import sys
-
 import backend.data_extraction.field.data.field_data as field_data
 import backend.data_extraction.field_list as field_list
-# import backend.data_extraction.digit_recognition.pyocr_ocr.handwriting_extract as data_extract
-# import backend.data_extraction.letter_recognition.src.main as hw_extract
-import backend.preprocess.preprocess_main as prp
 import backend.data_extraction.extract_methods as extract
 from skimage.segmentation import clear_border
 from imutils import contours
 import numpy as np
-import argparse
 import imutils
 import cv2
-import pyocr
-from PIL import Image
 import os
-import re
+
 
 """
 Entry point for the Data Extraction stage of the pipeline.
@@ -43,30 +35,30 @@ def show(title, image):
 def extract_data_entry_point(img, pair: field_data.FieldData):
     try:
         if pair.field_type == field_data.FieldType.FIELD_TYPE_ACCOUNT:
-            # show("account", img)
             print("account type")
             account_routing_extraction(img, pair)
         if pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
-            # show("amount type", img)
+            show("amount type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
-            # show("amount written type", img)
+            show("amount written type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_DATE:
-            # show("date type", img)
+            show("date type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
-            # show("memo", img)
+            show("memo", img)
             handwritten_extraction(img, pair)
             print("memo type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
-            # show("pay to the order of type", img)
+            show("pay to the order of type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
-            print("routing type")
+            # print("routing type")
+            show("routing/account", img)
             account_routing_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
-            # show("signature", img)
+            show("signature", img)
             handwritten_extraction(img, pair)
             print("signature type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
@@ -176,8 +168,9 @@ def account_routing_extraction(img, pair: field_data.FieldData):
         # load the input image, grab its dimensions, and apply array slicing
         # to keep only the bottom 40% of the image (that's where the account/routing info is)
         (h, w) = img.shape[:2]
-        delta = int(h - (h * 0.45))
-        bottom = img[delta:h, 0:w]
+        delta = int(h - (h * 0.65))
+        height_max = int(h*0.85)
+        bottom = img[delta:height_max, 0:w]
 
         # convert bottom image to grayscale, apply blackhat morphological operator
         # to find dark regions against a light background (the routing/account #s)
@@ -198,9 +191,13 @@ def account_routing_extraction(img, pair: field_data.FieldData):
         thresh = cv2.threshold(
             gradX, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
+        # show("thresh 1", thresh)
+
         # remove any pixels that are touching borders of image (helps us in next
         # step when pruning contours)
         thresh = clear_border(thresh)
+
+        # show("thresh 2", thresh)
 
         # find contours in thresholded image, init list of group locations
         groupCnts = cv2.findContours(
@@ -230,6 +227,8 @@ def account_routing_extraction(img, pair: field_data.FieldData):
             group = bottom[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
             group = cv2.threshold(
                 group, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+
+            # show("group", group)
 
             # find char contours in the group, then sort from left to right
             charCnts = cv2.findContours(

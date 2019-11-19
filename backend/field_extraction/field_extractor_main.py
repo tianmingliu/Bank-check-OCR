@@ -878,9 +878,9 @@ def upper_extract(image):
     width  = image.shape[1]
 
     # crop right half
-    min_x = int(width * 0.5)
-    max_x = width
-    min_y = int(height * 0.5)
+    min_x = int(width * 0.62)
+    max_x = int(width * 0.85)
+    min_y = int(height * 0.6)
     max_y = height
 
     date_img = image[min_y  : max_y,  min_x : max_x]
@@ -913,7 +913,7 @@ def middle_extract(image):
     pfield_height = pfield_max_y - pfield_min_y
 
     # Get the amount bounds
-    amount_min_x = int(pay_width * 0.775)
+    amount_min_x = int(pay_width * 0.795)
     amount_max_x = int(pay_width * 0.950)
     amount_min_y = 0
     amount_max_y = pay_height
@@ -933,7 +933,7 @@ def middle_extract(image):
     written_min_x = int(wwidth * 0.05)
     written_max_x = int(wwidth * 0.75)
     written_min_y = 0
-    written_max_y = wheight
+    written_max_y = int(wheight*0.5)
     written_width  = written_max_x - written_min_x
     written_height = written_max_y - written_min_y
 
@@ -964,6 +964,8 @@ def lower_extract(image):
     height = image.shape[0]
     width  = image.shape[1]
 
+    # cv_utils.show(image, "lower")
+
     # Get the top row
     top_min_x = 0
     top_max_x = width
@@ -974,18 +976,18 @@ def lower_extract(image):
     top_img = image[top_min_y : top_max_y, top_min_x : top_max_x]
 
     # Get the memo region bounds
-    memo_min_x = int(top_width * 0.08)
+    memo_min_x = int(top_width * 0.09)
     memo_max_x = int(top_width * 0.45)
-    memo_min_y = 0
-    memo_max_y = top_height
+    memo_min_y = int(top_height * 0.08)
+    memo_max_y = int(top_height * 0.65)
     memo_width  = memo_max_x - memo_min_x
     memo_height = memo_max_y - memo_min_y
 
     # Get the signature region bounds
     sig_min_x = int(top_width * 0.50)
     sig_max_x = int(top_width * 0.92)
-    sig_min_y = 0
-    sig_max_y = top_height
+    sig_min_y = int(top_height * 0.08)
+    sig_max_y = int(top_height * 0.65)
     sig_width  = sig_max_x - sig_min_x
     sig_height = sig_max_y - sig_min_y
 
@@ -993,7 +995,7 @@ def lower_extract(image):
     acc_min_x = 0
     acc_max_x = width
     acc_min_y = int(height * 0.55)
-    acc_max_y = int(height * 1.00)
+    acc_max_y = height
     acc_width  = acc_max_x - acc_min_x
     acc_height = acc_max_y - acc_min_y
     low_img = image[acc_min_y : acc_max_y, acc_min_x : acc_max_x]
@@ -1017,12 +1019,12 @@ def lower_extract(image):
     rout = FieldData()
     rout.bounds = BoundingRect(acc_min_x, acc_min_y, acc_width, acc_height)
     rout.field_type = FieldType.FIELD_TYPE_ROUTING
-    rout_field = (rout, rout_img)
+    rout_field = (rout, image)
 
     acc = FieldData()
     acc.bounds = BoundingRect(acc_min_x, acc_min_y, acc_width, acc_height)
     acc.field_type = FieldType.FIELD_TYPE_ACCOUNT
-    acc_field = (acc, rout_img)
+    acc_field = (acc, image)
 
     return [memo_field, sig_field, rout_field, acc_field]
 
@@ -1061,7 +1063,7 @@ def extractFieldsEntryPoint(image_orig, image):
     lower_x_start = 0
     lower_x_end   = width
     lower_y_start = int(height * .70)
-    lower_y_end   = int(height * .90)
+    lower_y_end   = height
 
     # draw the bounding region for visualization
     img_cpy = image.copy()
@@ -1078,6 +1080,7 @@ def extractFieldsEntryPoint(image_orig, image):
     #upper_images  = process_upper_region(cropped_upper) # BB WORKING
     #middle_images = process_middle_region(cropped_middle)
     #lower_images  = process_lower_region(cropped_lower)
+
 
     upper_images  = upper_extract(cropped_upper) # BB WORKING
     middle_images = middle_extract(cropped_middle)

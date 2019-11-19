@@ -4,7 +4,6 @@
     <head>
         <meta charset="utf-8">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
         <title>Upload Your Check</title>
         <style>
             th, td {
@@ -118,12 +117,11 @@
          * Don't delete any commented out code, it may be useful later on.
          */
         function processCheck() {
-            resetTable();
-            let img = document.getElementById("myFile").files[0];
-            let fd = new FormData();
+            var img = document.getElementById("myFile").files[0];
+            var fd = new FormData();
             fd.append('file', img);
 
-            let request = new XMLHttpRequest();
+            var request = new XMLHttpRequest();
             request.open('POST', 'http://127.0.0.1:5000/api/upload', false);
             request.send(fd);
 
@@ -136,36 +134,36 @@
                     case 0:
                         break;
                     case 1: //Date
-                        document.getElementById("date.val").value += results[key]["extracted_data"] + ",";
-                        document.getElementById("date.valid").innerHTML += results[key]["validation"] + ",";
+                        document.getElementById("date.val").value = results[key]["extracted_data"];
+                        document.getElementById("date.valid").innerHTML = results[key]["validation"];
                         break;
                     case 2: //Pay to Order Of
-                        document.getElementById("pto.val").value += results[key]["extracted_data"] + ",";
-                        document.getElementById("pto.valid").innerHTML += results[key]["validation"] + ",";
+                        document.getElementById("pto.val").value = results[key]["extracted_data"];
+                        document.getElementById("pto.valid").innerHTML = results[key]["validation"];
                         break;
                     case 3: //Numeric Amount
-                        document.getElementById("namt.val").value += results[key]["extracted_data"] + ",";
-                        document.getElementById("namt.valid").innerHTML += results[key]["validation"] + ",";
+                        document.getElementById("namt.val").value = results[key]["extracted_data"];
+                        document.getElementById("namt.valid").innerHTML = results[key]["validation"];
                         break;
                     case 4: //Written Amount
-                        document.getElementById("wamt.val").value += results[key]["extracted_data"] + ",";
-                        document.getElementById("wamt.valid").innerHTML += results[key]["validation"] + ",";
+                        document.getElementById("wamt.val").value = results[key]["extracted_data"];
+                        document.getElementById("wamt.valid").innerHTML = results[key]["validation"];
                         break;
                     case 5: //Signature
-                        document.getElementById("sig.val").value += results[key]["extracted_data"] + ",";
-                        document.getElementById("sig.valid").innerHTML += results[key]["validation"] + ",";
+                        document.getElementById("sig.val").value = results[key]["extracted_data"];
+                        document.getElementById("sig.valid").innerHTML = results[key]["validation"];
                         break;
                     case 6: //Memo
-                        document.getElementById("memo.val").value += results[key]["extracted_data"] + ",";
-                        document.getElementById("memo.valid").innerHTML += results[key]["validation"] + ",";
+                        document.getElementById("memo.val").value = results[key]["extracted_data"];
+                        document.getElementById("memo.valid").innerHTML = results[key]["validation"];
                         break;
                     case 7: //Routing
-                        document.getElementById("rn.val").value += results[key]["extracted_data"] + ",";
-                        document.getElementById("rn.valid").innerHTML += results[key]["validation"] + ",";
+                        document.getElementById("rn.val").value = results[key]["extracted_data"];
+                        document.getElementById("rn.valid").innerHTML = results[key]["validation"];
                         break;
                     case 8: //Account
-                        document.getElementById("an.val").value += results[key]["extracted_data"] + ",";
-                        document.getElementById("an.valid").innerHTML += results[key]["validation"] + ",";
+                        document.getElementById("an.val").value = results[key]["extracted_data"];
+                        document.getElementById("an.valid").innerHTML = results[key]["validation"];
                         break;
                     default:
                         break;
@@ -180,25 +178,6 @@
             x.document.open();
             x.document.write('<html><body><pre>' + resultsJson + '</pre></body></html>');
             x.document.close();
-        }
-
-        function resetTable() {
-            document.getElementById("date.val").value = "";
-            document.getElementById("date.valid").value = "";
-            document.getElementById("pto.val").value = "";
-            document.getElementById("pto.valid").value = "";
-            document.getElementById("namt.val").value = "";
-            document.getElementById("namt.valid").value = "";
-            document.getElementById("wamt.val").value = "";
-            document.getElementById("wamt.valid").value = "";
-            document.getElementById("sig.val").value = "";
-            document.getElementById("sig.valid").value = "";
-            document.getElementById("memo.val").value = "";
-            document.getElementById("memo.valid").value = "";
-            document.getElementById("rn.val").value = "";
-            document.getElementById("rn.valid").value = "";
-            document.getElementById("an.val").value = "";
-            document.getElementById("an.valid").value = "";
         }
 
         function revalidateData() {
