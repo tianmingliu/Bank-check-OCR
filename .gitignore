@@ -20,3 +20,4 @@ backend/logs/
 backend/data_extraction/handwriting_extract/src/logs/
 frontend/logs/
 backend/data_extraction/logs/
+tests/**/*.jpg

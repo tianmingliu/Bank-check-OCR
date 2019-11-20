@@ -38,27 +38,27 @@ def extract_data_entry_point(img, pair: field_data.FieldData):
             print("account type")
             account_routing_extraction(img, pair)
         if pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT:
-            show("amount type", img)
+            # show("amount type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_AMOUNT_WRITTEN:
-            show("amount written type", img)
+            # show("amount written type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_DATE:
-            show("date type", img)
+            # show("date type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_MEMO:
-            show("memo", img)
+            # show("memo", img)
             handwritten_extraction(img, pair)
             print("memo type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_PAY_TO_ORDER_OF:
-            show("pay to the order of type", img)
+            # show("pay to the order of type", img)
             handwritten_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_ROUTING:
             # print("routing type")
-            show("routing/account", img)
+            # show("routing/account", img)
             account_routing_extraction(img, pair)
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_SIGNATURE:
-            show("signature", img)
+            # show("signature", img)
             handwritten_extraction(img, pair)
             print("signature type")
         elif pair.field_type == field_data.FieldType.FIELD_TYPE_NONE:
