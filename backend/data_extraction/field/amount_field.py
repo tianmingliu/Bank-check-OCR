@@ -48,6 +48,16 @@ class AmountField(field.Field):
         return field_data.FieldType.FIELD_TYPE_AMOUNT
 
 
+"""
+Converts written numbers into digit numbers
+
+@param textnum: string of written numbers to be converted
+@param numwords: keywords array used for conversion
+
+@return result + current: the final int value that is the converted value of the written amount
+"""
+
+
 def word_to_num_helper(textnum, numwords={}):
     if not numwords:
         units = [
