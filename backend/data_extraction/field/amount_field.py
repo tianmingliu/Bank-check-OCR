@@ -26,9 +26,11 @@ class AmountField(field.Field):
         except ValueError:
             print("Amount number is not a float")
 
-            written_amount = str(data.extracted_data)
+            written_amount_raw = str(data.extracted_data)
+
 
             try:
+                written_amount, num = written_amount_raw.split("and")
                 num_amount = word_to_num_helper(written_amount)
             except ValueError:
                 print("Invalid written amount")
