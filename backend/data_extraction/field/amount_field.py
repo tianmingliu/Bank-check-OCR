@@ -32,6 +32,10 @@ class AmountField(field.Field):
             try:
                 written_amount, num = written_amount_raw.split("and")
                 num_amount = word_to_num_helper(written_amount)
+
+                if not validate_cents(num):
+                    raise ValueError
+
             except ValueError:
                 print("Invalid written amount")
                 return False
@@ -48,6 +52,32 @@ class AmountField(field.Field):
 
     def get_type(self):
         return field_data.FieldType.FIELD_TYPE_AMOUNT
+
+
+"""
+Validates the cents fraction portion of the written amount.
+
+@param text String containing the fraction portion of the written amount.
+
+@return true if the fraction is valid, false otherwise
+"""
+def validate_cents(text):
+    text = text.strip()
+
+    try:
+        numerator, denominator = text.split("/")
+        num = int(numerator)
+        den = int(denominator)
+    except:
+        return False
+
+    if num < 0 or num > 99:
+        return False
+
+    if den != 100:
+        return False
+
+    return True
 
 
 """

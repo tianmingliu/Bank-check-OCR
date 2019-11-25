@@ -878,10 +878,10 @@ def upper_extract(image):
     width  = image.shape[1]
 
     # crop right half
-    min_x = int(width * 0.62)
+    min_x = int(width * 0.65)
     max_x = int(width * 0.85)
-    min_y = int(height * 0.6)
-    max_y = height
+    min_y = int(height * 0.55)
+    max_y = int(height * 0.9)
 
     date_img = image[min_y  : max_y,  min_x : max_x]
 
@@ -979,7 +979,7 @@ def lower_extract(image):
     memo_min_x = int(top_width * 0.09)
     memo_max_x = int(top_width * 0.45)
     memo_min_y = int(top_height * 0.08)
-    memo_max_y = int(top_height * 0.65)
+    memo_max_y = int(top_height * 0.7)
     memo_width  = memo_max_x - memo_min_x
     memo_height = memo_max_y - memo_min_y
 

@@ -28,8 +28,11 @@ class DateField(field.Field):
         try:
             month, day, year = date.split('/')
         except ValueError:
-            print("The date is invalid (cannot be split).")
-            return False
+            try:
+                month, day, year = date.split('-')
+            except ValueError:
+                print("The date is invalid (cannot be split).")
+                return False
 
         try:
             print(year + " " + month + " " + day)
