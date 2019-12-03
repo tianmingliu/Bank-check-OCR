@@ -15,7 +15,7 @@ TODO(Dustin): Make sure during field extraction, all process call process_field
 rather than running their own function
 """
 
-from ...backend.utils.cv_utils import show, impl_mser
+from src.main.backend.utils.cv_utils import show, impl_mser
 
 from ..data_extraction.field.data.field_data import FieldType, FieldData, BoundingRect
 
