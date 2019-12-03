@@ -1,8 +1,8 @@
 import cv2
 
-from ...src.main.backend.preprocess.preprocess_main import preprocessEntryPoint
-from ...src.main.backend.field_extraction.field_extractor_main import extractFieldsEntryPoint, check_bounding_collision, merge_overlapping_bb, merge_close_bb, crop
-from ...src.main.backend.data_extraction.data_extraction_main import extract_data_entry_point
+from src.main.backend.preprocess.preprocess_main import preprocessEntryPoint
+from src.main.backend.field_extraction.field_extractor_main import extractFieldsEntryPoint, check_bounding_collision, merge_overlapping_bb, merge_close_bb, crop
+from src.main.backend.data_extraction.data_extraction_main import extract_data_entry_point
 
 
 """

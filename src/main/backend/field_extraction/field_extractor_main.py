@@ -15,7 +15,7 @@ TODO(Dustin): Make sure during field extraction, all process call process_field
 rather than running their own function
 """
 
-import backend.utils.cv_utils                                  as cv_utils
+from ...backend.utils.cv_utils import show, impl_mser
 
 from ..data_extraction.field.data.field_data import FieldType, FieldData, BoundingRect
 
@@ -124,7 +124,7 @@ def decode_predictions(scores, geometry):
 def detect_text(image, padding_x: float, padding_y: float):
     orig = image.copy()
     image = cv2.cvtColor(image,cv2.COLOR_GRAY2RGB)
-    cv_utils.show(image, "Detecting text image")
+    show(image, "Detecting text image")
     (origH, origW) = image.shape[:2]
 
     # set the new width and height and then determine the ratio in change
@@ -251,7 +251,7 @@ def detect_text(image, padding_x: float, padding_y: float):
         # cv2.putText(output, text, (startX, startY - 20), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
 
         # show the output image
-        cv_utils.show(output, "Text Detection")
+        show(output, "Text Detection")
 
 """
 END EAST TEXT DETECTION
@@ -292,7 +292,7 @@ def find_contours(image):
         # draw rectangle around contour on original image
         img_cpy = cv2.cvtColor(image.copy(), cv2.COLOR_GRAY2BGR)
         cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
-        cv_utils.show(img_cpy, "Test")
+        show(img_cpy, "Test")
 
 """
 Merge bounding boxes that are close together based on an
@@ -437,7 +437,7 @@ def draw_rects(image, rects):
     img_cpy = image.copy()
     for (x, y, w, h) in rects:
         cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
-    cv_utils.show(img_cpy, "Drawing rectangles")
+    show(img_cpy, "Drawing rectangles")
 
 
 
@@ -484,7 +484,7 @@ def detect_lines(img, color):
             cv2.line(blank,(x1,y1),(x2,y2),white,1)
 
     final = cv2.bitwise_or(img, blank)
-    cv_utils.show(final, "Lines")
+    show(final, "Lines")
     return final
 
 
@@ -498,7 +498,7 @@ def process_date(image):
     height = image.shape[0]
     width  = image.shape[1]
 
-    regions = cv_utils.impl_mser(image)
+    regions = impl_mser(image)
 
     # Get all possible bounding regions
     img_cpy = image.copy()
@@ -540,7 +540,7 @@ def process_field(image, expand_x = 0, expand_y = 0, threshold_x = 0, threshold_
     height = image.shape[0]
     width  = image.shape[1]
 
-    regions = cv_utils.impl_mser(image)
+    regions = impl_mser(image)
 
     list = []
     for box in regions:
@@ -584,7 +584,7 @@ def process_amount(image):
     height = image.shape[0]
     width  = image.shape[1]
 
-    regions = cv_utils.impl_mser(image)
+    regions = impl_mser(image)
 
     list = []
     for box in regions:
@@ -698,7 +698,7 @@ def process_middle_region(image):
     idx = 0
     for (pay, img) in possible_pay_order:
         img_cpy = img.copy()
-        cv_utils.show(img_cpy, "IMAGE")
+        show(img_cpy, "IMAGE")
 
         detect_lines(img_cpy, (128, 128, 0))
 
@@ -724,10 +724,10 @@ def process_middle_region(image):
     # for (amount, img) in possible_amount:
     #     # rect = amount.bounds
     #     img_cpy = img.copy()
-    #     cv_utils.show(img_cpy, "IMAGE")
+    #     show(img_cpy, "IMAGE")
     #     detect_lines(img_cpy, (128, 128, 0))
         
-    #     msers = cv_utils.impl_mser(img)
+    #     msers = impl_mser(img)
 
     #     for box in msers:
     #         img_cpy = img.copy()
@@ -740,7 +740,7 @@ def process_middle_region(image):
     #             continue
 
     #         cv2.rectangle(img_cpy, (x, y), (x + w, y + h), (128, 0, 128), 2)
-    #         cv_utils.show(img_cpy, "Another mser " + str(idx))
+    #         show(img_cpy, "Another mser " + str(idx))
     #     # end for
     #     idx += 1
     # end for
@@ -782,7 +782,7 @@ def process_middle_region(image):
         written.bounds = BoundingRect(x, y, w, h)
         written.field_type = FieldType.FIELD_TYPE_AMOUNT_WRITTEN
 
-        cv_utils.show(img_cpy, "Total box")
+        show(img_cpy, "Total box")
 
         possible_total.append((written, img_cpy))
     # end for
@@ -958,7 +958,7 @@ def lower_extract(image):
     height = image.shape[0]
     width  = image.shape[1]
 
-    # cv_utils.show(image, "lower")
+    # show(image, "lower")
 
     # Get the top row
     top_min_x = 0
