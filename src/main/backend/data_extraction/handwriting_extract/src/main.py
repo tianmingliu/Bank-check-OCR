@@ -200,13 +200,3 @@ def extract(image):
     return recognized
 
 
-if __name__ == "__main__":
-    filedir = os.path.abspath(os.path.dirname(__file__))
-    filename = os.path.join(filedir, "../../../../resources/images/testImage1.png")
-
-    print("FILENAME")
-    print(filename)
-
-    img = cv2.imread(filename)
-    
-    extract(img)

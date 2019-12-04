@@ -1,6 +1,9 @@
 from .data.field_data import FieldData, FieldType
 from .field import Field
 import datetime
+from dateutil.parser import parse
+from dateutil import relativedelta
+from ..config_helper import get_config_data
 
 """
 This class represents the Date Field, which is the field containing the information about the date of the check
@@ -25,20 +28,24 @@ class DateField(Field):
         print("Validating if the passed data is a valid date")
         date = data.extracted_data
         print(date)
-        try:
-            month, day, year = date.split('/')
-        except ValueError:
-            try:
-                month, day, year = date.split('-')
-            except ValueError:
-                print("The date is invalid (cannot be split).")
-                return False
 
         try:
-            print(year + " " + month + " " + day)
-            datetime.datetime(int(year), int(month), int(day))
+            parsed_date = parse(date).date()
+            print(parsed_date)
         except ValueError:
-            print("The date is invalid (Date time issue).")
+            print("Invalid date format")
+            return False
+
+        today = datetime.date.today()
+        months_config = int(get_config_data()['thresholds']['check_age_limit_months'])
+        age_limit = today - relativedelta.relativedelta(months=months_config)
+
+        if parsed_date > today:
+            print("Date is after today")
+            return False
+        elif parsed_date < age_limit:
+            print(age_limit)
+            print("Check is too old")
             return False
 
         print("The date is valid.")

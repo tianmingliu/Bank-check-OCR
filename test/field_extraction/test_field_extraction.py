@@ -196,7 +196,7 @@ def test_preprocess_extract():
         #     print("Field type: " + str(field.field_type))
 
 def test_hardcoded():
-    file = "resources/images/check_example.jpg"
+    file = "test/test_files/field_extract/check_example.jpg"
     img = cv2.imread(file)
 
     img, old_image = preprocessEntryPoint(img)

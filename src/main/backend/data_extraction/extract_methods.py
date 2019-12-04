@@ -60,22 +60,3 @@ def extract_data_handwriting(image):
     return extract(image)
 
 
-if __name__ == "__main__":
-    # img = cv2.imread("resources/images/amount_test.png")
-    # img = cv2.imread("resources/images/company_test.png")
-    # img = cv2.imread("resources/images/company_test_ul.png")
-    # img = cv2.imread("resources/images/date_test.png")    # ALL FAIL
-    # img = cv2.imread("resources/images/date_test2.png")   # ALL FAIL
-    # img = cv2.imread("resources/images/hello_test.png")
-    # img = cv2.imread("resources/images/money_test.png")
-    img = cv2.imread("resources/images/money_test_ul.png")  # ALL FAIL
-    # img = cv2.imread("resources/images/word_test_ul.png")
-
-    e1 = extract_data_pyocr(img)
-    e2 = extract_data_pytesseract(img)
-    e3 = extract_data_handwriting(img)
-
-    print("PyOCR: " + e1['text'])
-    print("PyTesseract: " + e2)
-    print("Handwriting: " + e3)
-
