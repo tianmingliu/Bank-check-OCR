@@ -3,9 +3,9 @@ import cv2
 
 def postprocessEntryPoint(image, dim, fields):
 
-    # for (field, _) in fields:
-    #     bb : BoundingRect = field.bounds
-    #     cv2.rectangle(image, (bb.x, bb.y), (bb.x + bb.w, bb.y + bb.h), (128, 0, 128), 2)
+    for (field, _) in fields:
+        bb : BoundingRect = field.bounds
+        cv2.rectangle(image, (bb.x, bb.y), (bb.x + bb.w, bb.y + bb.h), (128, 0, 128), 2)
 
 
 

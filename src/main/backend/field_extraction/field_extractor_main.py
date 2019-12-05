@@ -15,7 +15,7 @@ TODO(Dustin): Make sure during field extraction, all process call process_field
 rather than running their own function
 """
 
-from src.main.backend.utils.cv_utils import show, impl_mser
+from ..utils.cv_utils import show, impl_mser
 
 from ..data_extraction.field.data.field_data import FieldType, FieldData, BoundingRect
 
@@ -905,6 +905,8 @@ def middle_extract(image):
     pfield_max_y = int(pay_height * 1.0)
     pfield_width  = pfield_max_x - pfield_min_x
     pfield_height = pfield_max_y - pfield_min_y
+    pstart_x = pay_min_x + pfield_min_x
+    pstart_y = pay_min_y + pfield_min_y
 
     # Get the amount bounds
     amount_min_x = int(pay_width * 0.795)
@@ -913,6 +915,8 @@ def middle_extract(image):
     amount_max_y = pay_height
     amount_width  = amount_max_x - amount_min_x
     amount_height = amount_max_y - amount_min_y
+    amount_start_x = pay_min_x + amount_min_x
+    amount_start_y = pay_min_y + amount_min_y
 
     # Get the written row
     wrow_min_x = 0
@@ -930,25 +934,27 @@ def middle_extract(image):
     written_max_y = int(wheight*0.5)
     written_width  = written_max_x - written_min_x
     written_height = written_max_y - written_min_y
+    written_start_x = wrow_min_x + written_min_x
+    written_start_y = wrow_min_y + written_min_y
 
     # Create the pay field
     pay_img = prow_img[pfield_min_y : pfield_max_y,  pfield_min_x : pfield_max_x]
     pay = FieldData()
-    pay.bounds = BoundingRect(pfield_min_x, pfield_min_y, pfield_width, pfield_height)
+    pay.bounds = BoundingRect(pstart_x, pstart_y, pfield_width, pfield_height)
     pay.field_type = FieldType.FIELD_TYPE_PAY_TO_ORDER_OF
     pay_field = (pay, pay_img)
 
     # Create the amount field
     amount_img = prow_img[amount_min_y : amount_max_y,  amount_min_x : amount_max_x]
     amount = FieldData()
-    amount.bounds = BoundingRect(amount_min_x, amount_min_y, amount_width, amount_height)
+    amount.bounds = BoundingRect(amount_start_x, amount_start_y, amount_width, amount_height)
     amount.field_type = FieldType.FIELD_TYPE_AMOUNT
     amount_field = (amount, amount_img)
 
     # Create the pay field
     written_img = wrow_img[written_min_y : written_max_y,  written_min_x : written_max_x]
     written = FieldData()
-    written.bounds = BoundingRect(written_min_x, written_min_y, written_width, written_height)
+    written.bounds = BoundingRect(written_start_x, written_start_y, written_width, written_height)
     written.field_type = FieldType.FIELD_TYPE_AMOUNT_WRITTEN
     written_field = (written, written_img)
 
@@ -1082,13 +1088,28 @@ def extractFieldsEntryPoint(image_orig, image):
 
     # compile the list of fields
     list = []
-    for img in upper_images:
-        list.append(img)
+    for (field, img) in upper_images:
+        field.bounds = BoundingRect(field.bounds.x + upper_x_start, 
+                                    field.bounds.y + upper_y_start, 
+                                    field.bounds.w, 
+                                    field.bounds.h)
+
+        list.append((field, img))
     
-    for img in middle_images:
-        list.append(img)
+    for (field, img) in middle_images:
+        field.bounds = BoundingRect(field.bounds.x + middle_x_start, 
+                                    field.bounds.y + middle_y_start, 
+                                    field.bounds.w, 
+                                    field.bounds.h)
+
+        list.append((field, img))
     
-    for img in lower_images:
-        list.append(img)
+    for (field, img) in lower_images:
+        field.bounds = BoundingRect(field.bounds.x + lower_x_start, 
+                                    field.bounds.y + lower_y_start, 
+                                    field.bounds.w, 
+                                    field.bounds.h)
+
+        list.append((field, img))
 
     return img_cpy, list
