@@ -1,5 +1,6 @@
 import unittest
-
+import datetime
+from dateutil import relativedelta
 from src.main.backend.data_extraction.field.date_field import DateField
 from src.main.backend.data_extraction.field.data.field_data import FieldData, FieldType
 
@@ -104,8 +105,48 @@ class DateTest(unittest.TestCase):
         test_pair = FieldData()
 
         test_pair.field_type = FieldType.FIELD_TYPE_DATE
-        test_pair.extracted_data = "12/12/19"
+        today = datetime.date.today()
+        date = today - relativedelta.relativedelta(months=3)
+        test_pair.extracted_data = str(date.month) + "/" + str(date.day) + "/" + str(date.year)
         self.assertEqual(test_date_field_class.validate(test_pair), True)
+
+    """
+    Tests if a date that is older than 6 months, it should fail
+
+    @param self: self sent to method
+
+    Pass if date_field.validate returns False
+    """
+    def test_date_old(self):
+        test_date_field_class = DateField()
+        test_pair = FieldData()
+
+        test_pair.field_type = FieldType.FIELD_TYPE_DATE
+
+        today = datetime.date.today()
+        date = today - relativedelta.relativedelta(months=8)
+        test_pair.extracted_data = str(date.month) + "/" + str(date.day) + "/" + str(date.year)
+
+        self.assertEqual(test_date_field_class.validate(test_pair), False)
+
+    """
+    Tests if a date that is in the future, it should fail
+
+    @param self: self sent to method
+
+    Pass if date_field.validate returns False
+    """
+    def test_date_future(self):
+        test_date_field_class = DateField()
+        test_pair = FieldData()
+
+        test_pair.field_type = FieldType.FIELD_TYPE_DATE
+
+        today = datetime.date.today()
+        date = today + relativedelta.relativedelta(months=1)
+        test_pair.extracted_data = str(date.month) + "/" + str(date.day) + "/" + str(date.year)
+
+        self.assertEqual(test_date_field_class.validate(test_pair), False)
 
 
 if __name__ == '__main__':

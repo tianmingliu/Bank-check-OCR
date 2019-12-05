@@ -23,3 +23,4 @@ src/main/backend/data_extraction/logs/
 tests/**/*.jpg
 venv/*
 new_env/*
+logs/*
