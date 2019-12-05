@@ -1,4 +1,4 @@
-dateutil
+python-dateutil
 werkzeug
 autocorrect==0.4.4
 dataclasses

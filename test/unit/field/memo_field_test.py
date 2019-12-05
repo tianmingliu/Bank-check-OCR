@@ -60,6 +60,23 @@ class MemoTest(unittest.TestCase):
         test_pair.extracted_data = 12345
         self.assertEqual(test_pay_to_order_field_class.validate(test_pair), True)
 
+    """
+        Tests if empty string is sent, it should be rejected
+
+        @param self: self sent to method
+
+        Pass if memo_field.validate returns False
+        """
+
+    def test_is_empty(self):
+        print("\tMemo Validation Test 4")
+        test_pay_to_order_field_class = MemoField()
+        test_pair = FieldData()
+
+        test_pair.field_type = FieldType.FIELD_TYPE_MEMO
+        test_pair.extracted_data = ""
+        self.assertEqual(test_pay_to_order_field_class.validate(test_pair), False)
+
 
 if __name__ == '__main__':
     unittest.main()
