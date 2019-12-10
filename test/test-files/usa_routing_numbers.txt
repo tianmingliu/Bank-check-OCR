@@ -1,0 +1,36 @@
+State,Routing Number
+South Dakota,91408501
+Minnesota Moorhead, 91300023
+Montana,92900383
+Arizona,122105155
+Kentucky – Southern,83900363
+Colorado,102000021
+Wyoming,307070115
+Ohio,42000013
+Minnesota,91000022
+Missouri – Western,101200453
+Nevada,121201694
+California – Southern,122235821
+Oregon,123000220
+New Mexico,107002312
+Wisconsin,75000022
+Iowa,73000545
+Illinois - Northern,71904779
+Kentucky – Northern,42100175
+Kansas,101000187
+Illinois - Southern,81202759
+Utah,124302150
+Arkansas,82000549
+California – Northern,121122676
+North Dakota,91300023
+Washington,125000105
+Indiana,74900783
+Ohio Cleveland,41202582
+Nebraska,104000029
+Colorado Aspen,102101645
+Minnesota East Grand Forks,91215927
+Missouri, 81000210
+Tennessee,64000059
+Iowa Council Bluffs,104000029
+Idaho,123103729
+All other states,91000022

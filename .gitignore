@@ -1,10 +1,29 @@
 **/__pycache__
 
+external/
+
+src/main/backend/data_extraction/handwriting_extract/src/TFWordBeamSearch.so
+
+src/main/logs/
+
 .vscode
 */.vscode
 *.json
 
 .idea
 
-resources/output/
+src/main/uploads/*
+src/main/resources/output/
+test/test-files/field_extract/output/*
+test/test-files/field_extract/processed/*
 resources/*.zip
+src/main/backend/data_extraction/handwriting_extract/model/snapshot-24.data-00000-of-00001
+snapshot-24.data-00000-of-00001
+src/main/backend/logs/
+src/main/backend/data_extraction/handwriting_extract/src/logs/
+src/main/frontend/logs/
+src/main/backend/data_extraction/logs/
+tests/**/*.jpg
+venv/*
+new_env/*
+logs/*
