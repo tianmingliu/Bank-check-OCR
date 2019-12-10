@@ -1,0 +1,3 @@
+[submodule "external/CTCWordBeamSearch"]
+	path = external/CTCWordBeamSearch
+	url = https://github.com/githubharald/CTCWordBeamSearch.git

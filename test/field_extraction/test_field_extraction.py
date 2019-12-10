@@ -415,6 +415,8 @@ Lower Results:
 import os
 def test_split_image():
     out_dir = file_out_dir + "crop_image/"
+    if not os.path.isdir(out_dir):
+        os.mkdir(out_dir)
 
     test_header("Crop the top part of the image with varying sizes. Output name is test/test-files/field_extrac/output/crop_image/img_name_upper_crop.jpg")
 
@@ -476,6 +478,8 @@ def test_split_image():
 
     test_header("Crop the middle part of the image with varying sizes. Output name is test/test-files/field_extrac/output/crop_image/img_name_middle_crop.jpg")
     middle_out_dir = out_dir + "middle/"
+    if not os.path.isdir(middle_out_dir):
+        os.mkdir(middle_out_dir)
 
     # current approach splits middle 25% - 58%
     # To find the middle region, need to find the min/max y value
@@ -719,6 +723,8 @@ def test_split_image():
 
     test_header("Crop the bottom part of the image with varying sizes. Output name is test/test-files/field_extrac/output/crop_image/img_name_bottom_crop.jpg")
     lower_out_dir = out_dir + "lower/"
+    if not os.path.isdir(lower_out_dir):
+        os.mkdir(lower_out_dir)
 
     # Prep output directories
     cropped_dir = os.getcwd() + "/" + lower_out_dir + "cropped/"

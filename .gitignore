@@ -1,7 +1,8 @@
 **/__pycache__
 
+external/
+
 src/main/backend/data_extraction/handwriting_extract/src/TFWordBeamSearch.so
-src/main/backend/data_extraction/handwriting_extract/src/TFWordBeamSearch_origina.so
 
 src/main/logs/
 
@@ -11,8 +12,10 @@ src/main/logs/
 
 .idea
 
-uploads/*
+src/main/uploads/*
 src/main/resources/output/
+test/test-files/field_extract/output/*
+test/test-files/field_extract/processed/*
 resources/*.zip
 src/main/backend/data_extraction/handwriting_extract/model/snapshot-24.data-00000-of-00001
 snapshot-24.data-00000-of-00001
