@@ -26,7 +26,7 @@ class AmountField(Field):
         except ValueError:
             print("Amount number is not a float")
 
-            written_amount_raw = str(data.extracted_data)
+            written_amount_raw = str(data.extracted_data).lower()
 
 
             try:
