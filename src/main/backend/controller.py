@@ -1,5 +1,5 @@
 from .preprocess.preprocess_main import preprocessEntryPoint
-from .field_extraction.field_extractor_main import extractFieldsEntryPoint
+from .field_extraction.field_extractor_main import extract_fields_entry_point 
 from .data_extraction.data_extraction_main import extract_data_entry_point
 from .postprocess.postprocess_main import postprocessEntryPoint
 from .utils.json_utils import createJSONFromFieldDataList, writeToJSONFile
@@ -43,7 +43,7 @@ def controller_entry_point(image_file):
     ##################################################
     # Returns a list of fields
     # img, fields = fe.extractFieldsEntryPoint(old_image, pre_image)
-    nimg, fields = extractFieldsEntryPoint(old_image, img)
+    nimg, fields = extract_fields_entry_point(old_image, img)
 
     if fields is None or len(fields) == 0:
         print("No fields were found!")

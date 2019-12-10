@@ -1,8 +1,12 @@
 import cv2
 
-from src.main.backend.preprocess.preprocess_main import preprocessEntryPoint
-from src.main.backend.field_extraction.field_extractor_main import extractFieldsEntryPoint, check_bounding_collision, merge_overlapping_bb, merge_close_bb, crop
-from src.main.backend.data_extraction.data_extraction_main import extract_data_entry_point
+from src.main.backend.preprocess.preprocess_main            import preprocessEntryPoint
+from src.main.backend.field_extraction.field_extractor_main import extract_fields_entry_point
+from src.main.backend.field_extraction.field_extractor_main import check_bounding_collision
+from src.main.backend.field_extraction.field_extractor_main import merge_close_bb
+from src.main.backend.field_extraction.field_extractor_main import merge_overlapping_bb
+from src.main.backend.field_extraction.field_extractor_main import crop
+from src.main.backend.data_extraction.data_extraction_main  import extract_data_entry_point
 
 
 """
@@ -15,8 +19,6 @@ TODO(Dustin):
         - With isolated text
 - Automate extraction test some. Provide a struct with preprocessing info,
   field extraction info (line detection, text isolation)
-
-
 """
 
 file_base_dir      = "test/test-files/field_extract/"
@@ -168,7 +170,7 @@ def test_extraction():
     img, old_image = preprocessEntryPoint(img)
     # write_image(file_out_dir + "preprocess_" + file, img)
 
-    img, fields = extractFieldsEntryPoint(old_image, img)
+    img, fields = extract_fields_entry_point(old_image, img)
     # write_image(file_out_dir + "field_extract_" + file, img)
 
     for field, field_img in fields:
@@ -185,7 +187,7 @@ def test_preprocess_extract():
         img, old_image = preprocessEntryPoint(img)
         write_image(file_out_dir + "preprocess_" + file, img)
 
-        img, fields = extractFieldsEntryPoint(old_image, img)
+        img, fields = extract_fields_entry_point(old_image, img)
         write_image(file_out_dir + "field_extract_" + file, img)
 
         # for (field, image) in fields:
@@ -200,7 +202,7 @@ def test_hardcoded():
     img = cv2.imread(file)
 
     img, old_image = preprocessEntryPoint(img)
-    img, fields = extractFieldsEntryPoint(old_image, old_image)
+    img, fields = extract_fields_entry_point(old_image, old_image)
 
     for field, field_img in fields:
         print("TYPE:")
@@ -915,7 +917,7 @@ def test_field_extraction():
         height = image.shape[0]
         width  = image.shape[1]
 
-        old_img, fields = extractFieldsEntryPoint(None, image)
+        old_img, fields = extract_fields_entry_point(None, image)
 
 
         for (field, img) in fields:
@@ -945,11 +947,6 @@ def main():
     #----------------------------------------
     test_split_image()
     test_field_extraction()
-
-    # Bounding Box Tests
-    #----------------------------------------
-
-
 
     # test_preprocess_extract()
     # test_extraction()

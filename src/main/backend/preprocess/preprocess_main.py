@@ -147,11 +147,6 @@ def find_lines(img):
                     current_length = 0
                     start_x = i + 1
 
-    # cv2.imshow("Finding lines image...", img)
-    # cv2.imshow("Finding lines blank...", blank_image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows() 
-
 """
 Accepts an image as inout and performs a series of 
 preprocessing analysis on the image.
@@ -165,7 +160,6 @@ def preprocessEntryPoint(image):
     # TODO(Dustin): Preserve aspect ratio as much as possible
     # Rescale the image if need be
     smol_image, _, _ = downsize_image(image, 1080, 720)
-    # smol_image = image
 
     # Remove any background noise like small dots
     new_image = cv2.cvtColor(smol_image, cv2.COLOR_BGR2GRAY)
@@ -181,10 +175,6 @@ def preprocessEntryPoint(image):
             img2[labels == i + 1] = 255
     
     res = cv2.bitwise_not(img2)
-
-    # cv2.imshow("Dotless Image", res)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()  
 
     #new_image = remove_shadow(res)
     new_image = res
