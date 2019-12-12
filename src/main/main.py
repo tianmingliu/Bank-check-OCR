@@ -15,10 +15,27 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 result = {}
 
+"""
+Defines the file types that are allowed
+
+@param filename: the name of the file
+
+@return True if file has one of the allowed extensions, False otherwise
+"""
+
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+"""
+Converts the image to data
+
+@param path: the file path of the image
+
+@return the data of the image
+"""
 
 
 def image_to_data(path):
@@ -27,10 +44,12 @@ def image_to_data(path):
     encoded = base64.b64encode(open(path, "rb").read()).decode('utf-8')
     return prefix + encoded
 
-# @app.route('/uploads/<filename>')
-# def uploaded_file(filename):
-#     return send_from_directory(app.config['UPLOAD_FOLDER'],
-#                                filename)
+
+"""
+Handles file upload events
+
+@return the resulting processed image and extracted data to the frontend in JSON
+"""
 
 
 @app.route('/api/upload', methods=['POST'])
@@ -58,12 +77,18 @@ def upload_file():
             cv2.imwrite(path, img)
 
             # Show the processed image
-            # return redirect(url_for('uploaded_file',
-            #                         filename=filename))
             return jsonify(
                 image=image_to_data(path),
                 results=result
             )
+
+
+"""
+Handle the Re-Validate button events
+
+@return the resulting re-validated data to the frontend in JSON
+"""
+
 
 @app.route('/api/revalidate', methods=['POST'])
 def revalidate_data():
@@ -91,11 +116,19 @@ def revalidate_data():
     print(result)
     return jsonify(result)
 
+
+"""
+Handles the event that occurs when users navigates to the home
+
+@return the home.html template
+"""
+
+
 @app.route('/', methods=['GET'])
 def render_home():
     return render_template('home.html')
 
+
 # Runs the program
 if __name__ == "__main__":
     app.run(debug=True)
-

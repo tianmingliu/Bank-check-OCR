@@ -88,6 +88,9 @@ east_height = 320  # must be multiple of 32
 
 """
 A box has the tuple: (startX, startY, endX, endY)
+
+@param boxA: first bounding box
+@param boxB: second bounding box 
 """
 def check_bounding_collision(boxA: tuple, boxB: tuple):
     box_sx = boxA[0]
@@ -109,8 +112,15 @@ def check_bounding_collision(boxA: tuple, boxB: tuple):
 Merge bounding boxes that are close together based on an
 x, y threshold.
 
+@param image: the image to extract fields from
+@param bb_list: list of bounding boxes
+@param x_threshold: threshold for the x value, used for merging and combining of overlapping bounding boxes
+@param y_threshold: threshold for y value, used similar to above
+
 @return a list of tuples (x, y, w, h)
 """
+
+
 def merge_close_bb(image, bb_list, x_threshold = 0, y_threshold = 0):
     new_list = []
 
@@ -178,13 +188,17 @@ def merge_close_bb(image, bb_list, x_threshold = 0, y_threshold = 0):
 
     return new_list
 
+
 """
 Merge overlapping bounding boxes and return a new list.
 
+@param image: image whose fields are being extracted
 @param bb_list should be a list of tuples (x, y, w, h)
 
 @return a list of tuples (x, y, w, h)
 """
+
+
 def merge_overlapping_bb(image, bb_list):
     new_list = []
     # check_bounding_collision(boxA: tuple, boxB: tuple)
@@ -246,6 +260,17 @@ def merge_overlapping_bb(image, bb_list):
 
     return new_list
 
+
+"""
+Determines confidence levels of the accuracy of extracted bounding boxes
+
+@param scores: the location to store the scores
+@param geometry: contains the dimensions and coordinates of bounding boxes
+
+@return tuple: containing the bounding boxes and the confidence levels of each
+"""
+
+
 def decode_predictions(scores, geometry):
     # grab the number of rows and columns from the scores volume, then
     # initialize our set of bounding box rectangles and corresponding
@@ -301,7 +326,16 @@ def decode_predictions(scores, geometry):
             confidences.append(scoresData[x])
 
     # return a tuple of the bounding boxes and associated confidences
-    return (rects, confidences)
+    return rects, confidences
+
+
+"""
+Method to detect text
+
+@param image: image to extract field from
+@param padding_x: padding for the x coordinate
+@param padding_y: padding for the y coordinate 
+"""
 
 
 def detect_text(image, padding_x: float, padding_y: float):
@@ -421,6 +455,7 @@ def detect_text(image, padding_x: float, padding_y: float):
         print(str(idx))
         idx += 1
 
+
 """
 END EAST TEXT DETECTION
 """
@@ -428,7 +463,13 @@ END EAST TEXT DETECTION
 """
 Isolates text on the the provide image. Blackens the 
 background and whitens text.
+
+@param image: image to modify
+
+@return new_img: the modified image
 """
+
+
 def isolate_text(image):
     _, threshed = cv2.threshold(image, 100, 255, 
        cv2.THRESH_OTSU) 
@@ -438,6 +479,19 @@ def isolate_text(image):
 
     return new_img
 
+
+"""
+Dilutes the text in the image
+
+@param image: image to dilute
+@param kernel_width: width of kernel for diluting
+@param kernel_height: height of kernel for diluting
+@param iterations: number of iterations of dilation
+
+@return dilated: the dilated image
+"""
+
+
 def dilate_text(image, kernel_width = 3, kernel_height = 3, iterations = 3):
      # to manipulate the orientation of dilution , large x means horizonatally dilating  more, large y means vertically dilating more
     kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (kernel_width,
@@ -446,6 +500,14 @@ def dilate_text(image, kernel_width = 3, kernel_height = 3, iterations = 3):
     # dilate , more the iteration more the dilation
     dilated = cv2.dilate(image, kernel, iterations = iterations)
     return dilated
+
+
+"""
+Finds the contours in the image
+
+@param image: the image to find contours in
+"""
+
 
 def find_contours(image):
     contours, _ = cv2.findContours(image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -462,11 +524,30 @@ def find_contours(image):
         cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
         show(img_cpy, "Test")
 
+
+"""
+Draws rectangles on the image
+
+@param image: image to draw rectangles on
+@param rects: locations/coordinates of rectangles to draw
+"""
+
+
 def draw_rects(image, rects):
     img_cpy = image.copy()
     for (x, y, w, h) in rects:
         cv2.rectangle(img_cpy, (x, y), (x+w, y+h), (150, 0, 150), 2)
     show(img_cpy, "Drawing rectangles")
+
+
+"""
+Detects lines in the image
+
+@param img: the image to detect lines in
+@param color: the color of the image
+
+@return final: the result of the line detection
+"""
 
 
 def detect_lines(img, color):
@@ -520,9 +601,21 @@ x_max, y_max
 Format of return:
 (new_image, old_image)
 """
+
+
 def crop(img, min_x, min_y, max_x, max_y):
     new_image = img[min_y : max_y,  min_x : max_x]
     return (new_image, img)
+
+
+"""
+Extracts the upper region of the image
+
+@param image: image to extract upper region of
+
+@return tuple containing the date FieldData object and cropped image of date
+"""
+
 
 def upper_extract(image):
     height = image.shape[0]
@@ -541,6 +634,16 @@ def upper_extract(image):
     date.field_type = FieldType.FIELD_TYPE_DATE
 
     return [(date, date_img)]
+
+
+"""
+Extracts the middle region of the image
+
+@param image: image to extract middle region from
+
+@return tuple containing the Pay to the Order Of FieldData object, Amount FieldData and AmountWritten FieldData objects
+"""
+
 
 def middle_extract(image):
     height = image.shape[0]
@@ -617,6 +720,17 @@ def middle_extract(image):
 
     return [pay_field, amount_field, written_field]
 
+
+"""
+Extracts the lower region of the image
+
+@param image: the image whose lower region to extract
+
+@return tuple containing the Memo FieldData object, Signature FieldData object, RoutingNumber FieldData object, and 
+AccountNumber FieldData object
+"""
+
+
 def lower_extract(image):
     height = image.shape[0]
     width  = image.shape[1]
@@ -685,6 +799,7 @@ def lower_extract(image):
 
     return [memo_field, sig_field, rout_field, acc_field]
 
+
 """
 Provided an image of a check, a series of fields are
 extracted from the image. For each field found, a FieldData
@@ -696,6 +811,8 @@ for further processing in a later pipelin stage.
 
 @return A list of tuples containing a DataPair and a cropped image.
 """
+
+
 def extract_fields_entry_point(image_orig, image):
 
     # Split the image into thirds
@@ -729,8 +846,6 @@ def extract_fields_entry_point(image_orig, image):
     cropped_upper  = img_cpy[upper_y_start  : upper_y_end,  upper_x_start : upper_x_end]
     cropped_middle = img_cpy[middle_y_start : middle_y_end, upper_x_start : upper_x_end]
     cropped_lower  = img_cpy[lower_y_start  : lower_y_end,  upper_x_start : upper_x_end]
-
-
 
     upper_images  = upper_extract(cropped_upper) # BB WORKING
     middle_images = middle_extract(cropped_middle)

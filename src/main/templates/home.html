@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
     <head>
         <meta charset="utf-8">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -13,7 +12,7 @@
             tr:hover {background-color: #f5f5f5;}
         </style>
     </head>
-    <body> <!-- Don't delete any commented out code for now, it might be useful later on -->
+    <body>
         <h1 align="center">DBGT Check Reader</h1>
         <h2 align="center">Upload a Check</h2>
             <div align="center">
@@ -76,9 +75,6 @@
             <input type="submit" id="json" value="Get JSON" onclick="toJson()">
             <br><br><br>
         </div>
-        <!-- <div align="center"><textarea rows="10" style="width: 300px;" id="test" disabled>TEST</textarea></div>
-        <br><br><br>
-        TODO Add JSON file-->
     </body>
     <script>
         let image;
@@ -113,8 +109,6 @@
          * This function is called when the Upload button is clicked, and it gets the uploaded files' name
          * and then calls the hideUnhide() function based on whether a file was uploaded or not.
          * This function will also handle sending the data to the backend
-         *
-         * Don't delete any commented out code, it may be useful later on.
          */
         function processCheck() {
             var img = document.getElementById("myFile").files[0];
@@ -232,8 +226,6 @@
                         break;
                 }
             }
-
         }
-
     </script>
 </html>

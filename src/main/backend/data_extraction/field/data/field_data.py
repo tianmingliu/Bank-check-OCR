@@ -67,6 +67,11 @@ class FieldData:
     validation: bool = False
 
 
+"""
+Represents the pair of data passed around in the system
+@field image: The image that is to be processed
+@field data: The data that is extracted from the image
+"""
 @dataclass
 class DataPair:
     image: cv2.IMREAD_GRAYSCALE

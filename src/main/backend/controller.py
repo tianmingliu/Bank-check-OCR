@@ -18,9 +18,15 @@ Controls the overall pipeline:
 6. Write to JSON file
 7. Send postprocess data to the frontend 
 
+
+@param image_file: file containing path to the image
+
+@return (final_image, json_dict) tuple containing the final image after all processing, and the JSON dictionary object
 """
+
+
 def controller_entry_point(image_file):
-    
+
     print(image_file)
 
     # Read RGB image as greyscale
@@ -35,33 +41,17 @@ def controller_entry_point(image_file):
     dim = (width, height)
 
     # Process the image
-    # pre_image, old_image = prp.preprocessEntryPoint(img)
     img, old_image = preprocessEntryPoint(img)
 
     ##################################################
-    # FIELD EXTRACTTION PASS
+    # FIELD EXTRACTION PASS
     ##################################################
     # Returns a list of fields
-    # img, fields = fe.extractFieldsEntryPoint(old_image, pre_image)
     nimg, fields = extract_fields_entry_point(old_image, img)
 
     if fields is None or len(fields) == 0:
         print("No fields were found!")
         return
-    
-    # Was the data preserved when returning?
-    # Print and write to output file
-    # count = 0
-    # def_name = "resources/output/cropped_field"
-    # for pair in fields:
-    #     cv2.imshow('captcha_result', pair.image)
-    #     cv2.waitKey(0)
-    #     cv2.destroyAllWindows()
-    #
-    #     fname = def_name + str(count) + ".jpg";
-    #     cv2.imwrite(fname , pair.image)
-    #
-    #     count += 1
 
     ##################################################
     # DATA EXTRACTION PASS
@@ -69,16 +59,11 @@ def controller_entry_point(image_file):
     # for img, pair in fields:
     for (field, image) in fields:
         extract_data_entry_point(image, field)
-        # de.extract_data_entry_point(image, field)
         
     ##################################################
     # POST PROCESS PASS
     ##################################################
     final_img = postprocessEntryPoint(old_image, dim, fields)
-
-    # cv2.imshow('file img', final_img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
 
     json_dict = createJSONFromFieldDataList(fields)
     writeToJSONFile(json_dict, "out.json")

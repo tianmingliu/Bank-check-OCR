@@ -1,6 +1,12 @@
 import yaml
 import os
 
+"""
+This method retrieves the configuration data that exists in the config.yml file
+
+@return cfg the configuration data
+"""
+
 
 def get_config_data():
     filedir = os.path.abspath(os.path.dirname(__file__))
