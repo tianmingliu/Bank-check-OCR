@@ -8,6 +8,8 @@ Displays an image until a key is pressend.
 
 @return nothing.
 """
+
+
 def show(img, title):
     cv2.imshow(title, img)
     cv2.waitKey(0)
@@ -17,8 +19,11 @@ def show(img, title):
 """
 Performs mser on a given image.
 
+@param image: the image to perform mser on
 Returns the msers.
 """
+
+
 def impl_mser(image):
     mser = cv2.MSER_create()
     regions = mser.detectRegions(image)

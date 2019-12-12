@@ -6,9 +6,11 @@ Writes a list to a specified file in JSON format.
 fields is a tuple of (fields, image)
 
 @param fields: list of fields of type FieldData
-@param filename: file to write to
+
+@return the JSON that was created
 """
-# def createJSONFromFieldDataList(fields: List[fd.DataPair]):
+
+
 def createJSONFromFieldDataList(fields):
     json_str = "{\n"
     id = 0
@@ -17,6 +19,15 @@ def createJSONFromFieldDataList(fields):
         json_str += str("\"element" + str(id) + "\": " + pair.to_json(indent=4) + ",\n")
         id += 1
     return json.loads(json_str[:-2] + "\n}\n")
+
+
+"""
+Writes the JSON to a file
+
+@param json_str: the str containing JSON
+@param filename: the name of the file to write the JSON to
+"""
+
 
 def writeToJSONFile(json_str, filename):
     fp = open(filename, 'w+')

@@ -14,6 +14,8 @@ the the size of the image is not changed.
 @return the original width of the image
 @return the original height of the image
 """
+
+
 def downsize_image(image, new_width, new_height):
     height = image.shape[0] # keep original height
     width  = image.shape[1] # keep original width
@@ -34,6 +36,7 @@ def downsize_image(image, new_width, new_height):
 
     return image, width, height
 
+
 """
 Removes sharp lighting and shadow from an image.
 
@@ -43,6 +46,8 @@ Removes sharp lighting and shadow from an image.
                 and shadowing effects.
 @return norm_result: normalized image of the other return value.
 """
+
+
 def remove_shadow(image):
     # Remove the shadow
     rgb_planes = cv2.split(image)
@@ -68,6 +73,7 @@ def remove_shadow(image):
 
     return result, norm_result
 
+
 """
 width: width of the image
 height: height of the image
@@ -82,6 +88,8 @@ direction: 0 North
 Note(Dustin): y - 1 is North
               x - 1 is West
 """
+
+
 def check_neighbor(width: int, height: int, x: int, y: int, direction: int):
     # if north
     if direction == 0:
@@ -111,11 +119,14 @@ def check_neighbor(width: int, height: int, x: int, y: int, direction: int):
     else:
         return False
 
+
 """
 An experiment to determine if we can brute force finding the lines
 
-@param image
+@param img: img to find lines in
 """
+
+
 def find_lines(img):
     height = img.shape[0]
     width  = img.shape[1]
@@ -147,6 +158,7 @@ def find_lines(img):
                     current_length = 0
                     start_x = i + 1
 
+
 """
 Accepts an image as inout and performs a series of 
 preprocessing analysis on the image.
@@ -155,9 +167,9 @@ preprocessing analysis on the image.
 
 @return the processed image
 """
-def preprocessEntryPoint(image):
 
-    # TODO(Dustin): Preserve aspect ratio as much as possible
+
+def preprocessEntryPoint(image):
     # Rescale the image if need be
     smol_image, _, _ = downsize_image(image, 1080, 720)
 
@@ -176,7 +188,7 @@ def preprocessEntryPoint(image):
     
     res = cv2.bitwise_not(img2)
 
-    #new_image = remove_shadow(res)
+    # new_image = remove_shadow(res)
     new_image = res
 
     # find_lines(new_image)

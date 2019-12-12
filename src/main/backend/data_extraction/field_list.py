@@ -7,11 +7,11 @@ from .field.pay_to_order_field import PayToOrderField
 from .field.memo_field import MemoField
 from .field.data.field_data import FieldType
 
-
 # NOTE(Dustin): Maybe use an ordered map instead? Have the key
 # be the FieldType and the data be the object. Ordered maps tend to
-# be optmized for iteration, but also allow for fast lookups. Iterate
+# be optimized for iteration, but also allow for fast lookups. Iterate
 # over the map when identifying and lookup when validating.
+
 # Dictionary of Field classes.
 #    Key: Type of FieldData
 #    Value: Class that has implemented the Field interface.

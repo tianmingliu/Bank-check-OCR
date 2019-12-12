@@ -1,5 +1,15 @@
 import cv2
 
+"""
+Modifies the image to add bounding boxes to it and resize it to original size 
+
+@param image: the image to modify
+@param dim: dimensions to draw on to image
+@param fields: the fields of the image
+
+@return image: the modified image
+"""
+
 
 def postprocessEntryPoint(image, dim, fields):
 

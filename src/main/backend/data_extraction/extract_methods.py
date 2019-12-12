@@ -9,6 +9,12 @@ import imutils
 import os
 import numpy as np
 
+"""
+Method extracts data from given image using Py-Tesseract
+
+@return text the extracted text
+"""
+
 
 def extract_data_pytesseract(image):
     filename = "{}.png".format("temp")
@@ -16,6 +22,12 @@ def extract_data_pytesseract(image):
     text = pytesseract.image_to_string(Image.open(filename), config='--psm 7')
 
     return text
+
+"""
+Method extracts data from given image using handwriting_extract library
+
+@return the text that was extracted
+"""
 
 
 def extract_data_handwriting(image):
@@ -107,13 +119,9 @@ def account_routing_extraction(img, pair: FieldData):
         thresh = cv2.threshold(
             gradX, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
-        # show("thresh 1", thresh)
-
         # remove any pixels that are touching borders of image (helps us in next
         # step when pruning contours)
         thresh = clear_border(thresh)
-
-        # show("thresh 2", thresh)
 
         # find contours in thresholded image, init list of group locations
         groupCnts = cv2.findContours(
@@ -143,8 +151,6 @@ def account_routing_extraction(img, pair: FieldData):
             group = bottom[gY - 5: gY + gH + 5, gX - 5: gX + gW + 5]
             group = cv2.threshold(
                 group, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
-
-            # show("group", group)
 
             # find char contours in the group, then sort from left to right
             charCnts = cv2.findContours(

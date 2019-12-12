@@ -50,6 +50,13 @@ class AmountField(Field):
             print("Passed validation")
             return True
 
+    """
+    Gets the field type of this class
+
+    @param self: self sent to method
+
+    @return FIELD_TYPE_AMOUNT the enum Field type of the class
+    """
     def get_type(self):
         return FieldType.FIELD_TYPE_AMOUNT
 

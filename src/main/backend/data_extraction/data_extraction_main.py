@@ -3,21 +3,12 @@ from .field_list import GlobalFieldList
 from .extract_methods import extract_data_handwriting, extract_data_pytesseract, account_routing_extraction
 import cv2
 
-
 """
-Entry point for the Data Extraction stage of the pipeline.
-Controls the overall flow of the program:
-1. Checks if the input is handwritten or not (currently hardcoded)
-2. Extracts the data from the provided field
-3. identifies the extracted data using the GlobalFieldList
-4. validates the extracted data using the GlobalFieldList
+Creates a window displaying the image passed to it, making the title of the window = to the title parameter.
+Also automatically sets window to display until keypress, and when keypress happens it destroys all windows it created
 
-@param image: image to get the extracted data from
-@param field: a single field of type FieldData who is filled out
-during this stage of the pipeline. It can be assumed that a valid
-bounding box has been set in the field.
-
-@return True if the extraction was successful. False otherwise. 
+@param title: the title that the window should have
+@param image: the image to be displayed
 """
 
 
@@ -25,6 +16,20 @@ def show(title, image):
     cv2.imshow(title, image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+
+"""
+Entry point for the Data Extraction stage of the pipeline.
+Controls the overall flow of the program:
+1. Checks which field type has been passed to it, and calls the appropriate data extraction method
+2. Extracts the data from the provided field
+3. Validates the extracted data using the Fields' validation methods
+
+@param img: image to get the extracted data from
+@param pair: FieldData object containing Field Type and in which to store extracted data
+
+@return the pair FieldData object
+"""
 
 
 def extract_data_entry_point(img, pair: FieldData):
@@ -86,12 +91,3 @@ def validate_extracted_field(pair: FieldData):
         return GlobalFieldList[pair.field_type].validate(pair)
     except KeyError:
         return False
-
-    # for field in field_list.GlobalFieldList:
-    #     if data.field_type == field.getType():
-    #         return field.validate(data)
-    # return False
-
-
-if __name__ == '__main__':
-    extract_data_entry_point(None, None)
