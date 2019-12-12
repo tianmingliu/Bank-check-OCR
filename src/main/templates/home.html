@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <title>Upload Your Check</title>
+        <style>
+            th, td {
+                padding: 15px;
+                text-align: left;
+            }
+            tr:hover {background-color: #f5f5f5;}
+        </style>
+    </head>
+    <body> <!-- Don't delete any commented out code for now, it might be useful later on -->
+        <h1 align="center">DBGT Check Reader</h1>
+        <h2 align="center">Upload a Check</h2>
+            <div align="center">
+                <br>
+                <input type="file" id="myFile" name="file">
+                <br><br><br>
+                <input type="submit" id="submit" value="Upload" onclick="processCheck()">
+            </div>
+
+        <br><br><br>
+
+        <div id='dataDiv' align="center" style="display: none;">
+            <img id="image" style="max-width: 50%; max-length: 50%">
+            <br><br>
+            <table align="center" border="1" style="border-collapse: collapse;">
+                <tr>
+                    <th colspan="5">Extracted Data</th>
+                </tr>
+                <tr>
+                    <th> Field </th>
+                    <th> Value </th>
+                    <th> PASS? </th>
+                </tr><tr>
+                    <td> Account Number </td>
+                <td ><input type="text" id="an.val"></td>
+                    <td id="an.valid"></td>
+                </tr><tr>
+                    <td> Routing Number </td>
+                    <td><input type="text" id="rn.val"></td>
+                    <td id="rn.valid"></td>
+                </tr><tr>
+                    <td> Date </td>
+                    <td><input type="text" id="date.val"></td>
+                    <td id="date.valid"></td>
+                </tr><tr>
+                    <td> Pay to the Order of </td>
+                    <td><input type="text" id="pto.val"></td>
+                    <td id="pto.valid"></td>
+                </tr><tr>
+                    <td> Numeric Amount </td>
+                    <td><input type="text" id="namt.val"></td>
+                    <td id="namt.valid"></td>
+                </tr><tr>
+                    <td> Written Amount </td>
+                    <td><input type="text" id="wamt.val"></td>
+                    <td id="wamt.valid"></td>
+                </tr><tr>
+                    <td> Memo </td>
+                    <td><input type="text" id="memo.val"></td>
+                    <td id="memo.valid"></td>
+                </tr><tr>
+                    <td> Signature </td>
+                    <td><input type="text" id="sig.val"></td>
+                    <td id="sig.valid"></td>
+                </tr>
+            </table>
+            <br><br>
+            <input type="submit" id="resubmit" value="Re-validate" onclick="revalidateData()">
+            <br><br>
+            <input type="submit" id="json" value="Get JSON" onclick="toJson()">
+            <br><br><br>
+        </div>
+        <!-- <div align="center"><textarea rows="10" style="width: 300px;" id="test" disabled>TEST</textarea></div>
+        <br><br><br>
+        TODO Add JSON file-->
+    </body>
+    <script>
+        let image;
+        let results;
+        var data;
+        $(document).ready(function () {
+            $("#submit").hide();
+            $("#myFile").on("change", function () {
+                hideUnhide(false);
+                if ($('#myFile').val() != "") {
+                    $("#submit").show();
+                } else {
+                    $("#submit").hide();
+                }
+
+            })
+        });
+
+        /*
+         * This function either hides or reveals/shows elements on the page depending on user interaction
+         * @show boolean true means show, false means hide
+         */
+        function hideUnhide(show) {
+            if (show == true) {
+                document.getElementById('dataDiv').style = "";
+            } else {
+                document.getElementById('dataDiv').style = "display: none;";
+            }
+        }
+
+        /*
+         * This function is called when the Upload button is clicked, and it gets the uploaded files' name
+         * and then calls the hideUnhide() function based on whether a file was uploaded or not.
+         * This function will also handle sending the data to the backend
+         *
+         * Don't delete any commented out code, it may be useful later on.
+         */
+        function processCheck() {
+            var img = document.getElementById("myFile").files[0];
+            var fd = new FormData();
+            fd.append('file', img);
+
+            var request = new XMLHttpRequest();
+            request.open('POST', 'http://127.0.0.1:5000/api/upload', false);
+            request.send(fd);
+
+            data = JSON.parse(request.response);
+            image = data.image;
+            results = data.results;
+            document.getElementById("image").src = image;
+            for (var key in results) {
+                switch(results[key]["field_type"]) {
+                    case 0:
+                        break;
+                    case 1: //Date
+                        document.getElementById("date.val").value = results[key]["extracted_data"];
+                        document.getElementById("date.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 2: //Pay to Order Of
+                        document.getElementById("pto.val").value = results[key]["extracted_data"];
+                        document.getElementById("pto.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 3: //Numeric Amount
+                        document.getElementById("namt.val").value = results[key]["extracted_data"];
+                        document.getElementById("namt.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 4: //Written Amount
+                        document.getElementById("wamt.val").value = results[key]["extracted_data"];
+                        document.getElementById("wamt.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 5: //Signature
+                        document.getElementById("sig.val").value = results[key]["extracted_data"];
+                        document.getElementById("sig.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 6: //Memo
+                        document.getElementById("memo.val").value = results[key]["extracted_data"];
+                        document.getElementById("memo.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 7: //Routing
+                        document.getElementById("rn.val").value = results[key]["extracted_data"];
+                        document.getElementById("rn.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 8: //Account
+                        document.getElementById("an.val").value = results[key]["extracted_data"];
+                        document.getElementById("an.valid").innerHTML = results[key]["validation"];
+                        break;
+                    default:
+                        break;
+                }
+            }
+            hideUnhide(true);
+        }
+
+        function toJson() {
+            var resultsJson = JSON.stringify(results, null, 2);
+            var x = window.open();
+            x.document.open();
+            x.document.write('<html><body><pre>' + resultsJson + '</pre></body></html>');
+            x.document.close();
+        }
+
+        function revalidateData() {
+            newData = {
+                date: {data: document.getElementById("date.val").value},
+                account: {data: document.getElementById("an.val").value},
+                routing: {data: document.getElementById("rn.val").value},
+                paytoorder: {data: document.getElementById("pto.val").value},
+                amount: {data: document.getElementById("namt.val").value},
+                writtenamount: {data: document.getElementById("wamt.val").value},
+                memo: {data: document.getElementById("memo.val").value},
+                signature: {data: document.getElementById("sig.val").value},
+            }
+
+            console.log(newData);
+            let request = new XMLHttpRequest();
+            request.open('POST', 'http://127.0.0.1:5000/api/revalidate', false);
+            request.send(JSON.stringify(newData));
+
+            results = JSON.parse(request.response);
+            console.log(results);
+
+            for (var key in results) {
+                switch(results[key]["field_type"]) {
+                    case 0:
+                        break;
+                    case 1: //Date
+                        document.getElementById("date.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 2: //Pay to Order Of
+                        document.getElementById("pto.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 3: //Numeric Amount
+                        document.getElementById("namt.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 4: //Written Amount
+                        document.getElementById("wamt.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 5: //Signature
+                        document.getElementById("sig.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 6: //Memo
+                        document.getElementById("memo.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 7: //Routing
+                        document.getElementById("rn.valid").innerHTML = results[key]["validation"];
+                        break;
+                    case 8: //Account
+                        document.getElementById("an.valid").innerHTML = results[key]["validation"];
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        }
+
+    </script>
+</html>

@@ -1,0 +1,6 @@
+README.md
+setup.py
+DBGT_OCR_Project.egg-info/PKG-INFO
+DBGT_OCR_Project.egg-info/SOURCES.txt
+DBGT_OCR_Project.egg-info/dependency_links.txt
+DBGT_OCR_Project.egg-info/top_level.txt

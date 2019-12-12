@@ -1,0 +1,90 @@
+{
+  "element0": {
+    "bounds": {
+      "h": 46,
+      "w": 175,
+      "x": 570,
+      "y": 70
+    },
+    "extracted_data": "10/20/2014",
+    "field_type": 1,
+    "validation": false
+  },
+  "element1": {
+    "bounds": {
+      "h": 63,
+      "w": 535,
+      "x": 105,
+      "y": 117
+    },
+    "extracted_data": "‘ TEST. A@OVNT",
+    "field_type": 2,
+    "validation": true
+  },
+  "element2": {
+    "bounds": {
+      "h": 63,
+      "w": 136,
+      "x": 697,
+      "y": 117
+    },
+    "extracted_data": "200.00",
+    "field_type": 3,
+    "validation": true
+  },
+  "element3": {
+    "bounds": {
+      "h": 47,
+      "w": 614,
+      "x": 43,
+      "y": 180
+    },
+    "extracted_data": "TWO HONNRED AND _ Yiog",
+    "field_type": 4,
+    "validation": false
+  },
+  "element4": {
+    "bounds": {
+      "h": 44,
+      "w": 316,
+      "x": 78,
+      "y": 280
+    },
+    "extracted_data": "TEST Avie CARS",
+    "field_type": 6,
+    "validation": true
+  },
+  "element5": {
+    "bounds": {
+      "h": 41,
+      "w": 368,
+      "x": 438,
+      "y": 280
+    },
+    "extracted_data": "YD ayt tite...",
+    "field_type": 5,
+    "validation": true
+  },
+  "element6": {
+    "bounds": {
+      "h": 54,
+      "w": 877,
+      "x": 0,
+      "y": 339
+    },
+    "extracted_data": "000000000",
+    "field_type": 7,
+    "validation": false
+  },
+  "element7": {
+    "bounds": {
+      "h": 54,
+      "w": 877,
+      "x": 0,
+      "y": 339
+    },
+    "extracted_data": "000000000",
+    "field_type": 8,
+    "validation": true
+  }
+}
