@@ -16,6 +16,6 @@ pytest
 scikit-image
 setuptools
 tensorboard==1.14.0
-tensorflow==1.14.0
+tensorflow==1.15.0
 tensorflow-estimator==1.14.0
 pyyaml
