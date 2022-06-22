@@ -7,7 +7,7 @@ editdistance==0.5.3
 flask
 Flask
 imutils==0.5.3
-numpy==1.17.4
+numpy==1.22.0
 opencv-python==4.1.2.30
 Pillow==6.2.1
 pytesseract==0.3.0
